@@ -1,3 +1,4 @@
+import { createUser, registrationCountries } from "./create-user.js";
 import express from "express";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -118,11 +119,9 @@ export function createApp({
   }
   // The legacy password endpoint cannot establish an admin session.
   app.post("/api/login", originGuard, (_req, res) =>
-    res
-      .status(410)
-      .json({
-        error: "Actualisez la page : connexion par e-mail, OTP puis PIN.",
-      }),
+    res.status(410).json({
+      error: "Actualisez la page : connexion par e-mail, OTP puis PIN.",
+    }),
   );
   app.post(
     "/api/auth/email",
@@ -243,6 +242,28 @@ export function createApp({
       res.json({ success: true });
     },
   );
+  app.get("/api/registration/countries", requireAdmin, (_req, res) =>
+    res.json({ countries: registrationCountries() }),
+  );
+  app.post(
+    "/api/users",
+    originGuard,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res
+          .status(201)
+          .json({
+            success: true,
+            user: await createUser(pool, req.admin, req.body),
+          });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
   app.get("/api/dashboard", requireAdmin, async (req, res, next) => {
     try {
       res.json(await dashboard(pool, validateCountry(req.query.country)));
@@ -295,7 +316,7 @@ export function createApp({
     res.sendFile(path.join(root, "src/backoffice/login.html"));
   });
   app.get(
-    ["/", "/dashboard", "/users", "/users/:id"],
+    ["/", "/dashboard", "/users", "/users/new", "/users/:id"],
     async (req, res, next) => {
       try {
         const session = readSession(req, config, sessions);

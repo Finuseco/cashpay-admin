@@ -44,9 +44,10 @@ Les activités d’une fiche concernent uniquement son identifiant. Les transact
 - Ancien `POST /api/login` : désactivé (HTTP 410).
 - `GET /api/session`, `POST /api/logout` : session indépendante et révocation de la session courante.
 - `GET /api/dashboard?country=CD` : instantané global ou pays, graphiques et disponibilité des files.
+- `POST /api/users` : création d’un compte Client et de son portefeuille, journalisée ; session Admin et CSRF requis. Voir [le contrat](account-creation.md).
 - `GET /api/users?search=...&page=0&country=CD` : recherche littérale paramétrée, normalisation du téléphone sur neuf chiffres comme Cashpay Web.
 - `GET /api/users/{id}` : fiche, soldes et dépôts.
 - `GET /api/users/{id}/activity?kind=transactions|cards|orders&page=0` : activités paginées.
 - `GET /healthz` : disponibilité du processus uniquement, sans attestation de connexion à la base.
 
-Aucune de ces routes ne nomme un agent, ne modifie un compte, un tarif, un pays ou un solde. Les opérations de gestion seront des phases séparées avec leurs contrôles et journaux réels.
+La création de comptes ajoute un Client et un portefeuille à zéro ; elle ne nomme pas d’agent. Les autres routes ne modifient aucun compte, tarif, pays ou solde. Les opérations de gestion seront des phases séparées avec leurs contrôles et journaux réels.

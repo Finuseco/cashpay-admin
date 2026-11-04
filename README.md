@@ -5,6 +5,7 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 ## Livraison actuelle
 
 - Connexion du compte `Admin` actif : e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
+- Création de comptes Client nationaux et diaspora depuis le menu « Créer un compte », avec portefeuille à zéro, PIN chiffré par empreinte bcrypt et trace d’intervention. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
 - Graphiques Chart.js de la template : répartition des déposants, inscriptions/premiers dépôts sur douze mois, volumes du registre dans une seule devise sélectionnée.
 - Recherche par nom, téléphone, e-mail ou ID Wallet. Fiche utilisateur : avatar public, identité de consultation, soldes par devise, dépôts et listes paginées des transactions, demandes de cartes et commandes.
@@ -28,13 +29,13 @@ Node.js **22.9 minimum** et PostgreSQL de l’application existante.
 
 Pour travailler uniquement sur la machine locale, choisir `NODE_ENV=development` et une origine exacte telle que `http://127.0.0.1:8010`. Le service écoute par défaut sur le loopback ; la publication HTTPS passe par le proxy du VPS.
 
-Aucune migration, colonne ou table supplémentaire n’est nécessaire pour cette phase. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
+Aucune migration, colonne ou table supplémentaire n’est nécessaire pour cette phase. La création de comptes utilise les tables existantes `users`, `wallets` et `super_agent_interventions`. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
 
 ### Accès SQL
 
-Un utilisateur PostgreSQL de lecture dédié est recommandé. Les requêtes applicatives utilisent les tables existantes `users`, `wallets`, `transactions`, `card_requests` et `orders`. L’authentification doit pouvoir lire les champs de compte, `pin_hash` déjà configuré ; ces champs ne sont jamais renvoyés au navigateur. `DB_SCHEMA` sélectionne le schéma existant.
+Les consultations gardent la lecture seule par défaut. La création de comptes nécessite les droits d’écriture limités décrits dans [le contrat de création](docs/account-creation.md). Les requêtes applicatives utilisent les tables existantes `users`, `wallets`, `transactions`, `card_requests` et `orders`. L’authentification doit pouvoir lire les champs de compte, `pin_hash` déjà configuré ; ces champs ne sont jamais renvoyés au navigateur. `DB_SCHEMA` sélectionne le schéma existant.
 
-Le pool impose les transactions par défaut en lecture seule. Les statistiques et fiches utilisent en plus une transaction **REPEATABLE READ READ ONLY**, avec délais de requête/verrou, pour conserver une lecture cohérente. Les services optionnels cartes/commandes manquants ou incompatibles affichent « indisponible ». Une table essentielle absente fait échouer la lecture, elle n’est pas remplacée par un total zéro. La vérification d’un schéma sur la base réelle reste nécessaire avant ouverture de l’admin.
+Le pool impose les transactions par défaut en lecture seule ; la création de compte ouvre explicitement une transaction d’écriture. Les statistiques et fiches utilisent en plus une transaction **REPEATABLE READ READ ONLY**, avec délais de requête/verrou, pour conserver une lecture cohérente. Les services optionnels cartes/commandes manquants ou incompatibles affichent « indisponible ». Une table essentielle absente fait échouer la lecture, elle n’est pas remplacée par un total zéro. La vérification d’un schéma sur la base réelle reste nécessaire avant ouverture de l’admin.
 
 ## Règles de calcul
 

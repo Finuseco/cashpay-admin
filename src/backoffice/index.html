@@ -67,6 +67,13 @@
               ><span class="menu-title">Utilisateurs et activités</span></a
             >
           </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/users/new"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-account-plus"></i></span
+              ><span class="menu-title">Créer un compte</span></a
+            >
+          </li>
         </ul>
       </nav>
       <div class="container-fluid page-body-wrapper">
@@ -120,9 +127,216 @@
             <p id="app-status" class="text-muted" role="status">
               Chargement des données réelles…
             </p>
+            <section id="create-user-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">Créer un compte utilisateur</h1>
+                <a class="btn btn-outline-light" href="/users"
+                  >Rechercher un compte</a
+                >
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <p>
+                    Compte Client avec portefeuille initial à zéro. Vérifiez les
+                    coordonnées avec le titulaire. Celui-ci choisit son PIN
+                    initial et doit le conserver confidentiel. La vérification
+                    d’identité reste à effectuer selon la procédure Cashpay.
+                  </p>
+                  <form id="create-user-form">
+                    <div class="row">
+                      <div class="col-md-6 form-group">
+                        <label for="create-first_name">Prénom</label
+                        ><input
+                          class="form-control"
+                          id="create-first_name"
+                          name="first_name"
+                          type="text"
+                          required
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-last_name">Nom</label
+                        ><input
+                          class="form-control"
+                          id="create-last_name"
+                          name="last_name"
+                          type="text"
+                          required
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-middle_name">Postnom</label
+                        ><input
+                          class="form-control"
+                          id="create-middle_name"
+                          name="middle_name"
+                          type="text"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-email">Adresse e-mail</label
+                        ><input
+                          class="form-control"
+                          id="create-email"
+                          name="email"
+                          type="email"
+                          required
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-phone"
+                          >Téléphone international (+243…)</label
+                        ><input
+                          class="form-control"
+                          id="create-phone"
+                          name="phone"
+                          type="tel"
+                          required
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-birth_date">Date de naissance</label
+                        ><input
+                          class="form-control"
+                          id="create-birth_date"
+                          name="birth_date"
+                          type="date"
+                          required
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-nationality">Nationalité</label
+                        ><input
+                          class="form-control"
+                          id="create-nationality"
+                          name="nationality"
+                          type="text"
+                          required
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-province">Province</label
+                        ><input
+                          class="form-control"
+                          id="create-province"
+                          name="province"
+                          type="text"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-city">Ville</label
+                        ><input
+                          class="form-control"
+                          id="create-city"
+                          name="city"
+                          type="text"
+                          required
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-address">Adresse</label
+                        ><input
+                          class="form-control"
+                          id="create-address"
+                          name="address"
+                          type="text"
+                          required
+                          maxlength="500"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-pin">PIN initial (4 chiffres)</label
+                        ><input
+                          class="form-control"
+                          id="create-pin"
+                          name="pin"
+                          type="password"
+                          required
+                          inputmode="numeric"
+                          pattern="[0-9]{4}"
+                          maxlength="4"
+                          autocomplete="new-password"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-pin_confirmation"
+                          >Confirmer le PIN</label
+                        ><input
+                          class="form-control"
+                          id="create-pin_confirmation"
+                          name="pin_confirmation"
+                          type="password"
+                          required
+                          inputmode="numeric"
+                          pattern="[0-9]{4}"
+                          maxlength="4"
+                          autocomplete="new-password"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-country">Pays de résidence</label
+                        ><select
+                          class="form-control"
+                          id="create-country"
+                          name="countryCode"
+                          required
+                        ></select>
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="create-type">Type de compte</label
+                        ><select
+                          id="create-type"
+                          class="form-control"
+                          name="account_type"
+                        >
+                          <option value="national">National</option>
+                          <option value="diaspora">Diaspora</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label"
+                        ><input
+                          class="form-check-input"
+                          id="create-confirm"
+                          type="checkbox"
+                          required
+                        />Je confirme les données avec le titulaire et son
+                        accord pour la création du compte.</label
+                      >
+                    </div>
+                    <button
+                      id="create-user-submit"
+                      class="btn btn-primary mt-3"
+                      type="submit"
+                    >
+                      Créer le compte
+                    </button>
+                  </form>
+                  <div
+                    id="create-user-result"
+                    class="mt-3"
+                    role="status"
+                    aria-live="polite"
+                  ></div>
+                </div>
+              </div>
+            </section>
             <section id="dashboard-view" hidden>
               <div class="page-header">
                 <h1 class="page-title">Tableau de bord Cashpay</h1>
+                <a href="/users/new" class="btn btn-outline-primary"
+                  ><i class="mdi mdi-account-plus"></i> Créer un compte</a
+                >
                 <button id="refresh" class="btn btn-primary">
                   <i class="mdi mdi-refresh"></i> Actualiser
                 </button>

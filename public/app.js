@@ -523,7 +523,16 @@ async function boot() {
             link.getAttribute("href") === location.pathname,
           ),
       );
-    if (location.pathname === "/users") {
+    if (location.pathname === "/users/new") {
+      $("create-user-view").hidden = false;
+      const data = await api("/api/registration/countries");
+      const select = $("create-country");
+      select.replaceChildren(new Option("Choisir un pays", ""));
+      for (const country of data.countries)
+        select.add(new Option(country.name, country.code));
+      $("app-status").textContent =
+        "Création réservée aux administrateurs. Aucun solde ni rôle privilégié attribué.";
+    } else if (location.pathname === "/users") {
       $("users-view").hidden = false;
       await loadUsers();
     } else if (/^\/users\/[1-9]\d*$/.test(location.pathname)) {
@@ -601,3 +610,50 @@ document.querySelectorAll("[data-kind]").forEach((button) =>
   }),
 );
 void boot();
+
+let creatingUser = false;
+$("create-user-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (creatingUser) return;
+  const form = event.currentTarget,
+    result = $("create-user-result");
+  const body = Object.fromEntries(new FormData(form));
+  if (body.pin !== body.pin_confirmation) {
+    result.textContent = "Les PIN ne correspondent pas.";
+    return;
+  }
+  creatingUser = true;
+  $("create-user-submit").disabled = true;
+  result.textContent = "Création en cours…";
+  try {
+    const data = await api("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": state.session.csrf,
+      },
+      body: JSON.stringify(body),
+    });
+    form.reset();
+    form.hidden = true;
+    result.replaceChildren(
+      element(
+        "p",
+        `Compte créé : ${data.user.full_name} — ${data.user.id_wallet}`,
+        "text-success",
+      ),
+    );
+    const link = element("a", "Consulter le compte", "btn btn-primary");
+    link.href = "/users/" + data.user.id;
+    result.append(link);
+  } catch (reason) {
+    result.textContent =
+      reason.message +
+      " Si la connexion a été interrompue, recherchez le compte avant de réessayer.";
+  } finally {
+    creatingUser = false;
+    $("create-user-submit").disabled = false;
+    $("create-pin").value = "";
+    $("create-pin_confirmation").value = "";
+  }
+});
