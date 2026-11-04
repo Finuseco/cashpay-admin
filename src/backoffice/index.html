@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cashpay Admin — Tableau de bord</title>
+    <link
+      rel="stylesheet"
+      href="/assets/vendors/mdi/css/materialdesignicons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendors/ti-icons/css/themify-icons.css"
+    />
+    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css" />
+    <link
+      rel="stylesheet"
+      href="/assets/vendors/font-awesome/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="icon" href="/assets/images/favicon.png" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div
+          class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top"
+        >
+          <a class="sidebar-brand brand-logo" href="/dashboard"
+            ><img src="/assets/images/logo.svg" alt="Template Corona" /></a
+          ><a class="sidebar-brand brand-logo-mini" href="/dashboard"
+            ><img src="/assets/images/logo-mini.svg" alt=""
+          /></a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  <i
+                    class="mdi mdi-account-circle icon-md"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+                <div class="profile-name">
+                  <h5 class="mb-0 font-weight-normal" id="admin-name">
+                    Session…
+                  </h5>
+                  <span>Administration Cashpay</span>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Pilotage</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/dashboard"
+              ><span class="menu-icon"><i class="mdi mdi-speedometer"></i></span
+              ><span class="menu-title">Tableau de bord</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/users"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-account-multiple"></i></span
+              ><span class="menu-title">Utilisateurs et activités</span></a
+            >
+          </li>
+        </ul>
+      </nav>
+      <div class="container-fluid page-body-wrapper">
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div
+            class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center"
+          >
+            <a class="navbar-brand brand-logo-mini" href="/dashboard"
+              ><img src="/assets/images/logo-mini.svg" alt=""
+            /></a>
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button
+              class="navbar-toggler navbar-toggler align-self-center"
+              type="button"
+              data-toggle="minimize"
+              aria-label="Réduire le menu"
+            >
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <span class="nav-link">Cashpay Admin</span>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item">
+                <button id="logout" class="btn btn-outline-light btn-sm">
+                  <i class="mdi mdi-logout"></i> Déconnexion
+                </button>
+              </li>
+            </ul>
+            <button
+              class="navbar-toggler navbar-toggler-right d-lg-none align-self-center"
+              type="button"
+              data-toggle="offcanvas"
+              aria-label="Ouvrir le menu"
+            >
+              <span class="mdi mdi-format-line-spacing"></span>
+            </button>
+          </div>
+        </nav>
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div
+              id="app-error"
+              class="alert alert-danger"
+              role="alert"
+              hidden
+            ></div>
+            <p id="app-status" class="text-muted" role="status">
+              Chargement des données réelles…
+            </p>
+            <section id="dashboard-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">Tableau de bord Cashpay</h1>
+                <button id="refresh" class="btn btn-primary">
+                  <i class="mdi mdi-refresh"></i> Actualiser
+                </button>
+              </div>
+              <p class="text-muted">
+                Comptes de tous les rôles, dépôts confirmés et soldes
+                comptables. Aucune conversion entre devises.
+              </p>
+              <div class="form-group">
+                <label for="country-filter">Pays déclaré du titulaire</label
+                ><select id="country-filter" class="form-control">
+                  <option value="">Tous les pays</option>
+                </select>
+              </div>
+              <div class="row" id="metric-cards"></div>
+              <div
+                id="balance-warning"
+                class="alert alert-warning"
+                hidden
+              ></div>
+              <div class="row">
+                <div class="col-md-4 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">
+                        Comptes avec et sans dépôt confirmé
+                      </h2>
+                      <canvas
+                        id="deposit-chart"
+                        height="250"
+                        role="img"
+                        aria-label="Répartition des titulaires avec et sans dépôt"
+                      ></canvas>
+                      <p class="text-muted mt-3">
+                        Un solde positif ne remplace pas l’historique de dépôt.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-8 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">
+                        Inscriptions et premiers déposants
+                      </h2>
+                      <p class="text-muted">Douze mois, calendrier UTC.</p>
+                      <canvas
+                        id="registration-chart"
+                        height="140"
+                        role="img"
+                        aria-label="Inscriptions et premiers dépôts par mois"
+                      ></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-7 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Dépôts du registre par devise</h2>
+                      <label for="volume-currency">Devise de l’écriture</label
+                      ><select
+                        id="volume-currency"
+                        class="form-control mb-3"
+                      ></select
+                      ><canvas
+                        id="volume-chart"
+                        height="180"
+                        role="img"
+                        aria-label="Volume mensuel des dépôts dans la devise sélectionnée"
+                      ></canvas>
+                      <p class="text-muted mt-3">
+                        Principal enregistré, sans frais ajoutés et sans
+                        conversion.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-5 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">
+                        Commandes et demandes de cartes
+                      </h2>
+                      <div id="queue-summary"></div>
+                      <p class="text-muted mt-3">
+                        Détails disponibles depuis la fiche de chaque
+                        utilisateur. Aucune approbation n’est simulée.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Soldes des devises non nulles</h2>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Devise</th>
+                              <th>Somme des soldes</th>
+                              <th>Titulaires non nuls</th>
+                            </tr>
+                          </thead>
+                          <tbody id="currency-rows"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Pays représentés</h2>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Pays</th>
+                              <th>Comptes</th>
+                              <th>Actifs</th>
+                              <th>Déposants</th>
+                            </tr>
+                          </thead>
+                          <tbody id="country-rows"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section id="users-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">Utilisateurs</h1>
+              </div>
+              <form id="user-search" class="mb-4">
+                <label for="search"
+                  >Rechercher par téléphone, ID Wallet, nom ou e-mail</label
+                >
+                <div class="input-group">
+                  <input
+                    id="search"
+                    class="form-control"
+                    maxlength="100"
+                    placeholder="Numéro ou identifiant"
+                  /><button class="btn btn-primary" type="submit">
+                    <i class="mdi mdi-magnify"></i> Rechercher
+                  </button>
+                </div>
+              </form>
+              <div class="card">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Utilisateur</th>
+                          <th>ID Wallet</th>
+                          <th>Téléphone</th>
+                          <th>Pays</th>
+                          <th>Rôle</th>
+                          <th>État</th>
+                          <th>Fiche</th>
+                        </tr>
+                      </thead>
+                      <tbody id="user-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-4">
+                    <button id="users-prev" class="btn btn-outline-primary">
+                      Précédent</button
+                    ><span id="users-page"></span
+                    ><button id="users-next" class="btn btn-outline-primary">
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section id="user-view" hidden>
+              <a href="/users" class="btn btn-outline-light mb-4"
+                ><i class="mdi mdi-arrow-left"></i> Retour aux utilisateurs</a
+              >
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div
+                    id="user-heading"
+                    class="d-flex align-items-center"
+                  ></div>
+                  <dl id="user-facts" class="row mt-4"></dl>
+                  <div
+                    id="user-wallet-warning"
+                    class="alert alert-warning"
+                    hidden
+                  ></div>
+                  <h2 class="card-title mt-4">
+                    Soldes actuels, sans conversion
+                  </h2>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Devise</th>
+                          <th>Solde</th>
+                        </tr>
+                      </thead>
+                      <tbody id="user-balance-rows"></tbody>
+                    </table>
+                  </div>
+                  <h2 class="card-title mt-4">Dépôts confirmés du titulaire</h2>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Devise</th>
+                          <th>Principal du registre</th>
+                          <th>Nombre</th>
+                        </tr>
+                      </thead>
+                      <tbody id="user-deposit-rows"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <h2 class="card-title">Activités du compte</h2>
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                      <button
+                        class="nav-link active"
+                        data-kind="transactions"
+                        type="button"
+                      >
+                        Transactions
+                      </button>
+                    </li>
+                    <li class="nav-item">
+                      <button class="nav-link" data-kind="cards" type="button">
+                        Demandes de cartes
+                      </button>
+                    </li>
+                    <li class="nav-item">
+                      <button class="nav-link" data-kind="orders" type="button">
+                        Commandes
+                      </button>
+                    </li>
+                  </ul>
+                  <div class="table-responsive mt-3">
+                    <table class="table">
+                      <thead id="activity-head"></thead>
+                      <tbody id="activity-rows"></tbody>
+                    </table>
+                  </div>
+                  <p id="activity-status" role="status"></p>
+                  <div class="d-flex justify-content-between mt-4">
+                    <button id="activity-prev" class="btn btn-outline-primary">
+                      Précédent</button
+                    ><span id="activity-page"></span
+                    ><button id="activity-next" class="btn btn-outline-primary">
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+          <footer class="footer">
+            <div
+              class="d-sm-flex justify-content-center justify-content-sm-between"
+            >
+              <span class="text-muted"
+                >Cashpay Admin — consultation de la base partagée</span
+              ><span class="text-muted"
+                >Template Corona ·
+                <a href="https://www.bootstrapdash.com/" rel="noopener"
+                  >BootstrapDash</a
+                ></span
+              >
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="/assets/vendors/chart.js/chart.umd.js"></script>
+    <script src="/assets/js/off-canvas.js"></script>
+    <script src="/assets/js/misc.js"></script>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
