@@ -6,3 +6,9 @@ node_modules/
 !.env.example
 *.log
 coverage/
+
+# Private runtime session identifiers (no OTP/PIN/token stored)
+.runtime/
+
+.env.backup-*
+.env.tmp-*

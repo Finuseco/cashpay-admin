@@ -48,8 +48,31 @@ export function loadConfig(env = process.env) {
     throw Error("Port invalide.");
   if (env.DB_SSL && !["true", "false"].includes(env.DB_SSL))
     throw Error("DB_SSL doit être true ou false.");
+  const sessionHours = Number(env.ADMIN_SESSION_HOURS || 8),
+    sessionIdleMinutes = Number(env.ADMIN_SESSION_IDLE_MINUTES || 60),
+    smtpPort = Number(env.SMTP_PORT || 587);
+  if (
+    !Number.isFinite(sessionHours) ||
+    sessionHours < 1 ||
+    sessionHours > 24 ||
+    !Number.isInteger(sessionIdleMinutes) ||
+    sessionIdleMinutes < 5 ||
+    sessionIdleMinutes > 480
+  )
+    throw Error("Durée de session invalide.");
+  if (!Number.isInteger(smtpPort) || smtpPort < 1 || smtpPort > 65535)
+    throw Error("SMTP_PORT invalide.");
   return {
     production,
+    sessionHours,
+    sessionIdleMinutes,
+    stateDir: env.ADMIN_STATE_DIR || ".runtime",
+    smtp: {
+      host: env.SMTP_HOST,
+      user: env.SMTP_USER,
+      password: env.SMTP_PASSWORD,
+      port: smtpPort,
+    },
     origin: origin.origin,
     mediaOrigin: media.origin,
     secret: env.ADMIN_SESSION_SECRET,

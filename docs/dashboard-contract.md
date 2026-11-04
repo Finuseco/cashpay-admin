@@ -37,7 +37,11 @@ Les activités d’une fiche concernent uniquement son identifiant. Les transact
 
 ## API
 
-- `POST /api/login` : e-mail, mot de passe, OTP d’authentification si configuré ; rôle Admin actif exigé.
+- `POST /api/auth/email` : adresse du compte Admin actif, envoi SMTP du code.
+- `POST /api/auth/otp` : vérification du code, passage au PIN sans session admin.
+- `POST /api/auth/pin` : PIN existant ; création de session après validation des deux étapes.
+- `GET /api/auth/status`, `POST /api/auth/reset` : reprise ou abandon de la demande.
+- Ancien `POST /api/login` : désactivé (HTTP 410).
 - `GET /api/session`, `POST /api/logout` : session indépendante et révocation de la session courante.
 - `GET /api/dashboard?country=CD` : instantané global ou pays, graphiques et disponibilité des files.
 - `GET /api/users?search=...&page=0&country=CD` : recherche littérale paramétrée, normalisation du téléphone sur neuf chiffres comme Cashpay Web.

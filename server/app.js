@@ -9,7 +9,6 @@ import {
   readSession,
   issueSession,
   findAdmin,
-  authenticatePassword,
   loginLimiter,
 } from "./auth.js";
 import {
@@ -22,9 +21,18 @@ import {
   userId,
   avatarUrl,
 } from "./data.js";
+import { SessionStore } from "./session-store.js";
+import { createLoginFlow, challengeCookie } from "./login-flow.js";
+import { createOtpMailer } from "./mailer.js";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-export function createApp({ pool, config }) {
-  const sessions = new Map();
+export function createApp({
+  pool,
+  config,
+  sessions = new SessionStore({ secret: config.secret }),
+  sendOtp = createOtpMailer(config),
+  clock,
+}) {
+  const flow = createLoginFlow({ pool, config, sendOtp, clock });
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", "loopback");
@@ -82,11 +90,18 @@ export function createApp({ pool, config }) {
       const session = readSession(req, config, sessions);
       const user = session ? await findAdmin(pool, session.sub) : null;
       if (!user) {
-        if (session) sessions.delete(session.jti);
+        if (session) await sessions.revoke(session.jti);
         return res
           .status(401)
           .json({ error: "Session administrateur requise." });
       }
+      if (
+        !(await sessions.touch(
+          session.jti,
+          (config.sessionIdleMinutes || 60) * 60000,
+        ))
+      )
+        return res.status(401).json({ error: "Session expirée." });
       req.admin = user;
       req.adminSession = session;
       next();
@@ -101,46 +116,110 @@ export function createApp({ pool, config }) {
         .json({ error: "Rechargez la session avant de continuer." });
     next();
   }
+  // The legacy password endpoint cannot establish an admin session.
+  app.post("/api/login", originGuard, (_req, res) =>
+    res
+      .status(410)
+      .json({
+        error: "Actualisez la page : connexion par e-mail, OTP puis PIN.",
+      }),
+  );
   app.post(
-    "/api/login",
+    "/api/auth/email",
     originGuard,
     loginLimiter(),
     async (req, res, next) => {
       try {
-        const { email, password, otp } = req.body || {};
-        if (
-          typeof email !== "string" ||
-          email.length > 254 ||
-          typeof password !== "string" ||
-          password.length < 1 ||
-          password.length > 256 ||
-          (otp !== undefined && typeof otp !== "string")
-        )
-          return res.status(400).json({ error: "Identifiants invalides." });
-        const user = await authenticatePassword(
-          pool,
-          email.toLowerCase().trim(),
-          password,
-          otp,
-        );
-        if (!user)
-          return res
-            .status(401)
-            .json({
-              error:
-                "Identifiants, code de sécurité ou accès administrateur invalides.",
-            });
-        res.cookie(
-          cookieName,
-          issueSession(user, config, sessions),
-          sessionOptions(config),
-        );
-        res.json({ success: true });
+        const result = await flow.start(req);
+        res.cookie(challengeCookie, result.token, flow.cookieOptions());
+        res.json(result.data);
       } catch (error) {
+        if (error.retryAfter) res.set("Retry-After", String(error.retryAfter));
         next(error);
       }
     },
   );
+  const verificationWindows = new Map();
+  function verificationLimit(req, res, next) {
+    const now = Date.now();
+    for (const [key, value] of verificationWindows)
+      if (value.until < now) verificationWindows.delete(key);
+    if (verificationWindows.size > 50000)
+      return res.status(429).json({ error: "Trop de connexions." });
+    const state = verificationWindows.get(req.ip) || {
+      count: 0,
+      until: now + 15 * 60000,
+    };
+    state.count++;
+    verificationWindows.set(req.ip, state);
+    if (state.count > 60) {
+      res.set("Retry-After", String(Math.ceil((state.until - now) / 1000)));
+      return res
+        .status(429)
+        .json({ error: "Trop de vérifications. Réessayez plus tard." });
+    }
+    next();
+  }
+  app.post(
+    "/api/auth/otp",
+    originGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.json(await flow.verifyOtp(req));
+      } catch (error) {
+        if (error.retryAfter) res.set("Retry-After", String(error.retryAfter));
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/auth/pin",
+    originGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        const user = await flow.verifyPin(req);
+        const token = await issueSession(user, config, sessions);
+        res.cookie(cookieName, token, sessionOptions(config));
+        res.clearCookie(challengeCookie, {
+          ...flow.cookieOptions(),
+          maxAge: undefined,
+        });
+        res.json({ success: true });
+      } catch (error) {
+        if (error.retryAfter) res.set("Retry-After", String(error.retryAfter));
+        next(error);
+      }
+    },
+  );
+  app.post("/api/auth/reset", originGuard, (req, res) => {
+    flow.reset(req);
+    res.clearCookie(challengeCookie, {
+      ...flow.cookieOptions(),
+      maxAge: undefined,
+    });
+    res.json({ step: "email" });
+  });
+  app.get("/api/auth/status", async (req, res, next) => {
+    try {
+      const session = readSession(req, config, sessions);
+      if (session) {
+        const user = await findAdmin(pool, session.sub);
+        if (user) {
+          await sessions.touch(
+            session.jti,
+            (config.sessionIdleMinutes || 60) * 60000,
+          );
+          return res.json({ step: "authenticated" });
+        }
+        await sessions.revoke(session.jti);
+      }
+      res.json(flow.describe(req));
+    } catch (error) {
+      next(error);
+    }
+  });
   app.get("/api/session", requireAdmin, (req, res) =>
     res.json({
       user: {
@@ -150,14 +229,20 @@ export function createApp({ pool, config }) {
       csrf: req.adminSession.csrf,
     }),
   );
-  app.post("/api/logout", originGuard, requireAdmin, csrfGuard, (req, res) => {
-    sessions.delete(req.adminSession.jti);
-    res.clearCookie(cookieName, {
-      ...sessionOptions(config),
-      maxAge: undefined,
-    });
-    res.json({ success: true });
-  });
+  app.post(
+    "/api/logout",
+    originGuard,
+    requireAdmin,
+    csrfGuard,
+    async (req, res) => {
+      await sessions.revoke(req.adminSession.jti);
+      res.clearCookie(cookieName, {
+        ...sessionOptions(config),
+        maxAge: undefined,
+      });
+      res.json({ success: true });
+    },
+  );
   app.get("/api/dashboard", requireAdmin, async (req, res, next) => {
     try {
       res.json(await dashboard(pool, validateCountry(req.query.country)));
@@ -242,16 +327,15 @@ export function createApp({ pool, config }) {
         ? 503
         : 500);
     console.error("[request]", error.code || "failed");
-    res
-      .status(status)
-      .json({
-        error:
-          status < 500
-            ? error.type === "entity.parse.failed"
-              ? "Requête JSON invalide."
-              : error.message
-            : "Données indisponibles. Vérifiez la connexion PostgreSQL, les droits de lecture et le schéma partagé. Aucun montant de remplacement n’est affiché.",
-      });
+    res.status(status).json({
+      error: error.expose
+        ? error.message
+        : status < 500
+          ? error.type === "entity.parse.failed"
+            ? "Requête JSON invalide."
+            : error.message
+          : "Données indisponibles. Vérifiez la connexion PostgreSQL, les droits de lecture et le schéma partagé. Aucun montant de remplacement n’est affiché.",
+    });
   });
   return app;
 }

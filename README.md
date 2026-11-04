@@ -4,7 +4,7 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 
 ## Livraison actuelle
 
-- Connexion avec le compte existant ayant le rôle `Admin`, statut actif, e-mail et mot de passe Cashpay. Si `totp_secret` est configuré, le code de l’application d’authentification est également exigé. Aucun compte, mot de passe ni jeu de données de démonstration n’est créé.
+- Connexion du compte `Admin` actif : e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
 - Graphiques Chart.js de la template : répartition des déposants, inscriptions/premiers dépôts sur douze mois, volumes du registre dans une seule devise sélectionnée.
 - Recherche par nom, téléphone, e-mail ou ID Wallet. Fiche utilisateur : avatar public, identité de consultation, soldes par devise, dépôts et listes paginées des transactions, demandes de cartes et commandes.
@@ -32,7 +32,7 @@ Aucune migration, colonne ou table supplémentaire n’est nécessaire pour cett
 
 ### Accès SQL
 
-Un utilisateur PostgreSQL de lecture dédié est recommandé. Les requêtes applicatives utilisent les tables existantes `users`, `wallets`, `transactions`, `card_requests` et `orders`. L’authentification doit pouvoir lire les champs de compte, `password_hash` et le secret TOTP déjà configuré ; ces champs ne sont jamais renvoyés au navigateur. `DB_SCHEMA` sélectionne le schéma existant.
+Un utilisateur PostgreSQL de lecture dédié est recommandé. Les requêtes applicatives utilisent les tables existantes `users`, `wallets`, `transactions`, `card_requests` et `orders`. L’authentification doit pouvoir lire les champs de compte, `pin_hash` déjà configuré ; ces champs ne sont jamais renvoyés au navigateur. `DB_SCHEMA` sélectionne le schéma existant.
 
 Le pool impose les transactions par défaut en lecture seule. Les statistiques et fiches utilisent en plus une transaction **REPEATABLE READ READ ONLY**, avec délais de requête/verrou, pour conserver une lecture cohérente. Les services optionnels cartes/commandes manquants ou incompatibles affichent « indisponible ». Une table essentielle absente fait échouer la lecture, elle n’est pas remplacée par un total zéro. La vérification d’un schéma sur la base réelle reste nécessaire avant ouverture de l’admin.
 
@@ -42,10 +42,13 @@ Voir [le contrat des indicateurs](docs/dashboard-contract.md). Les devises ne so
 
 ## Accès et sessions
 
-L’accès **global** est limité au rôle `Admin` actif. Les super-agents régionaux ne reçoivent pas un accès global implicite. L’authentification réutilise les empreintes bcrypt déjà présentes dans la base. Un compte sans mot de passe doit être configuré par la procédure existante ; aucune procédure de récupération ou nomination administrateur n’est ajoutée ici.
+L’accès global est limité au rôle `Admin` actif. Le code e-mail à six chiffres expire après dix minutes ; cinq essais incorrects invalident la demande. Le PIN existant de quatre à six chiffres est vérifié contre `users.pin_hash` (bcrypt ou ancien format numérique déjà pris en charge par Cashpay Web), sans modifier la base. Aucun accès n’est établi à la seule validation de l’OTP.
 
-La session indépendante expire après 30 minutes, utilise un cookie HttpOnly/Secure/SameSite Strict, et est revérifiée contre le rôle/statut actuel à chaque requête. Les sessions sont gardées en mémoire, révoquées à la déconnexion et perdues au redémarrage. **Une seule instance PM2**, comme configuré dans `deploy/ecosystem.config.cjs`, est prévue ; plusieurs instances exigeraient un stockage de session et de limitation de tentatives partagé. Les mots de passe, PIN, secrets et jetons ne sont pas journalisés. Origine des mutations vérifiée et jeton anti-CSRF pour la déconnexion. Tentatives limitées côté application et dans le modèle Nginx.
+Le service utilise les mêmes variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` et les modèles e-mail Cashpay Web. Une erreur SMTP bloque l’envoi, sans afficher un faux succès. Les codes sont conservés sous empreinte en mémoire et perdus au redémarrage. Les envois et vérifications sont limités.
 
+La session indépendante utilise un cookie HttpOnly/Secure/SameSite Strict, expire après huit heures ou soixante minutes d’inactivité, et vérifie le rôle et le statut à chaque requête. Les identifiants de session et échéances sont persistés dans `.runtime/sessions.json`, fichier privé signé ; ni OTP, ni PIN, ni jeton n’y sont stockés. Conserver `ADMIN_SESSION_SECRET` et ce répertoire entre déploiements. La déconnexion révoque la session. Une seule instance PM2 est prévue. Les anciennes sessions par mot de passe demandent une nouvelle connexion après mise à jour. Origine des mutations et CSRF de déconnexion sont contrôlés.
+
+Pour une installation existante, voir [la mise à jour OTP/PIN](docs/login-otp-pin.md).
 Seuls les actifs de la template et les scripts applicatifs explicitement autorisés sont exposés. Aucun dossier racine de dépôt, `.env`, `dist`, `.ssh` ni fichier serveur n’est accessible via le serveur HTTP. Les avatars viennent exclusivement de l’origine publique configurée ; une image privée/inaccessible conserve un état sans faux avatar.
 
 ## VPS

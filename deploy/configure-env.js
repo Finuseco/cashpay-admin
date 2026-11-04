@@ -5,7 +5,7 @@ import { parseEnv } from "node:util";
 import { randomBytes } from "node:crypto";
 import { loadConfig } from "../server/config.js";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-function encode(name, value) {
+export function encode(name, value) {
   const text = String(value);
   for (const quote of ["'", '"', "`"]) {
     const candidate = `${name}=${quote}${text}${quote}\n`;
@@ -44,6 +44,10 @@ export async function configureEnvironment(
     "DB_SCHEMA",
     "DB_SSL",
     "DB_SSL_CA",
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_USER",
+    "SMTP_PASSWORD",
   ])
     if (original[name] !== undefined) values[name] = original[name];
   values.DB_PORT ||= "5432";
