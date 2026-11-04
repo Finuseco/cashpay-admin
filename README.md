@@ -7,9 +7,10 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 - Connexion du compte `Admin` actif : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
 - Création de comptes Client nationaux et diaspora depuis le menu « Créer un compte », avec portefeuille à zéro, PIN chiffré par empreinte bcrypt et trace d’intervention. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
+- Centralisation financière : frais bruts par devise, registres crypto BTC/USDT, commissions, comptes de flotte/revenus, activités et corridors internationaux. Voir [sources et limites](docs/finance-dashboard.md).
 - Graphiques Chart.js de la template : répartition des déposants, inscriptions/premiers dépôts sur douze mois, volumes du registre dans une seule devise sélectionnée.
 - Recherche par nom, téléphone, e-mail ou ID Wallet. Fiche utilisateur : avatar public, identité de consultation, soldes par devise, dépôts et listes paginées des transactions, demandes de cartes et commandes.
-- Filtre pays, actualisation manuelle et toutes les 60 secondes lorsque le tableau de bord est visible. Les données affichées portent leur heure de lecture. Une panne n’est pas remplacée par des chiffres inventés.
+- Filtre pays, actualisation manuelle et toutes les 10 secondes lorsque le tableau de bord est visible. Les données affichées portent leur heure de lecture. Une panne n’est pas remplacée par des chiffres inventés.
 
 Les fonctionnalités de nomination, blocage de comptes ou de pays, interruption des inscriptions, approbations/rejets et configuration globale constituent les phases suivantes. Aucun bouton ne prétend effectuer ces opérations dans ce premier lot. La restriction d’inscription devra être appliquée dans **Cashpay Web**, à l’endroit où l’inscription est réellement exécutée : un interrupteur isolé dans l’admin ne suffirait pas.
 

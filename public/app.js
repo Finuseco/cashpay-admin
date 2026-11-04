@@ -288,8 +288,9 @@ function renderDashboard(data) {
       for (const row of section.rows)
         queues.append(element("p", `${row.status} : ${number(row.count)}`));
   }
+  renderFinance(data.finance);
   $("app-status").textContent =
-    `Données arrêtées au ${date(data.snapshotAt)} · actualisation automatique toutes les 60 secondes.`;
+    `Données arrêtées au ${date(data.snapshotAt)} · actualisation automatique toutes les 10 secondes.`;
 }
 async function loadDashboard() {
   if (state.busy) return;
@@ -544,7 +545,7 @@ async function boot() {
       await loadDashboard();
       setInterval(() => {
         if (!document.hidden) void loadDashboard();
-      }, 60000);
+      }, 10000);
     }
   } catch (reason) {
     error(reason.message);
@@ -657,3 +658,191 @@ $("create-user-form").addEventListener("submit", async (event) => {
     $("create-pin_confirmation").value = "";
   }
 });
+
+function financeAmount(value, unknown = 0) {
+  return Number(unknown) > 0 || value === null || value === undefined
+    ? "Incomplet / indisponible"
+    : decimal(value);
+}
+function renderFeeChart() {
+  const finance = state.dashboard?.finance;
+  if (!finance) return;
+  const currency = $("fee-currency").value;
+  const months = state.dashboard.monthly.map((row) => row.month);
+  chart("fee-chart", "bar", months, [
+    {
+      label: `Frais bruts inscrits (${currency || "—"})`,
+      backgroundColor: "#8f5fe8",
+      data: months.map((month) => {
+        const row = finance.monthly.find(
+          (item) => item.month === month && item.currency === currency,
+        );
+        return row
+          ? Number(row.unknown_fees) > 0
+            ? null
+            : Number(row.fees)
+          : 0;
+      }),
+    },
+  ]);
+}
+function renderFinance(finance) {
+  $("finance-view").hidden = false;
+  const warnings = $("finance-warnings");
+  warnings.replaceChildren();
+  const warn = (text) => warnings.append(element("p", text, "text-warning"));
+  for (const [label, section] of [
+    ["Registre crypto", finance.crypto],
+    ["Commissions", finance.commissions],
+    ["Taux de change", finance.rates],
+    ["Comptes de revenus", finance.treasury.revenueRegistry],
+    ["Flotte B2B", finance.treasury.floatRegistry],
+  ])
+    if (!section.available)
+      warn(
+        label + " : schéma indisponible. Aucun solde de remplacement affiché.",
+      );
+  if (finance.treasury.accounts.some((row) => row.error))
+    warn(
+      "Des comptes référencés sont introuvables ou invalides : les totaux de trésorerie sont incomplets.",
+    );
+  warn(
+    "Les comptes bancaires et portefeuilles blockchain externes ne sont pas interrogés par cette vue. Aucun montant fictif utilisé.",
+  );
+  fillRows(
+    "finance-fee-rows",
+    finance.fees.map((row) => [
+      row.currency || "Devise absente",
+      number(row.count),
+      financeAmount(row.fees, row.unknown_fees),
+      Number(row.unknown_fees) > 0
+        ? "Incomplet"
+        : decimal(row.month_fees || "0"),
+      Number(row.unknown_fees) > 0 ? "Frais manquants" : "Registre",
+    ]),
+    5,
+  );
+  fillRows(
+    "finance-mirror-rows",
+    finance.mirrors.map((row) => [
+      row.source_currency,
+      financeAmount(row.source_amount, row.unknown_fees),
+      row.target_currency,
+      row.rate ? decimal(row.rate) : "Taux indisponible",
+      row.rate ? financeAmount(row.amount, row.unknown_fees) : "Indisponible",
+    ]),
+    5,
+  );
+  fillRows(
+    "finance-crypto-rows",
+    finance.crypto.rows.map((row) => [
+      row.currency,
+      financeAmount(row.amount, row.invalid_entries),
+      number(row.accounts),
+      Number(row.invalid_entries) > 0 ? "Incomplet" : "Solde en base",
+    ]),
+    4,
+  );
+  fillRows(
+    "finance-commission-rows",
+    finance.commissions.rows.map((row) => [
+      row.currency,
+      financeAmount(row.amount, row.invalid_entries),
+      Number(row.invalid_entries) > 0 ? "Incomplet" : "Solde en base",
+    ]),
+    3,
+  );
+  fillRows(
+    "finance-treasury-total-rows",
+    finance.treasury.totals.map((row) => [
+      row.currency,
+      financeAmount(row.amount, row.invalid_entries),
+      !finance.treasury.revenueRegistry.available ||
+      !finance.treasury.floatRegistry.available ||
+      finance.treasury.accounts.some((account) => account.error)
+        ? "Comptes manquants / incomplet"
+        : Number(row.invalid_entries) > 0
+          ? "Incomplet"
+          : "Portefeuilles dédupliqués",
+    ]),
+    3,
+  );
+  const accounts = [];
+  for (const row of finance.treasury.accounts) {
+    const sources = row.sources
+      .map((source) =>
+        [source.source, source.country, source.purpose, source.status]
+          .filter(Boolean)
+          .join(" · "),
+      )
+      .join(" / ");
+    if (!row.balances.length)
+      accounts.push([
+        row.wallet_id,
+        sources,
+        "—",
+        "Indisponible",
+        row.error || "Aucun solde enregistré",
+      ]);
+    for (const balance of row.balances)
+      accounts.push([
+        row.wallet_id,
+        sources,
+        balance.currency,
+        balance.valid ? decimal(balance.amount) : "Invalide",
+        row.error || "Portefeuille interne",
+      ]);
+  }
+  fillRows("finance-account-rows", accounts, 5);
+  fillRows(
+    "finance-flow-rows",
+    finance.flows.map((row) => [
+      row.type_code,
+      row.status,
+      row.currency,
+      number(row.count),
+      financeAmount(row.amount, row.unknown_amounts),
+      financeAmount(row.fees, row.unknown_fees),
+    ]),
+    6,
+  );
+  fillRows(
+    "finance-corridor-rows",
+    finance.corridors.map((row) => [
+      row.sender_country,
+      row.receiver_country,
+      row.currency,
+      number(row.count),
+      financeAmount(row.amount, row.unknown_amounts),
+      financeAmount(row.fees, row.unknown_fees),
+    ]),
+    6,
+  );
+  fillRows(
+    "finance-recent-rows",
+    finance.recent.map((row) => [
+      date(row.created_at),
+      row.reference_code,
+      row.type_code,
+      row.status,
+      row.currency,
+      financeAmount(row.amount),
+      financeAmount(row.fee),
+      row.sender_country || "Non renseigné / externe",
+      row.receiver_country || "Non renseigné / externe",
+    ]),
+    9,
+  );
+  const selected = $("fee-currency").value;
+  $("fee-currency").replaceChildren();
+  for (const currency of [
+    ...new Set(finance.fees.map((row) => row.currency).filter(Boolean)),
+  ])
+    $("fee-currency").add(new Option(currency, currency));
+  if (
+    [...$("fee-currency").options].some((option) => option.value === selected)
+  )
+    $("fee-currency").value = selected;
+  renderFeeChart();
+}
+$("fee-currency").addEventListener("change", renderFeeChart);

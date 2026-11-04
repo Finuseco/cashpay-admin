@@ -43,7 +43,7 @@ Les activités d’une fiche concernent uniquement son identifiant. Les transact
 - `GET /api/auth/status`, `POST /api/auth/reset` : reprise ou abandon de la demande.
 - Ancien `POST /api/login` : désactivé (HTTP 410).
 - `GET /api/session`, `POST /api/logout` : session indépendante et révocation de la session courante.
-- `GET /api/dashboard?country=CD` : instantané global ou pays, graphiques et disponibilité des files.
+- `GET /api/dashboard?country=CD` : instantané global ou pays, graphiques, disponibilité des files et objet `finance`. Voir [le contrat financier](finance-dashboard.md).
 - `POST /api/users` : création d’un compte Client et de son portefeuille, journalisée ; session Admin et CSRF requis. Voir [le contrat](account-creation.md).
 - `GET /api/users?search=...&page=0&country=CD` : recherche littérale paramétrée, normalisation du téléphone sur neuf chiffres comme Cashpay Web.
 - `GET /api/users/{id}` : fiche, soldes et dépôts.

@@ -1,3 +1,4 @@
+import { financialOverview } from "./finance.js";
 import countries from "./countries.json" with { type: "json" };
 import { readSnapshot, optionalSection } from "./db.js";
 export const depositCodes = [
@@ -103,11 +104,17 @@ export async function dashboard(pool, country) {
           )
         ).rows,
     );
+    const finance = await financialOverview(db, {
+      aliases,
+      country,
+      depositCodes,
+    });
     const {
       rows: [clock],
     } = await db.query("SELECT transaction_timestamp() AS at");
     return {
       snapshotAt: clock.at,
+      finance,
       country,
       counts,
       balances,
@@ -171,12 +178,10 @@ export async function findUsers(
       args,
     );
     return {
-      users: rows
-        .slice(0, 25)
-        .map((row) => ({
-          ...row,
-          profile_photo: avatarUrl(row.profile_photo, mediaOrigin),
-        })),
+      users: rows.slice(0, 25).map((row) => ({
+        ...row,
+        profile_photo: avatarUrl(row.profile_photo, mediaOrigin),
+      })),
       page,
       hasMore: rows.length > 25,
     };

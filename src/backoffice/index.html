@@ -472,6 +472,223 @@
                   </div>
                 </div>
               </div>
+              <div id="finance-view" hidden>
+                <div class="page-header">
+                  <h2 class="page-title">
+                    Trésorerie et activités financières
+                  </h2>
+                </div>
+                <p class="text-muted">
+                  Soldes internes et frais bruts du registre. Les soldes
+                  clients, commissions, crypto et comptes de flotte restent
+                  séparés. Ils ne représentent pas un bénéfice net ni une
+                  liquidité bancaire ou blockchain vérifiée. Les comptes globaux
+                  GBL restent inclus dans la trésorerie, même avec un filtre
+                  pays.
+                </p>
+                <div id="finance-warnings" role="status"></div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">Frais inscrits sur douze mois</h3>
+                    <label for="fee-currency">Devise du graphique</label
+                    ><select
+                      class="form-control mb-3"
+                      id="fee-currency"
+                    ></select
+                    ><canvas id="fee-chart" height="100"></canvas>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Frais bruts des transactions terminées
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Opérations</th>
+                            <th>Frais cumulés</th>
+                            <th>Frais du mois</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-fee-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Équivalents indicatifs des frais en USD / EUR
+                    </h3>
+                    <p class="text-muted">
+                      Taux directs de la configuration Cashpay : pays
+                      sélectionné, puis GBL. Sans taux, aucun équivalent
+                      inventé. Ces estimations ne constituent pas une opération
+                      de change.
+                    </p>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise source</th>
+                            <th>Frais source</th>
+                            <th>Devise cible</th>
+                            <th>Taux configuré</th>
+                            <th>Équivalent</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-mirror-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">Registre des soldes crypto</h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Actif / réseau</th>
+                            <th>Solde enregistré</th>
+                            <th>Comptes</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-crypto-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Commissions enregistrées des agents
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Solde de commissions</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-commission-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Soldes des comptes de flotte et de revenus référencés
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Solde interne</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-treasury-total-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">Comptes de flotte et de revenus</h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>ID Wallet</th>
+                            <th>Rattachements</th>
+                            <th>Devise</th>
+                            <th>Solde interne</th>
+                            <th>État</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-account-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Toutes les activités du registre par type et statut
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Type</th>
+                            <th>Statut</th>
+                            <th>Devise</th>
+                            <th>Opérations</th>
+                            <th>Montant principal</th>
+                            <th>Frais inscrits</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-flow-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Opérations terminées entre pays distincts
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Pays émetteur</th>
+                            <th>Pays bénéficiaire</th>
+                            <th>Devise</th>
+                            <th>Opérations</th>
+                            <th>Montant</th>
+                            <th>Frais</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-corridor-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">50 dernières opérations</h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Référence</th>
+                            <th>Type</th>
+                            <th>Statut</th>
+                            <th>Devise</th>
+                            <th>Montant</th>
+                            <th>Frais</th>
+                            <th>Pays émetteur</th>
+                            <th>Pays bénéficiaire</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-recent-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
             <section id="users-view" hidden>
               <div class="page-header">
