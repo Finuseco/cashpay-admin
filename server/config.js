@@ -1,6 +1,6 @@
 export function loadConfig(env = process.env) {
   const production = env.NODE_ENV === "production";
-  const origin = new URL(env.ADMIN_PUBLIC_ORIGIN || "http://127.0.0.1:3102");
+  const origin = new URL(env.ADMIN_PUBLIC_ORIGIN || "http://127.0.0.1:8010");
   if (
     origin.origin !== origin.href.replace(/\/$/, "") ||
     origin.username ||
@@ -35,7 +35,7 @@ export function loadConfig(env = process.env) {
     throw Error("DB_SCHEMA invalide.");
   if (!env.DB_HOST || !env.DB_NAME || !env.DB_USER)
     throw Error("DB_HOST, DB_NAME et DB_USER requis.");
-  const port = Number(env.PORT || 3102),
+  const port = Number(env.PORT || 8010),
     dbPort = Number(env.DB_PORT || 5432);
   if (
     !Number.isInteger(port) ||

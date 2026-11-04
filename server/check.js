@@ -1,13 +1,13 @@
 import { readdir, readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
-const files = [
-  ...(await readdir(new URL("./", import.meta.url)))
-    .filter((f) => f.endsWith(".js"))
-    .map((f) => "server/" + f),
-  ...(await readdir(new URL("../public/", import.meta.url)))
-    .filter((f) => f.endsWith(".js"))
-    .map((f) => "public/" + f),
-];
+const files = [];
+for (const directory of ["server", "public", "deploy"]) {
+  for (const file of await readdir(
+    new URL("../" + directory + "/", import.meta.url),
+  )) {
+    if (/\.c?js$/.test(file)) files.push(directory + "/" + file);
+  }
+}
 for (const file of files) {
   const result = spawnSync(process.execPath, ["--check", file], {
     encoding: "utf8",

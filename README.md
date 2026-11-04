@@ -26,7 +26,7 @@ Node.js **22.9 minimum** et PostgreSQL de l’application existante.
 4. Garder `CASH_PAY_PUBLIC_ORIGIN=https://app.cashpay-all.com` pour les URL publiques d’avatars. PostgreSQL distant : activer `DB_SSL=true` et fournir sa CA si nécessaire ; la vérification de certificat n’est jamais désactivée.
 5. Exécuter `npm run check`, puis `npm start`. En production, l’origine HTTPS et les paramètres requis sont contrôlés au démarrage. Aucun secret manquant n’est remplacé par une valeur de démonstration.
 
-Pour travailler uniquement sur la machine locale, choisir `NODE_ENV=development` et une origine exacte telle que `http://127.0.0.1:3102`. Le service écoute par défaut sur le loopback ; la publication HTTPS passe par le proxy du VPS.
+Pour travailler uniquement sur la machine locale, choisir `NODE_ENV=development` et une origine exacte telle que `http://127.0.0.1:8010`. Le service écoute par défaut sur le loopback ; la publication HTTPS passe par le proxy du VPS.
 
 Aucune migration, colonne ou table supplémentaire n’est nécessaire pour cette phase. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
 
@@ -49,6 +49,8 @@ La session indépendante expire après 30 minutes, utilise un cookie HttpOnly/Se
 Seuls les actifs de la template et les scripts applicatifs explicitement autorisés sont exposés. Aucun dossier racine de dépôt, `.env`, `dist`, `.ssh` ni fichier serveur n’est accessible via le serveur HTTP. Les avatars viennent exclusivement de l’origine publique configurée ; une image privée/inaccessible conserve un état sans faux avatar.
 
 ## VPS
+
+Le port demandé est **8010**, sur le loopback. Le [guide VPS 8010](docs/vps-8010.md) détaille le chemin demandé et l’initialisation privée du fichier admin avec `deploy/configure-env.js`. Cet outil refuse d’écraser un environnement existant.
 
 Voir [le guide de livraison](docs/deployment.md), le modèle PM2 et le modèle Nginx sous `deploy/`. Ils ne constituent pas un déploiement effectué : DNS, certificat, variables privées, droits SQL et vérification des comptes doivent être préparés par l’exploitant. Aucune modification de production ni fusion sur `main` n’est effectuée pendant cette livraison.
 
