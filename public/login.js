@@ -54,7 +54,7 @@ function render(next) {
   $("retry-status").hidden = true;
   $("login-info").textContent =
     state.step === "email"
-      ? "Saisissez l’adresse e-mail de votre compte Admin."
+      ? "Saisissez l’ID Wallet ou l’adresse e-mail de votre compte Admin."
       : state.step === "otp"
         ? `Un code a été envoyé à ${state.destination}. Il est valable dix minutes.`
         : "Code e-mail vérifié. Saisissez maintenant votre PIN existant.";
@@ -98,7 +98,7 @@ $("email-form").addEventListener("submit", (event) => {
   event.preventDefault();
   void run(async () => {
     email = $("email").value.toLowerCase().trim();
-    const value = await api("/api/auth/email", { email });
+    const value = await api("/api/auth/email", { identifier: email });
     $("otp").value = "";
     render(value);
   });
@@ -125,7 +125,7 @@ $("pin-form").addEventListener("submit", (event) => {
 });
 $("resend").addEventListener("click", () => {
   void run(async () => {
-    const value = await api("/api/auth/email", { email });
+    const value = await api("/api/auth/email", { identifier: email });
     $("otp").value = "";
     render(value);
   });

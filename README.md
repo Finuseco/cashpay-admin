@@ -4,7 +4,7 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 
 ## Livraison actuelle
 
-- Connexion du compte `Admin` actif : e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
+- Connexion du compte `Admin` actif : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
 - Création de comptes Client nationaux et diaspora depuis le menu « Créer un compte », avec portefeuille à zéro, PIN chiffré par empreinte bcrypt et trace d’intervention. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
 - Graphiques Chart.js de la template : répartition des déposants, inscriptions/premiers dépôts sur douze mois, volumes du registre dans une seule devise sélectionnée.

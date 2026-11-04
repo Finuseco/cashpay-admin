@@ -20,10 +20,12 @@ UPDATE
 
 L’import SMTP copie seulement les quatre paramètres SMTP existants. Il conserve les paramètres PostgreSQL et le secret admin, crée une sauvegarde privée de `.env`, refuse des paramètres SMTP différents déjà configurés et n’affiche aucun secret. Les sauvegardes sont exclues de Git. L’outil exige Node 22.9 minimum. Ne pas copier les secrets JWT client.
 
-Nginx et les autres processus ne sont pas modifiés. Ouvrir ensuite https://admin.cashpay-all.com/login, saisir l’e-mail Admin, le code reçu, puis le PIN existant. Vérifier la réception réelle de l’e-mail et l’accès au tableau de bord. `/healthz` confirme uniquement le processus, pas SMTP ni PostgreSQL.
+Nginx et les autres processus ne sont pas modifiés. Ouvrir ensuite https://admin.cashpay-all.com/login, saisir l’ID Wallet ou l’e-mail Admin, le code reçu, puis le PIN existant. Vérifier la réception réelle de l’e-mail et l’accès au tableau de bord. `/healthz` confirme uniquement le processus, pas SMTP ni PostgreSQL.
 
 Les sessions valides survivent au redémarrage PM2 si le secret et `.runtime` restent identiques. Durée absolue configurable par `ADMIN_SESSION_HOURS` (défaut 8), inactivité par `ADMIN_SESSION_IDLE_MINUTES` (défaut 60). Les demandes OTP inachevées doivent être recommencées après redémarrage. La persistance est conçue pour une instance PM2 unique.
 
 ## Validation de livraison
 
 Syntaxe JavaScript, essais SQL/API sur PGlite isolé et parcours Chromium e-mail → OTP → PIN → tableau de bord → déconnexion. Vérifications des refus de rôles, de l’ordre des étapes, des codes incorrects et réutilisés, de l’échec d’envoi, de la persistance/révocation/expiration des sessions et de la préservation de l’environnement. Les doubles de transport utilisés pour ces essais restent hors Git. Aucun e-mail réel ni accès à la base de production pendant les essais ; la livraison ne certifie pas la configuration SMTP du VPS.
+
+L’identifiant Wallet est recherché sans distinction de casse dans `users.id_wallet`. Le code OTP est envoyé uniquement à l’adresse e-mail déjà liée à ce compte Admin actif ; aucune adresse fournie dans le navigateur ne peut remplacer ce destinataire. La limite de renvoi est commune à l’ID Wallet et à l’e-mail du même compte. Un compte sans e-mail valide doit être corrigé par la procédure de gestion des coordonnées existante.

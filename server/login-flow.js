@@ -77,25 +77,33 @@ export function createLoginFlow({ pool, config, sendOtp, clock = Date.now }) {
   }
   async function start(req) {
     sweep();
-    const email = normalize(req.body?.email || resolve(req)?.email);
-    if (!email || email.length > 254 || !/^\S+@[^@\s]+\.[^@\s]+$/.test(email))
-      throw failure("Saisissez une adresse e-mail valide.", 400);
-    const until = recentEmails.get(email);
-    if (until > clock())
-      throw failure(
-        "Veuillez patienter avant de renvoyer un code.",
-        429,
-        Math.ceil((until - clock()) / 1000),
-      );
+    const identifier = normalize(
+      req.body?.identifier || req.body?.email || resolve(req)?.email,
+    );
+    const isEmail = identifier.includes("@");
+    if (
+      !identifier ||
+      identifier.length > 254 ||
+      (isEmail
+        ? !/^[^\s@]+@[^@\s]+\.[^@\s]+$/.test(identifier)
+        : !/^[a-z0-9]{4,64}$/i.test(identifier))
+    )
+      throw failure("Saisissez votre ID Wallet ou votre adresse e-mail.", 400);
     if (challenges.size >= 5000)
       throw failure("Trop de connexions en cours. Réessayez plus tard.", 503);
     const { rows } = await pool.query(
-      "SELECT id,email,full_name,pin_hash FROM users WHERE LOWER(TRIM(email))=$1 AND role::text='Admin' AND LOWER(TRIM(status::text))='active' LIMIT 2",
-      [email],
+      "SELECT id,email,full_name,pin_hash FROM users WHERE ((LOWER(TRIM(email))=$1 AND $2::boolean) OR (LOWER(TRIM(id_wallet))=$1 AND NOT $2::boolean)) AND role::text='Admin' AND LOWER(TRIM(status::text))='active' LIMIT 2",
+      [identifier, isEmail],
     );
     if (rows.length !== 1 || !rows[0].pin_hash)
       throw failure("Compte Admin actif et PIN configuré requis.", 403);
     const user = rows[0];
+    const email = normalize(user.email);
+    if (!/^[^\s@]+@[^@\s]+\.[^@\s]+$/.test(email))
+      throw failure(
+        "Ce compte Admin doit posséder une adresse e-mail valide pour recevoir l’OTP.",
+        403,
+      );
     // Recheck after the asynchronous query so concurrent sends cannot bypass cooldown.
     if ((recentEmails.get(email) || 0) > clock())
       throw failure("Veuillez patienter avant de renvoyer un code.", 429, 60);

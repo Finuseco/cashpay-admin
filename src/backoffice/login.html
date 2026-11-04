@@ -23,8 +23,8 @@
               <div class="card-body px-4 px-md-5 py-5">
                 <h1 class="card-title text-start mb-3">Cashpay Admin</h1>
                 <p class="text-muted">
-                  Accès réservé aux comptes Admin actifs : e-mail, code reçu,
-                  puis PIN Cashpay existant.
+                  Accès réservé aux comptes Admin actifs : ID Wallet ou e-mail,
+                  code reçu, puis PIN Cashpay existant.
                 </p>
                 <ul
                   class="nav nav-pills nav-fill mb-4"
@@ -32,7 +32,7 @@
                 >
                   <li class="nav-item">
                     <span id="step-email" class="nav-link active"
-                      >1. E-mail</span
+                      >1. Identifiant</span
                     >
                   </li>
                   <li class="nav-item">
@@ -48,11 +48,12 @@
                 <p id="login-error" class="text-danger" role="alert"></p>
                 <form id="email-form" hidden>
                   <div class="form-group">
-                    <label for="email">Adresse e-mail du compte Admin</label
+                    <label for="email"
+                      >ID Wallet ou e-mail du compte Admin</label
                     ><input
                       id="email"
                       name="email"
-                      type="email"
+                      type="text"
                       autocomplete="username"
                       required
                       maxlength="254"
@@ -136,7 +137,7 @@
                   class="btn btn-link mt-3"
                   hidden
                 >
-                  Recommencer avec une adresse e-mail</button
+                  Changer d’identifiant</button
                 ><button
                   id="retry-status"
                   type="button"

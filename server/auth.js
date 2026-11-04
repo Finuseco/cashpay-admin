@@ -72,9 +72,10 @@ export function loginLimiter() {
       return res
         .status(429)
         .json({ error: "Trop de connexions. Réessayez plus tard." });
+    const rawIdentifier = req.body?.identifier ?? req.body?.email;
     const email =
-      typeof req.body?.email === "string"
-        ? req.body.email.toLowerCase().trim()
+      typeof rawIdentifier === "string"
+        ? rawIdentifier.toLowerCase().trim()
         : "";
     for (const key of [
       `ip:${req.ip}`,
