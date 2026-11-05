@@ -24,9 +24,16 @@ function number(value) {
     return "Indisponible";
   }
 }
-function decimal(value) {
+function decimal(value, currency) {
   const text = String(value ?? "");
   if (!/^[+-]?\d+(\.\d+)?$/.test(text)) return "Valeur à vérifier";
+  if (currency === "EUR") {
+    const negative=text.startsWith("-");
+    const [whole,fraction=""]=text.replace(/^[+-]/, "").split(".");
+    let cents=BigInt(whole)*100n+BigInt((fraction+"00").slice(0,2));
+    if(Number(fraction[2]||0)>=5)cents++;
+    return (negative&&cents>0n?"-":"")+(cents/100n).toLocaleString("fr-FR")+","+String(cents%100n).padStart(2,"0");
+  }
   const [integer, fraction] = text.split(".");
   return (
     BigInt(integer).toLocaleString("fr-FR") + (fraction ? "," + fraction : "")
@@ -142,7 +149,7 @@ function balance(currency, data) {
     (row && Number(row.invalid_entries) > 0)
   )
     return "Incomplet";
-  return decimal(row?.amount || "0") + " " + currency;
+  return decimal(row?.amount || "0", currency) + " " + currency;
 }
 function renderVolume() {
   const data = state.dashboard,
@@ -258,7 +265,7 @@ function renderDashboard(data) {
       Number(data.balanceQuality.invalid_wallets) > 0 ||
       Number(row.invalid_entries) > 0
         ? "Incomplet"
-        : decimal(row.amount),
+        : decimal(row.amount, row.currency),
       number(row.funded_users),
     ]),
     3,
@@ -406,8 +413,8 @@ async function loadActivity() {
               date(row.created_at),
               row.reference_code,
               row.type_code,
-              decimal(row.amount) + " " + row.currency,
-              decimal(row.fee || "0") + " " + row.currency,
+              decimal(row.amount, row.currency) + " " + row.currency,
+              decimal(row.fee || "0", row.currency) + " " + row.currency,
               badge(row.status),
               Number(row.sender_id) === Number(state.userId)
                 ? "Titulaire / émetteur"
@@ -424,7 +431,7 @@ async function loadActivity() {
             : [
                 date(row.created_at),
                 row.reference,
-                decimal(row.amount) + " " + row.currency,
+                decimal(row.amount, row.currency) + " " + row.currency,
                 badge(row.status),
               ],
       ),
@@ -490,14 +497,14 @@ async function loadProfile() {
         : "Le format d’un portefeuille doit être vérifié.";
     fillRows(
       "user-balance-rows",
-      data.balances.map((row) => [row.currency, decimal(row.amount)]),
+      data.balances.map((row) => [row.currency, decimal(row.amount, row.currency)]),
       2,
     );
     fillRows(
       "user-deposit-rows",
       data.deposits.map((row) => [
         row.currency,
-        decimal(row.amount),
+        decimal(row.amount, row.currency),
         number(row.count),
       ]),
       3,
@@ -659,10 +666,10 @@ $("create-user-form").addEventListener("submit", async (event) => {
   }
 });
 
-function financeAmount(value, unknown = 0) {
+function financeAmount(value, unknown = 0, currency) {
   return Number(unknown) > 0 || value === null || value === undefined
     ? "Incomplet / indisponible"
-    : decimal(value);
+    : decimal(value,currency);
 }
 function renderFeeChart() {
   const finance = state.dashboard?.finance;
@@ -714,10 +721,10 @@ function renderFinance(finance) {
     finance.fees.map((row) => [
       row.currency || "Devise absente",
       number(row.count),
-      financeAmount(row.fees, row.unknown_fees),
+      financeAmount(row.fees, row.unknown_fees, row.currency),
       Number(row.unknown_fees) > 0
         ? "Incomplet"
-        : decimal(row.month_fees || "0"),
+        : decimal(row.month_fees || "0", row.currency),
       Number(row.unknown_fees) > 0 ? "Frais manquants" : "Registre",
     ]),
     5,
@@ -726,10 +733,10 @@ function renderFinance(finance) {
     "finance-mirror-rows",
     finance.mirrors.map((row) => [
       row.source_currency,
-      financeAmount(row.source_amount, row.unknown_fees),
+      financeAmount(row.source_amount, row.unknown_fees, row.source_currency),
       row.target_currency,
       row.rate ? decimal(row.rate) : "Taux indisponible",
-      row.rate ? financeAmount(row.amount, row.unknown_fees) : "Indisponible",
+      row.rate ? financeAmount(row.amount, row.unknown_fees, row.target_currency) : "Indisponible",
     ]),
     5,
   );
@@ -737,7 +744,7 @@ function renderFinance(finance) {
     "finance-crypto-rows",
     finance.crypto.rows.map((row) => [
       row.currency,
-      financeAmount(row.amount, row.invalid_entries),
+      financeAmount(row.amount, row.invalid_entries, row.currency),
       number(row.accounts),
       Number(row.invalid_entries) > 0 ? "Incomplet" : "Solde en base",
     ]),
@@ -747,7 +754,7 @@ function renderFinance(finance) {
     "finance-commission-rows",
     finance.commissions.rows.map((row) => [
       row.currency,
-      financeAmount(row.amount, row.invalid_entries),
+      financeAmount(row.amount, row.invalid_entries, row.currency),
       Number(row.invalid_entries) > 0 ? "Incomplet" : "Solde en base",
     ]),
     3,
@@ -756,7 +763,7 @@ function renderFinance(finance) {
     "finance-treasury-total-rows",
     finance.treasury.totals.map((row) => [
       row.currency,
-      financeAmount(row.amount, row.invalid_entries),
+      financeAmount(row.amount, row.invalid_entries, row.currency),
       !finance.treasury.revenueRegistry.available ||
       !finance.treasury.floatRegistry.available ||
       finance.treasury.accounts.some((account) => account.error)
@@ -789,7 +796,7 @@ function renderFinance(finance) {
         row.wallet_id,
         sources,
         balance.currency,
-        balance.valid ? decimal(balance.amount) : "Invalide",
+        balance.valid ? decimal(balance.amount, balance.currency) : "Invalide",
         row.error || "Portefeuille interne",
       ]);
   }
@@ -801,8 +808,8 @@ function renderFinance(finance) {
       row.status,
       row.currency,
       number(row.count),
-      financeAmount(row.amount, row.unknown_amounts),
-      financeAmount(row.fees, row.unknown_fees),
+      financeAmount(row.amount, row.unknown_amounts, row.currency),
+      financeAmount(row.fees, row.unknown_fees, row.currency),
     ]),
     6,
   );
@@ -813,8 +820,8 @@ function renderFinance(finance) {
       row.receiver_country,
       row.currency,
       number(row.count),
-      financeAmount(row.amount, row.unknown_amounts),
-      financeAmount(row.fees, row.unknown_fees),
+      financeAmount(row.amount, row.unknown_amounts, row.currency),
+      financeAmount(row.fees, row.unknown_fees, row.currency),
     ]),
     6,
   );
@@ -826,8 +833,8 @@ function renderFinance(finance) {
       row.type_code,
       row.status,
       row.currency,
-      financeAmount(row.amount),
-      financeAmount(row.fee),
+      financeAmount(row.amount,0,row.currency),
+      financeAmount(row.fee,0,row.currency),
       row.sender_country || "Non renseigné / externe",
       row.receiver_country || "Non renseigné / externe",
     ]),
