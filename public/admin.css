@@ -1,0 +1,30 @@
+.page-body-wrapper,
+.main-panel,
+.content-wrapper {
+  min-width: 0;
+}
+@media (min-width: 992px) {
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar .nav {
+    padding-bottom: 24px;
+  }
+}
+@media (max-width: 991.98px) {
+  .sidebar-offcanvas {
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+  .content-wrapper {
+    padding: 1.5rem 0.75rem;
+  }
+  .page-header {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}

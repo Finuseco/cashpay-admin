@@ -1,3 +1,12 @@
+import {
+  managedClient,
+  updateClient,
+  upgradePartner,
+} from "./client-management.js";
+import { operations, orderDetails } from "./operations.js";
+import { registrationCertificate } from "./certificate.js";
+import { createMediaStore } from "./registration-media.js";
+import { createWelcomeSender } from "./welcome.js";
 import { createUser, registrationCountries } from "./create-user.js";
 import express from "express";
 import helmet from "helmet";
@@ -32,7 +41,9 @@ export function createApp({
   sessions = new SessionStore({ secret: config.secret }),
   sendOtp = createOtpMailer(config),
   clock,
+  sendWelcome = createWelcomeSender(config),
 }) {
+  const media = createMediaStore(config);
   const flow = createLoginFlow({ pool, config, sendOtp, clock });
   const app = express();
   app.disable("x-powered-by");
@@ -57,6 +68,7 @@ export function createApp({
       hsts: config.production ? undefined : false,
     }),
   );
+  app.use("/api/registration/media", express.json({ limit: "8mb" }));
   app.use(express.json({ limit: "16kb" }));
   app.use(cookieParser());
   // Serve only the template asset directory and the explicit application scripts.
@@ -75,6 +87,21 @@ export function createApp({
   );
   app.get("/login.js", (_req, res) =>
     res.sendFile(path.join(root, "public/login.js")),
+  );
+  app.get("/admin.css", (_req, res) =>
+    res.sendFile(path.join(root, "public/admin.css")),
+  );
+  app.get("/registration.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/registration.js")),
+  );
+  app.get("/management.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/management.js")),
+  );
+  app.get("/certificate.css", (_req, res) =>
+    res.sendFile(path.join(root, "public/certificate.css")),
+  );
+  app.get("/certificate.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/certificate.js")),
   );
   app.get("/healthz", (_req, res) => res.json({ status: "ok" }));
   app.use("/api", (_req, res, next) => {
@@ -223,7 +250,10 @@ export function createApp({
     res.json({
       user: {
         ...req.admin,
-        profile_photo: avatarUrl(req.admin.profile_photo, config.mediaOrigin),
+        profile_photo: avatarUrl(req.admin.profile_photo, [
+          config.mediaOrigin,
+          config.origin,
+        ]),
       },
       csrf: req.adminSession.csrf,
     }),
@@ -242,6 +272,53 @@ export function createApp({
       res.json({ success: true });
     },
   );
+  app.post(
+    "/api/registration/media",
+    originGuard,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.status(201).json(await media.save(req.admin, req.body));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/registration/media/:id",
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        const file = await media.get(req.params.id);
+        res.set({
+          "Cache-Control": "no-store",
+          "Content-Type": file.mime,
+          "Content-Disposition":
+            file.mime === "application/pdf"
+              ? 'attachment; filename="document.pdf"'
+              : "inline",
+        });
+        res.sendFile(path.join(media.root, file.file));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get("/media/avatars/:id", async (req, res, next) => {
+    try {
+      const file = await media.get(req.params.id);
+      if (file.purpose !== "avatar") return res.sendStatus(404);
+      res
+        .type("jpeg")
+        .set("Cache-Control", "public,max-age=3600")
+        .set("Cross-Origin-Resource-Policy", "cross-origin")
+        .sendFile(path.join(media.root, file.file));
+    } catch (error) {
+      next(error);
+    }
+  });
   app.get("/api/registration/countries", requireAdmin, (_req, res) =>
     res.json({ countries: registrationCountries() }),
   );
@@ -253,12 +330,13 @@ export function createApp({
     verificationLimit,
     async (req, res, next) => {
       try {
-        res
-          .status(201)
-          .json({
-            success: true,
-            user: await createUser(pool, req.admin, req.body),
-          });
+        res.status(201).json({
+          success: true,
+          user: await createUser(pool, req.admin, req.body, {
+            media,
+            sendWelcome,
+          }),
+        });
       } catch (error) {
         next(error);
       }
@@ -281,9 +359,83 @@ export function createApp({
             country: validateCountry(req.query.country),
             page: pageNumber(req.query.page),
           },
-          config.mediaOrigin,
+          [config.mediaOrigin, config.origin],
         ),
       );
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.get("/api/users/:id/manage", requireAdmin, async (req, res, next) => {
+    try {
+      res.json(await managedClient(pool, userId(req.params.id)));
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.patch(
+    "/api/users/:id",
+    originGuard,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await updateClient(pool, req.admin, userId(req.params.id), req.body),
+        );
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/users/:id/partner",
+    originGuard,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await upgradePartner(
+            pool,
+            req.admin,
+            userId(req.params.id),
+            req.body,
+          ),
+        );
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get("/api/operations/:kind", requireAdmin, async (req, res, next) => {
+    try {
+      res.json(
+        await operations(pool, req.params.kind, {
+          page: pageNumber(req.query.page),
+          search: req.query.search || "",
+          status: req.query.status || "",
+        }),
+      );
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.get("/api/orders/:id", requireAdmin, async (req, res, next) => {
+    try {
+      res.json(await orderDetails(pool, userId(req.params.id)));
+    } catch (error) {
+      next(error);
+    }
+  });
+  app.get("/users/:id/certificate", requireAdmin, async (req, res, next) => {
+    try {
+      res
+        .set("Cache-Control", "no-store")
+        .type("html")
+        .send(await registrationCertificate(pool, userId(req.params.id)));
     } catch (error) {
       next(error);
     }
@@ -291,7 +443,10 @@ export function createApp({
   app.get("/api/users/:id", requireAdmin, async (req, res, next) => {
     try {
       res.json(
-        await userProfile(pool, userId(req.params.id), config.mediaOrigin),
+        await userProfile(pool, userId(req.params.id), [
+          config.mediaOrigin,
+          config.origin,
+        ]),
       );
     } catch (error) {
       next(error);
@@ -316,7 +471,17 @@ export function createApp({
     res.sendFile(path.join(root, "src/backoffice/login.html"));
   });
   app.get(
-    ["/", "/dashboard", "/users", "/users/new", "/users/:id"],
+    [
+      "/",
+      "/dashboard",
+      "/users",
+      "/users/new",
+      "/users/:id",
+      "/transactions",
+      "/cards",
+      "/orders",
+      "/registrations",
+    ],
     async (req, res, next) => {
       try {
         const session = readSession(req, config, sessions);
@@ -347,15 +512,18 @@ export function createApp({
       ].includes(error.code)
         ? 503
         : 500);
+    if (error.retryAfter) res.set("Retry-After", String(error.retryAfter));
     console.error("[request]", error.code || "failed");
     res.status(status).json({
-      error: error.expose
-        ? error.message
-        : status < 500
-          ? error.type === "entity.parse.failed"
-            ? "Requête JSON invalide."
-            : error.message
-          : "Données indisponibles. Vérifiez la connexion PostgreSQL, les droits de lecture et le schéma partagé. Aucun montant de remplacement n’est affiché.",
+      error: ["EACCES", "ENOSPC", "EROFS"].includes(error.code)
+        ? "Stockage privé indisponible : vérifier les droits et l’espace disque du dossier ADMIN_STATE_DIR."
+        : error.expose
+          ? error.message
+          : status < 500
+            ? error.type === "entity.parse.failed"
+              ? "Requête JSON invalide."
+              : error.message
+            : "Données indisponibles. Vérifiez la connexion PostgreSQL, les droits de lecture et le schéma partagé. Aucun montant de remplacement n’est affiché.",
     });
   });
   return app;

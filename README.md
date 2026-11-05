@@ -5,10 +5,11 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 ## Livraison actuelle
 
 - Connexion du compte `Admin` actif : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
-- Création de comptes Client nationaux et diaspora depuis le menu « Créer un compte », avec portefeuille à zéro, PIN chiffré par empreinte bcrypt et trace d’intervention. Voir [le contrat et les droits SQL](docs/account-creation.md).
+- Inscription Client en quatre étapes : identité, coordonnées, photo/signature/pièce et confirmation, avec PIN généré, notifications et certificat A4 historisé. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
 - Centralisation financière : frais bruts par devise, registres crypto BTC/USDT, commissions, comptes de flotte/revenus, activités et corridors internationaux. Voir [sources et limites](docs/finance-dashboard.md).
 - Graphiques Chart.js de la template : répartition des déposants, inscriptions/premiers dépôts sur douze mois, volumes du registre dans une seule devise sélectionnée.
+- Mise à jour de clients et activation Partenaire B2B, protégées par PIN Admin et journalisées. Menus dédiés aux transactions, commandes de cartes, ventes/articles/vendeurs et historique.
 - Recherche par nom, téléphone, e-mail ou ID Wallet. Fiche utilisateur : avatar public, identité de consultation, soldes par devise, dépôts et listes paginées des transactions, demandes de cartes et commandes.
 - Filtre pays, actualisation manuelle et toutes les 10 secondes lorsque le tableau de bord est visible. Les données affichées portent leur heure de lecture. Une panne n’est pas remplacée par des chiffres inventés.
 
@@ -16,7 +17,7 @@ Les fonctionnalités de nomination, blocage de comptes ou de pays, interruption 
 
 ## Template conservée
 
-Le serveur utilise `src/assets/css/style.css`, Bootstrap, les icônes MDI/Font Awesome et Chart.js **déjà livrés par la template**. Les cartes, tableaux, menu latéral, navigation mobile et formulaire de connexion reprennent ses composants et classes. Aucun logo, image ou pack d’icônes n’est généré. Les fichiers de démonstration d’origine restent comme référence dans `src`/`dist`, mais leurs pages et leur `dashboard.js` de démonstration **ne sont pas servis ni chargés par l’application**. Les pages actives sont `src/backoffice/index.html` et `login.html`. Aucun CSS supplémentaire.
+Le serveur utilise `src/assets/css/style.css`, Bootstrap, les icônes MDI/Font Awesome et Chart.js **déjà livrés par la template**. Les cartes, tableaux, menu latéral, navigation mobile et formulaire de connexion reprennent ses composants et classes. Aucun logo, image ou pack d’icônes n’est généré. Les fichiers de démonstration d’origine restent comme référence dans `src`/`dist`, mais leurs pages et leur `dashboard.js` de démonstration **ne sont pas servis ni chargés par l’application**. Les pages actives sont `src/backoffice/index.html` et `login.html`. Des ajustements CSS limités gèrent le menu responsive et l’impression du certificat A4 ; les composants et icônes de la template restent utilisés.
 
 ## Environnement et lancement
 
@@ -30,7 +31,7 @@ Node.js **22.9 minimum** et PostgreSQL de l’application existante.
 
 Pour travailler uniquement sur la machine locale, choisir `NODE_ENV=development` et une origine exacte telle que `http://127.0.0.1:8010`. Le service écoute par défaut sur le loopback ; la publication HTTPS passe par le proxy du VPS.
 
-Aucune migration, colonne ou table supplémentaire n’est nécessaire pour cette phase. La création de comptes utilise les tables existantes `users`, `wallets` et `super_agent_interventions`. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
+Aucune migration, colonne ou table supplémentaire n’est nécessaire pour cette phase. La création de comptes utilise les tables existantes `users`, `wallets`, `user_documents`, `b2b_partners` et `super_agent_interventions`. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
 
 ### Accès SQL
 
@@ -40,7 +41,7 @@ Le pool impose les transactions par défaut en lecture seule ; la création de c
 
 ## Règles de calcul
 
-Voir [le contrat des indicateurs](docs/dashboard-contract.md). Les devises ne sont jamais additionnées entre elles et aucun taux fictif n’est appliqué. Les sommes PostgreSQL sont renvoyées en texte et affichées sans conversion en flottant JavaScript. Les graphiques ont une précision de dessin limitée : les tableaux demeurent la référence décimale.
+Voir [le contrat des indicateurs](docs/dashboard-contract.md). Les devises ne sont jamais additionnées entre elles et aucun taux fictif n’est appliqué. Les sommes PostgreSQL sont renvoyées en texte. Les montants EUR sont arrondis à deux décimales par calcul entier exact à l’affichage ; les montants en base et la précision crypto sont conservés. Les graphiques ont une précision de dessin limitée : les tableaux demeurent la référence décimale.
 
 ## Accès et sessions
 

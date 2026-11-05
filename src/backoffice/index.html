@@ -18,6 +18,7 @@
       href="/assets/vendors/font-awesome/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="stylesheet" href="/admin.css" />
     <link rel="icon" href="/assets/images/favicon.png" />
   </head>
   <body>
@@ -61,17 +62,54 @@
             >
           </li>
           <li class="nav-item menu-items">
+            <a class="nav-link" href="/transactions"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-bank-transfer"></i></span
+              ><span class="menu-title">Transactions</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/dashboard#finance-view"
+              ><span class="menu-icon"><i class="mdi mdi-wallet"></i></span
+              ><span class="menu-title">Trésorerie et frais</span></a
+            >
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Comptes et inscriptions</span>
+          </li>
+          <li class="nav-item menu-items">
             <a class="nav-link" href="/users"
               ><span class="menu-icon"
                 ><i class="mdi mdi-account-multiple"></i></span
-              ><span class="menu-title">Utilisateurs et activités</span></a
+              ><span class="menu-title">Utilisateurs</span></a
             >
           </li>
           <li class="nav-item menu-items">
             <a class="nav-link" href="/users/new"
               ><span class="menu-icon"
                 ><i class="mdi mdi-account-plus"></i></span
-              ><span class="menu-title">Créer un compte</span></a
+              ><span class="menu-title">Nouvelle inscription</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/registrations"
+              ><span class="menu-icon"><i class="mdi mdi-history"></i></span
+              ><span class="menu-title">Historique</span></a
+            >
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Services et commerce</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/cards"
+              ><span class="menu-icon"><i class="mdi mdi-credit-card"></i></span
+              ><span class="menu-title">Commandes de cartes</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/orders"
+              ><span class="menu-icon"><i class="mdi mdi-cart"></i></span
+              ><span class="menu-title">Ventes et commandes</span></a
             >
           </li>
         </ul>
@@ -129,198 +167,461 @@
             </p>
             <section id="create-user-view" hidden>
               <div class="page-header">
-                <h1 class="page-title">Créer un compte utilisateur</h1>
-                <a class="btn btn-outline-light" href="/users"
-                  >Rechercher un compte</a
+                <h1 class="page-title">Inscrire un utilisateur</h1>
+                <a class="btn btn-outline-light" href="/registrations"
+                  >Historique des inscriptions</a
                 >
               </div>
               <div class="card">
                 <div class="card-body">
                   <p>
-                    Compte Client avec portefeuille initial à zéro. Vérifiez les
-                    coordonnées avec le titulaire. Celui-ci choisit son PIN
-                    initial et doit le conserver confidentiel. La vérification
-                    d’identité reste à effectuer selon la procédure Cashpay.
+                    Le PIN est généré par le serveur et envoyé au titulaire
+                    après enregistrement. Ne saisissez pas votre PIN
+                    administrateur dans les données du client.
                   </p>
-                  <form id="create-user-form">
-                    <div class="row">
-                      <div class="col-md-6 form-group">
-                        <label for="create-first_name">Prénom</label
-                        ><input
-                          class="form-control"
-                          id="create-first_name"
-                          name="first_name"
-                          type="text"
-                          required
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-last_name">Nom</label
-                        ><input
-                          class="form-control"
-                          id="create-last_name"
-                          name="last_name"
-                          type="text"
-                          required
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-middle_name">Postnom</label
-                        ><input
-                          class="form-control"
-                          id="create-middle_name"
-                          name="middle_name"
-                          type="text"
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-email">Adresse e-mail</label
-                        ><input
-                          class="form-control"
-                          id="create-email"
-                          name="email"
-                          type="email"
-                          required
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-phone"
-                          >Téléphone international (+243…)</label
-                        ><input
-                          class="form-control"
-                          id="create-phone"
-                          name="phone"
-                          type="tel"
-                          required
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-birth_date">Date de naissance</label
-                        ><input
-                          class="form-control"
-                          id="create-birth_date"
-                          name="birth_date"
-                          type="date"
-                          required
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-nationality">Nationalité</label
-                        ><input
-                          class="form-control"
-                          id="create-nationality"
-                          name="nationality"
-                          type="text"
-                          required
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-province">Province</label
-                        ><input
-                          class="form-control"
-                          id="create-province"
-                          name="province"
-                          type="text"
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-city">Ville</label
-                        ><input
-                          class="form-control"
-                          id="create-city"
-                          name="city"
-                          type="text"
-                          required
-                          maxlength="254"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-address">Adresse</label
-                        ><input
-                          class="form-control"
-                          id="create-address"
-                          name="address"
-                          type="text"
-                          required
-                          maxlength="500"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-pin">PIN initial (4 chiffres)</label
-                        ><input
-                          class="form-control"
-                          id="create-pin"
-                          name="pin"
-                          type="password"
-                          required
-                          inputmode="numeric"
-                          pattern="[0-9]{4}"
-                          maxlength="4"
-                          autocomplete="new-password"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-pin_confirmation"
-                          >Confirmer le PIN</label
-                        ><input
-                          class="form-control"
-                          id="create-pin_confirmation"
-                          name="pin_confirmation"
-                          type="password"
-                          required
-                          inputmode="numeric"
-                          pattern="[0-9]{4}"
-                          maxlength="4"
-                          autocomplete="new-password"
-                        />
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-country">Pays de résidence</label
-                        ><select
-                          class="form-control"
-                          id="create-country"
-                          name="countryCode"
-                          required
-                        ></select>
-                      </div>
-                      <div class="col-md-6 form-group">
-                        <label for="create-type">Type de compte</label
-                        ><select
-                          id="create-type"
-                          class="form-control"
-                          name="account_type"
-                        >
-                          <option value="national">National</option>
-                          <option value="diaspora">Diaspora</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-check">
-                      <label class="form-check-label"
-                        ><input
-                          class="form-check-input"
-                          id="create-confirm"
-                          type="checkbox"
-                          required
-                        />Je confirme les données avec le titulaire et son
-                        accord pour la création du compte.</label
+                  <ul
+                    class="nav nav-pills nav-fill mb-4"
+                    id="registration-steps"
+                  >
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-0"
+                        >1. Identité</span
                       >
+                    </li>
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-1"
+                        >2. Coordonnées</span
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-2"
+                        >3. Photos et pièces</span
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-3"
+                        >4. Confirmation</span
+                      >
+                    </li>
+                  </ul>
+                  <form id="create-user-form" novalidate>
+                    <fieldset data-registration-step="0">
+                      <legend class="h5">Identité du titulaire</legend>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label for="create-first_name">Prénom</label
+                          ><input
+                            id="create-first_name"
+                            class="form-control"
+                            name="first_name"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-last_name">Nom</label
+                          ><input
+                            id="create-last_name"
+                            class="form-control"
+                            name="last_name"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-middle_name">Postnom</label
+                          ><input
+                            id="create-middle_name"
+                            class="form-control"
+                            name="middle_name"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-birth_date"
+                            >Date de naissance</label
+                          ><input
+                            id="create-birth_date"
+                            class="form-control"
+                            name="birth_date"
+                            type="date"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-birth_place"
+                            >Lieu de naissance</label
+                          ><input
+                            id="create-birth_place"
+                            class="form-control"
+                            name="birth_place"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-nationality">Nationalité</label
+                          ><input
+                            id="create-nationality"
+                            class="form-control"
+                            name="nationality"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-profession">Profession</label
+                          ><input
+                            id="create-profession"
+                            class="form-control"
+                            name="profession"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-gender">Genre</label
+                          ><select
+                            id="create-gender"
+                            name="gender"
+                            class="form-control"
+                          >
+                            <option value="">Non renseigné</option>
+                            <option value="male">Homme</option>
+                            <option value="female">Femme</option>
+                            <option value="other">Autre</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-marital_status">État civil</label
+                          ><select
+                            id="create-marital_status"
+                            name="marital_status"
+                            class="form-control"
+                          >
+                            <option value="">Non renseigné</option>
+                            <option value="single">Célibataire</option>
+                            <option value="married">Marié(e)</option>
+                            <option value="divorced">Divorcé(e)</option>
+                            <option value="widowed">Veuf / veuve</option>
+                          </select>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset data-registration-step="1" hidden>
+                      <legend class="h5">Coordonnées et compte</legend>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label for="create-email">E-mail du titulaire</label
+                          ><input
+                            id="create-email"
+                            class="form-control"
+                            name="email"
+                            type="email"
+                            maxlength="254"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-phone"
+                            >Téléphone international (+243…)</label
+                          ><input
+                            id="create-phone"
+                            class="form-control"
+                            name="phone"
+                            type="tel"
+                            maxlength="16"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-province">Province</label
+                          ><input
+                            id="create-province"
+                            class="form-control"
+                            name="province"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-city">Ville</label
+                          ><input
+                            id="create-city"
+                            class="form-control"
+                            name="city"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-address">Adresse</label
+                          ><input
+                            id="create-address"
+                            class="form-control"
+                            name="address"
+                            type="text"
+                            maxlength="500"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-country">Pays de résidence</label
+                          ><select
+                            id="create-country"
+                            name="countryCode"
+                            class="form-control"
+                            required
+                          ></select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-account_type">Type de compte</label
+                          ><select
+                            id="create-account_type"
+                            name="account_type"
+                            class="form-control"
+                          >
+                            <option value="national">National</option>
+                            <option value="diaspora">Diaspora</option>
+                          </select>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset data-registration-step="2" hidden>
+                      <legend class="h5">
+                        Photo, signature et document d’identité
+                      </legend>
+                      <p>
+                        Images JPEG/PNG et pièces PDF, maximum 5 Mo par fichier.
+                        Les documents sont réservés aux administrateurs
+                        authentifiés.
+                      </p>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label for="upload-avatar"
+                            >Photo du profil (requis)</label
+                          ><input
+                            id="upload-avatar"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png"
+                            data-media-purpose="avatar"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="user"
+                              data-media-purpose="avatar"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-avatar"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="upload-signature"
+                            >Signature du titulaire (requis)</label
+                          ><input
+                            id="upload-signature"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png"
+                            data-media-purpose="signature"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="environment"
+                              data-media-purpose="signature"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-signature"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="upload-id_front"
+                            >Pièce d’identité — recto (requis)</label
+                          ><input
+                            id="upload-id_front"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png,application/pdf"
+                            data-media-purpose="id_front"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="environment"
+                              data-media-purpose="id_front"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-id_front"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="upload-id_back"
+                            >Pièce d’identité — verso</label
+                          ><input
+                            id="upload-id_back"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png,application/pdf"
+                            data-media-purpose="id_back"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="environment"
+                              data-media-purpose="id_back"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-id_back"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                      </div>
+                      <details>
+                        <summary>Dessiner la signature du titulaire</summary>
+                        <canvas
+                          id="signature-canvas"
+                          width="600"
+                          height="180"
+                          class="border w-100"
+                          style="
+                            touch-action: none;
+                            max-width: 600px;
+                            background: white;
+                          "
+                        ></canvas>
+                        <div>
+                          <button
+                            type="button"
+                            id="signature-clear"
+                            class="btn btn-outline-light btn-sm"
+                          >
+                            Effacer</button
+                          ><button
+                            type="button"
+                            id="signature-use"
+                            class="btn btn-outline-primary btn-sm"
+                          >
+                            Utiliser cette signature
+                          </button>
+                        </div>
+                      </details>
+                      <div class="row mt-4">
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_type">Type de pièce</label
+                          ><select
+                            id="create-id_type"
+                            name="id_type"
+                            class="form-control"
+                          >
+                            <option value="national_id">Carte nationale</option>
+                            <option value="passport">Passeport</option>
+                            <option value="voter_card">Carte d’électeur</option>
+                            <option value="driving_license">
+                              Permis de conduire
+                            </option>
+                            <option value="residence_permit">
+                              Titre de séjour
+                            </option>
+                            <option value="other">Autre</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_number">Numéro de pièce</label
+                          ><input
+                            id="create-id_number"
+                            class="form-control"
+                            name="id_number"
+                            type="text"
+                            maxlength="100"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_issued_date"
+                            >Date de délivrance</label
+                          ><input
+                            id="create-id_issued_date"
+                            class="form-control"
+                            name="id_issued_date"
+                            type="date"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_expiry_date"
+                            >Date d’expiration</label
+                          ><input
+                            id="create-id_expiry_date"
+                            class="form-control"
+                            name="id_expiry_date"
+                            type="date"
+                            maxlength="150"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset data-registration-step="3" hidden>
+                      <legend class="h5">Vérification avant création</legend>
+                      <dl id="registration-review" class="row"></dl>
+                      <p>
+                        Le compte et son portefeuille seront créés ensemble. Les
+                        pièces recueillies ne déclenchent pas une validation
+                        automatique de l’identité.
+                      </p>
+                      <div class="form-check">
+                        <label class="form-check-label"
+                          ><input
+                            id="create-confirm"
+                            type="checkbox"
+                            class="form-check-input"
+                            required
+                          />J’ai contrôlé les informations avec le titulaire et
+                          recueilli son accord.</label
+                        >
+                      </div>
+                    </fieldset>
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                      <button
+                        id="registration-prev"
+                        type="button"
+                        class="btn btn-outline-light"
+                      >
+                        Précédent</button
+                      ><button
+                        id="registration-next"
+                        type="button"
+                        class="btn btn-primary"
+                      >
+                        Suivant</button
+                      ><button
+                        id="create-user-submit"
+                        type="submit"
+                        class="btn btn-success"
+                        hidden
+                      >
+                        Créer et envoyer les codes
+                      </button>
                     </div>
-                    <button
-                      id="create-user-submit"
-                      class="btn btn-primary mt-3"
-                      type="submit"
-                    >
-                      Créer le compte
-                    </button>
                   </form>
                   <div
                     id="create-user-result"
@@ -738,10 +1039,263 @@
                 </div>
               </div>
             </section>
+            <section id="operations-view" hidden>
+              <div class="page-header">
+                <h1 id="operations-title" class="page-title"></h1>
+              </div>
+              <form id="operations-search" class="row mb-3">
+                <div class="col-md-6 form-group">
+                  <label for="operations-query"
+                    >Nom, téléphone, ID Wallet ou référence</label
+                  ><input
+                    id="operations-query"
+                    class="form-control"
+                    maxlength="100"
+                  />
+                </div>
+                <div class="col-md-4 form-group">
+                  <label for="operations-status"
+                    >Statut exact (facultatif)</label
+                  ><input
+                    id="operations-status"
+                    class="form-control"
+                    maxlength="50"
+                  />
+                </div>
+                <div class="col-md-2 form-group d-flex align-items-end">
+                  <button class="btn btn-primary">Rechercher</button>
+                </div>
+              </form>
+              <div class="card">
+                <div class="card-body">
+                  <p id="operations-info" role="status"></p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead id="operations-head"></thead>
+                      <tbody id="operations-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <button
+                      id="operations-prev"
+                      class="btn btn-outline-primary"
+                    >
+                      Précédent</button
+                    ><span id="operations-page"></span
+                    ><button
+                      id="operations-next"
+                      class="btn btn-outline-primary"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="order-detail" class="card mt-3" hidden>
+                <div class="card-body">
+                  <h2 id="order-detail-title" class="card-title"></h2>
+                  <div id="order-detail-items"></div>
+                </div>
+              </div>
+            </section>
             <section id="user-view" hidden>
               <a href="/users" class="btn btn-outline-light mb-4"
                 ><i class="mdi mdi-arrow-left"></i> Retour aux utilisateurs</a
               >
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <a id="user-certificate" class="btn btn-outline-primary"
+                  >Certificat A4</a
+                ><button
+                  id="edit-client-open"
+                  class="btn btn-primary"
+                  type="button"
+                  hidden
+                >
+                  Modifier les données</button
+                ><button
+                  id="partner-open"
+                  class="btn btn-outline-success"
+                  type="button"
+                  hidden
+                >
+                  Activer comme partenaire
+                </button>
+              </div>
+              <div id="client-management" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">Mise à jour du client</h2>
+                  <form id="edit-client-form">
+                    <div class="row">
+                      <div class="col-md-6 form-group">
+                        <label for="edit-first_name">Prénom</label
+                        ><input
+                          id="edit-first_name"
+                          name="first_name"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-last_name">Nom</label
+                        ><input
+                          id="edit-last_name"
+                          name="last_name"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-middle_name">Postnom</label
+                        ><input
+                          id="edit-middle_name"
+                          name="middle_name"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-email">E-mail</label
+                        ><input
+                          id="edit-email"
+                          name="email"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-phone">Téléphone international</label
+                        ><input
+                          id="edit-phone"
+                          name="phone"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-province">Province</label
+                        ><input
+                          id="edit-province"
+                          name="province"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-city">Ville</label
+                        ><input
+                          id="edit-city"
+                          name="city"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-address">Adresse</label
+                        ><input
+                          id="edit-address"
+                          name="address"
+                          class="form-control"
+                          maxlength="500"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-nationality">Nationalité</label
+                        ><input
+                          id="edit-nationality"
+                          name="nationality"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-profession">Profession</label
+                        ><input
+                          id="edit-profession"
+                          name="profession"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="edit-reason">Motif de modification</label
+                      ><textarea
+                        id="edit-reason"
+                        class="form-control"
+                        minlength="10"
+                        maxlength="500"
+                        required
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="edit-admin-pin"
+                        >Votre PIN administrateur</label
+                      ><input
+                        id="edit-admin-pin"
+                        class="form-control"
+                        type="password"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="6"
+                        required
+                      />
+                    </div>
+                    <button class="btn btn-primary">
+                      Enregistrer les modifications
+                    </button>
+                  </form>
+                  <p id="edit-client-result" role="status"></p>
+                </div>
+              </div>
+              <div id="partner-panel" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">Passage au compte Partenaire B2B</h2>
+                  <p>
+                    Cette opération attribue le rôle PartnerB2B et crée les
+                    identifiants API selon le mécanisme Cashpay existant. Aucun
+                    solde n’est modifié.
+                  </p>
+                  <form id="partner-form">
+                    <div class="form-group">
+                      <label for="partner-company">Nom de l’entreprise</label
+                      ><input
+                        id="partner-company"
+                        class="form-control"
+                        minlength="2"
+                        maxlength="150"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="partner-pin">Votre PIN administrateur</label
+                      ><input
+                        id="partner-pin"
+                        class="form-control"
+                        type="password"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label"
+                        ><input
+                          id="partner-confirm"
+                          type="checkbox"
+                          class="form-check-input"
+                          required
+                        />Je confirme l’attribution de l’accès partenaire à ce
+                        client.</label
+                      >
+                    </div>
+                    <button class="btn btn-success mt-3">
+                      Activer le partenariat
+                    </button>
+                  </form>
+                  <p id="partner-result" role="status"></p>
+                </div>
+              </div>
               <div class="card mb-4">
                 <div class="card-body">
                   <div
@@ -831,7 +1385,7 @@
               class="d-sm-flex justify-content-center justify-content-sm-between"
             >
               <span class="text-muted"
-                >Cashpay Admin — consultation de la base partagée</span
+                >Cashpay Admin — gestion de la base partagée</span
               ><span class="text-muted"
                 >Template Corona ·
                 <a href="https://www.bootstrapdash.com/" rel="noopener"
@@ -848,5 +1402,7 @@
     <script src="/assets/js/off-canvas.js"></script>
     <script src="/assets/js/misc.js"></script>
     <script src="/app.js" defer></script>
+    <script src="/registration.js" defer></script>
+    <script src="/management.js" defer></script>
   </body>
 </html>

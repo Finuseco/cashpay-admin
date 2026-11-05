@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { readFile } from "node:fs/promises";
-const escape = (value) =>
+export const escape = (value) =>
   String(value ?? "").replace(
     /[&<>"']/g,
     (char) =>
@@ -8,6 +8,23 @@ const escape = (value) =>
         char
       ],
   );
+export function smtpTransport(config) {
+  if (!config.smtp?.host || !config.smtp.user || !config.smtp.password)
+    throw Error("SMTP non configuré.");
+  return nodemailer.createTransport({
+    host: config.smtp.host,
+    port: config.smtp.port,
+    secure: config.smtp.port === 465,
+    requireTLS: config.smtp.port !== 465,
+    auth: { user: config.smtp.user, pass: config.smtp.password },
+    tls: { rejectUnauthorized: true },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 20000,
+    disableFileAccess: true,
+    disableUrlAccess: true,
+  });
+}
 export function createOtpMailer(config) {
   let transport;
   return async function sendOtp({ email, name, code, ip }) {

@@ -23,7 +23,7 @@ Les douze mois d’inscriptions viennent de `users.created_at`. Les premiers dé
 
 ## Soldes et devises
 
-Les soldes sont lus dans `wallets.balances`, décomposés et additionnés **par clé devise**. Les montants restent des décimaux PostgreSQL et sont envoyés sous forme de chaînes. L’interface utilise les entiers arbitraires pour formater leur partie entière. USD/EUR sont des sommes de soldes existants, sans conversion depuis CDF/BTC/USDT.
+Les soldes sont lus dans `wallets.balances`, décomposés et additionnés **par clé devise**. Les montants restent des décimaux PostgreSQL et sont envoyés sous forme de chaînes. L’interface utilise les entiers arbitraires pour formater leur partie entière. USD/EUR sont des sommes de soldes existants, sans conversion depuis CDF/BTC/USDT. Les montants EUR s’affichent à deux décimales avec arrondi exact, sans modifier les valeurs SQL ; les cryptos gardent leur précision.
 
 Une devise est listée si au moins un solde est non nul, ou si une valeur doit être vérifiée. Les soldes négatifs restent visibles et ne sont pas transformés en zéro. Une valeur non numérique est signalée ; sa somme n’est pas affichée comme complète. Un portefeuille au format non objet est également signalé. Un portefeuille absent n’est pas présenté comme un portefeuille attesté à zéro dans la fiche du compte.
 
@@ -44,10 +44,12 @@ Les activités d’une fiche concernent uniquement son identifiant. Les transact
 - Ancien `POST /api/login` : désactivé (HTTP 410).
 - `GET /api/session`, `POST /api/logout` : session indépendante et révocation de la session courante.
 - `GET /api/dashboard?country=CD` : instantané global ou pays, graphiques, disponibilité des files et objet `finance`. Voir [le contrat financier](finance-dashboard.md).
-- `POST /api/users` : création d’un compte Client et de son portefeuille, journalisée ; session Admin et CSRF requis. Voir [le contrat](account-creation.md).
+- `POST /api/users` : inscription Client avec médias, documents, notifications et certificat, journalisée ; session Admin et CSRF requis. Voir [le contrat](account-creation.md).
 - `GET /api/users?search=...&page=0&country=CD` : recherche littérale paramétrée, normalisation du téléphone sur neuf chiffres comme Cashpay Web.
 - `GET /api/users/{id}` : fiche, soldes et dépôts.
 - `GET /api/users/{id}/activity?kind=transactions|cards|orders&page=0` : activités paginées.
+- `PATCH /api/users/{id}`, `POST /api/users/{id}/partner` : gestion de client et activation B2B avec PIN Admin, motif/version pour la mise à jour et trace d’intervention.
+- `GET /api/operations/{kind}`, `GET /api/orders/{id}` : listes globales et détail commercial.
 - `GET /healthz` : disponibilité du processus uniquement, sans attestation de connexion à la base.
 
 La création de comptes ajoute un Client et un portefeuille à zéro ; elle ne nomme pas d’agent. Les autres routes ne modifient aucun compte, tarif, pays ou solde. Les opérations de gestion seront des phases séparées avec leurs contrôles et journaux réels.

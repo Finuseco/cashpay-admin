@@ -27,12 +27,21 @@ function number(value) {
 function decimal(value, currency) {
   const text = String(value ?? "");
   if (!/^[+-]?\d+(\.\d+)?$/.test(text)) return "Valeur à vérifier";
-  if (currency === "EUR") {
-    const negative=text.startsWith("-");
-    const [whole,fraction=""]=text.replace(/^[+-]/, "").split(".");
-    let cents=BigInt(whole)*100n+BigInt((fraction+"00").slice(0,2));
-    if(Number(fraction[2]||0)>=5)cents++;
-    return (negative&&cents>0n?"-":"")+(cents/100n).toLocaleString("fr-FR")+","+String(cents%100n).padStart(2,"0");
+  if (
+    String(currency || "")
+      .trim()
+      .toUpperCase() === "EUR"
+  ) {
+    const negative = text.startsWith("-");
+    const [whole, fraction = ""] = text.replace(/^[+-]/, "").split(".");
+    let cents = BigInt(whole) * 100n + BigInt((fraction + "00").slice(0, 2));
+    if (Number(fraction[2] || 0) >= 5) cents++;
+    return (
+      (negative && cents > 0n ? "-" : "") +
+      (cents / 100n).toLocaleString("fr-FR") +
+      "," +
+      String(cents % 100n).padStart(2, "0")
+    );
   }
   const [integer, fraction] = text.split(".");
   return (
@@ -57,13 +66,26 @@ async function api(url, options = {}) {
   const response = await fetch(url, {
     ...options,
     cache: "no-store",
-    signal: AbortSignal.timeout(20000),
+    signal: AbortSignal.timeout(options.timeoutMs || 20000),
   });
   if (response.status === 401) {
     location.replace("/login");
     throw Error("Session expirée.");
   }
-  const data = await response.json();
+  if (response.status === 413)
+    throw Error(
+      "Fichier refusé par le proxy : vérifier la limite de téléversement de 8 Mo dans Nginx.",
+    );
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw Error(
+      "Réponse du serveur indisponible ou invalide (HTTP " +
+        response.status +
+        "). Réessayez ou consultez les journaux du service.",
+    );
+  }
   if (!response.ok) throw Error(data.error || "Service indisponible.");
   return data;
 }
@@ -296,6 +318,10 @@ function renderDashboard(data) {
         queues.append(element("p", `${row.status} : ${number(row.count)}`));
   }
   renderFinance(data.finance);
+  if (location.hash === "#finance-view" && !state.financeAnchorShown) {
+    state.financeAnchorShown = true;
+    requestAnimationFrame(() => $("finance-view").scrollIntoView());
+  }
   $("app-status").textContent =
     `Données arrêtées au ${date(data.snapshotAt)} · actualisation automatique toutes les 10 secondes.`;
 }
@@ -497,7 +523,10 @@ async function loadProfile() {
         : "Le format d’un portefeuille doit être vérifié.";
     fillRows(
       "user-balance-rows",
-      data.balances.map((row) => [row.currency, decimal(row.amount, row.currency)]),
+      data.balances.map((row) => [
+        row.currency,
+        decimal(row.amount, row.currency),
+      ]),
       2,
     );
     fillRows(
@@ -512,6 +541,7 @@ async function loadProfile() {
     $("app-status").textContent =
       "Fiche de consultation du compte : aucune modification ni approbation effectuée.";
     await loadActivity();
+    await renderClientManagement(user);
   } catch (reason) {
     error(reason.message);
   }
@@ -531,7 +561,13 @@ async function boot() {
             link.getAttribute("href") === location.pathname,
           ),
       );
-    if (location.pathname === "/users/new") {
+    if (
+      ["/transactions", "/cards", "/orders", "/registrations"].includes(
+        location.pathname,
+      )
+    ) {
+      await loadOperations();
+    } else if (location.pathname === "/users/new") {
       $("create-user-view").hidden = false;
       const data = await api("/api/registration/countries");
       const select = $("create-country");
@@ -617,59 +653,12 @@ document.querySelectorAll("[data-kind]").forEach((button) =>
     void loadActivity();
   }),
 );
-void boot();
-
-let creatingUser = false;
-$("create-user-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (creatingUser) return;
-  const form = event.currentTarget,
-    result = $("create-user-result");
-  const body = Object.fromEntries(new FormData(form));
-  if (body.pin !== body.pin_confirmation) {
-    result.textContent = "Les PIN ne correspondent pas.";
-    return;
-  }
-  creatingUser = true;
-  $("create-user-submit").disabled = true;
-  result.textContent = "Création en cours…";
-  try {
-    const data = await api("/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": state.session.csrf,
-      },
-      body: JSON.stringify(body),
-    });
-    form.reset();
-    form.hidden = true;
-    result.replaceChildren(
-      element(
-        "p",
-        `Compte créé : ${data.user.full_name} — ${data.user.id_wallet}`,
-        "text-success",
-      ),
-    );
-    const link = element("a", "Consulter le compte", "btn btn-primary");
-    link.href = "/users/" + data.user.id;
-    result.append(link);
-  } catch (reason) {
-    result.textContent =
-      reason.message +
-      " Si la connexion a été interrompue, recherchez le compte avant de réessayer.";
-  } finally {
-    creatingUser = false;
-    $("create-user-submit").disabled = false;
-    $("create-pin").value = "";
-    $("create-pin_confirmation").value = "";
-  }
-});
+document.addEventListener("DOMContentLoaded", () => void boot());
 
 function financeAmount(value, unknown = 0, currency) {
   return Number(unknown) > 0 || value === null || value === undefined
     ? "Incomplet / indisponible"
-    : decimal(value,currency);
+    : decimal(value, currency);
 }
 function renderFeeChart() {
   const finance = state.dashboard?.finance;
@@ -736,7 +725,9 @@ function renderFinance(finance) {
       financeAmount(row.source_amount, row.unknown_fees, row.source_currency),
       row.target_currency,
       row.rate ? decimal(row.rate) : "Taux indisponible",
-      row.rate ? financeAmount(row.amount, row.unknown_fees, row.target_currency) : "Indisponible",
+      row.rate
+        ? financeAmount(row.amount, row.unknown_fees, row.target_currency)
+        : "Indisponible",
     ]),
     5,
   );
@@ -833,8 +824,8 @@ function renderFinance(finance) {
       row.type_code,
       row.status,
       row.currency,
-      financeAmount(row.amount,0,row.currency),
-      financeAmount(row.fee,0,row.currency),
+      financeAmount(row.amount, 0, row.currency),
+      financeAmount(row.fee, 0, row.currency),
       row.sender_country || "Non renseigné / externe",
       row.receiver_country || "Non renseigné / externe",
     ]),

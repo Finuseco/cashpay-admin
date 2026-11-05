@@ -1,0 +1,150 @@
+@page {
+  size: A4 portrait;
+  margin: 16mm;
+}
+body {
+  background: #eee;
+  color: #20232a;
+  font-family: Arial, sans-serif;
+  line-height: 1.4;
+}
+main {
+  box-sizing: border-box;
+  max-width: 178mm;
+  margin: 12px auto;
+  background: white;
+  padding: 12mm;
+  min-height: 250mm;
+}
+header {
+  border-bottom: 2px solid #20232a;
+  padding-bottom: 6mm;
+  margin-bottom: 8mm;
+}
+h1 {
+  font-size: 24pt;
+}
+h2 {
+  font-size: 18pt;
+}
+h3 {
+  font-size: 12pt;
+}
+dl {
+  display: grid;
+  grid-template-columns: 40mm 1fr;
+  gap: 3mm;
+  clear: both;
+}
+dt,
+dd {
+  margin: 0;
+  font-size: 11pt;
+  overflow-wrap: anywhere;
+}
+dt {
+  font-weight: bold;
+}
+.portrait {
+  width: 28mm;
+  height: 32mm;
+  object-fit: cover;
+  float: right;
+  margin: 0 0 5mm 5mm;
+}
+.signature {
+  width: 55mm;
+  max-height: 20mm;
+  object-fit: contain;
+}
+section {
+  margin-top: 8mm;
+  break-inside: avoid;
+}
+footer {
+  border-top: 1px solid #aaa;
+  margin-top: 8mm;
+  padding-top: 4mm;
+  font-size: 9pt;
+}
+.print-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 15px;
+}
+@media print {
+  body {
+    background: white;
+  }
+  main {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+    max-width: none;
+  }
+  .print-actions {
+    display: none;
+  }
+  a {
+    color: inherit;
+  }
+}
+@media screen and (max-width: 600px) {
+  main {
+    padding: 20px;
+    min-height: 0;
+  }
+  dl {
+    grid-template-columns: 110px 1fr;
+  }
+  .print-actions {
+    flex-wrap: wrap;
+  }
+}
+main {
+  position: relative;
+}
+header {
+  padding-right: 34mm;
+}
+header h1,
+header h2 {
+  margin: 0 0 3mm;
+}
+header p {
+  margin: 0 0 2mm;
+  font-size: 10pt;
+}
+.portrait {
+  position: absolute;
+  top: 12mm;
+  right: 12mm;
+  float: none;
+  margin: 0;
+}
+dl {
+  clear: none;
+  gap: 2mm;
+}
+dt,
+dd {
+  font-size: 10.5pt;
+}
+section {
+  margin-top: 6mm;
+}
+section p {
+  margin: 0 0 2mm;
+  font-size: 10pt;
+}
+@media print {
+  .portrait {
+    top: 0;
+    right: 0;
+  }
+  header {
+    margin-bottom: 6mm;
+    padding-bottom: 4mm;
+  }
+}

@@ -40,10 +40,15 @@ export function validateCountry(value) {
 export function avatarUrl(value, origin) {
   if (!value || typeof value !== "string") return null;
   try {
-    const url = new URL(value, origin);
+    const origins = Array.isArray(origin) ? origin : [origin];
+    const url = new URL(value, origins[0]);
     if (
-      url.origin !== origin ||
-      url.protocol !== "https:" ||
+      !origins.includes(url.origin) ||
+      (url.protocol !== "https:" &&
+        !(
+          url.protocol === "http:" &&
+          ["localhost", "127.0.0.1"].includes(url.hostname)
+        )) ||
       url.username ||
       url.password
     )

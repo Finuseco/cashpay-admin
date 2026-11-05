@@ -67,6 +67,17 @@ export function loadConfig(env = process.env) {
     sessionHours,
     sessionIdleMinutes,
     stateDir: env.ADMIN_STATE_DIR || ".runtime",
+    avatarRoot: env.CASH_PAY_AVATAR_DIR || null,
+    sms: {
+      url: env.DREAM_DIGITAL_API_URL,
+      id: env.DREAM_DIGITAL_API_ID,
+      password: env.DREAM_DIGITAL_API_PASSWORD,
+      sender: env.DREAM_DIGITAL_SENDER_ID || "CashPay",
+    },
+    whatsapp: {
+      phoneId: env.WHATSAPP_PHONE_NUMBER_ID,
+      token: env.WHATSAPP_ACCESS_TOKEN,
+    },
     smtp: {
       host: env.SMTP_HOST,
       user: env.SMTP_USER,
