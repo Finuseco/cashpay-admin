@@ -1,3 +1,4 @@
+import { assertRegistrationScope } from "./staff-access.js";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import countries from "./registration-countries.json" with { type: "json" };
@@ -155,10 +156,11 @@ export async function createUser(pool, actor, body, { media, sendWelcome }) {
     await client.query("SET LOCAL statement_timeout='10s'");
     await client.query("SET LOCAL lock_timeout='3s'");
     const active = await client.query(
-      "SELECT id FROM users WHERE id=$1 AND role::text='Admin' AND LOWER(TRIM(status::text))='active' FOR SHARE",
+      "SELECT id,role::text AS role,country,province FROM users WHERE id=$1 AND role::text IN ('Admin','AccountManager') AND LOWER(TRIM(status::text))='active' FOR SHARE",
       [actor.id],
     );
     if (!active.rows.length) throw fail("Compte Admin actif requis.", 403);
+    assertRegistrationScope(active.rows[0], country.name, province);
     // Serialize admin enrolments; constraints still protect against other application writers.
     await client.query(
       "SELECT pg_advisory_xact_lock(hashtext('cashpay-admin-create-user'))",

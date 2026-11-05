@@ -1,3 +1,6 @@
+import { assertClientScope, deny } from "./staff-access.js";
+import { assignAccountManager } from "./staff-roles.js";
+import { quoteCard, orderAssistedCard } from "./assisted-cards.js";
 import {
   managedClient,
   updateClient,
@@ -6,7 +9,7 @@ import {
 import { operations, orderDetails } from "./operations.js";
 import { registrationCertificate } from "./certificate.js";
 import { createMediaStore } from "./registration-media.js";
-import { createWelcomeSender } from "./welcome.js";
+import { createWelcomeSender, createCardOrderSender } from "./welcome.js";
 import { createUser, registrationCountries } from "./create-user.js";
 import express from "express";
 import helmet from "helmet";
@@ -18,7 +21,7 @@ import {
   sessionOptions,
   readSession,
   issueSession,
-  findAdmin,
+  findStaff,
   loginLimiter,
 } from "./auth.js";
 import {
@@ -42,6 +45,7 @@ export function createApp({
   sendOtp = createOtpMailer(config),
   clock,
   sendWelcome = createWelcomeSender(config),
+  sendCardReceipt = createCardOrderSender(config),
 }) {
   const media = createMediaStore(config);
   const flow = createLoginFlow({ pool, config, sendOtp, clock });
@@ -94,6 +98,9 @@ export function createApp({
   app.get("/registration.js", (_req, res) =>
     res.sendFile(path.join(root, "public/registration.js")),
   );
+  app.get("/staff.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/staff.js")),
+  );
   app.get("/management.js", (_req, res) =>
     res.sendFile(path.join(root, "public/management.js")),
   );
@@ -113,15 +120,15 @@ export function createApp({
       return res.status(403).json({ error: "Origine non autorisée." });
     next();
   }
-  async function requireAdmin(req, res, next) {
+  async function requireStaff(req, res, next) {
     try {
       const session = readSession(req, config, sessions);
-      const user = session ? await findAdmin(pool, session.sub) : null;
+      const user = session ? await findStaff(pool, session.sub) : null;
       if (!user) {
         if (session) await sessions.revoke(session.jti);
         return res
           .status(401)
-          .json({ error: "Session administrateur requise." });
+          .json({ error: "Session professionnelle requise." });
       }
       if (
         !(await sessions.touch(
@@ -136,6 +143,27 @@ export function createApp({
     } catch (error) {
       next(error);
     }
+  }
+  function requireAdmin(req, res, next) {
+    if (req.admin.role !== "Admin")
+      return res.status(403).json({ error: "Fonction réservée à l’Admin." });
+    next();
+  }
+  async function protectMedia(req, file) {
+    if (req.admin.role === "Admin") return;
+    const suffix = "%" + file.id + "%";
+    const { rows } = await pool.query(
+      "SELECT DISTINCT u.id FROM users u LEFT JOIN user_documents d ON d.user_id=u.id WHERE u.profile_photo LIKE $1 OR u.signature_image LIKE $1 OR d.id_front_image LIKE $1 OR d.id_back_image LIKE $1",
+      [suffix],
+    );
+    if (!rows.length && file.ownerId === Number(req.admin.id)) return;
+    for (const target of rows) {
+      try {
+        await assertClientScope(pool, req.admin, target.id);
+        return;
+      } catch {}
+    }
+    throw deny("Document non accessible.");
   }
   function csrfGuard(req, res, next) {
     if (req.get("x-csrf-token") !== req.adminSession.csrf)
@@ -172,13 +200,14 @@ export function createApp({
       if (value.until < now) verificationWindows.delete(key);
     if (verificationWindows.size > 50000)
       return res.status(429).json({ error: "Trop de connexions." });
-    const state = verificationWindows.get(req.ip) || {
+    const key = req.admin ? "staff:" + req.admin.id : "ip:" + req.ip;
+    const state = verificationWindows.get(key) || {
       count: 0,
       until: now + 15 * 60000,
     };
     state.count++;
-    verificationWindows.set(req.ip, state);
-    if (state.count > 60) {
+    verificationWindows.set(key, state);
+    if (state.count > (req.admin ? 240 : 60)) {
       res.set("Retry-After", String(Math.ceil((state.until - now) / 1000)));
       return res
         .status(429)
@@ -212,7 +241,10 @@ export function createApp({
           ...flow.cookieOptions(),
           maxAge: undefined,
         });
-        res.json({ success: true });
+        res.json({
+          success: true,
+          landing: user.role === "AccountManager" ? "/users" : "/dashboard",
+        });
       } catch (error) {
         if (error.retryAfter) res.set("Retry-After", String(error.retryAfter));
         next(error);
@@ -231,13 +263,16 @@ export function createApp({
     try {
       const session = readSession(req, config, sessions);
       if (session) {
-        const user = await findAdmin(pool, session.sub);
+        const user = await findStaff(pool, session.sub);
         if (user) {
           await sessions.touch(
             session.jti,
             (config.sessionIdleMinutes || 60) * 60000,
           );
-          return res.json({ step: "authenticated" });
+          return res.json({
+            step: "authenticated",
+            landing: user.role === "AccountManager" ? "/users" : "/dashboard",
+          });
         }
         await sessions.revoke(session.jti);
       }
@@ -246,7 +281,7 @@ export function createApp({
       next(error);
     }
   });
-  app.get("/api/session", requireAdmin, (req, res) =>
+  app.get("/api/session", requireStaff, (req, res) =>
     res.json({
       user: {
         ...req.admin,
@@ -256,12 +291,18 @@ export function createApp({
         ]),
       },
       csrf: req.adminSession.csrf,
+      capabilities: {
+        finance: req.admin.role === "Admin",
+        roles: req.admin.role === "Admin",
+        clientManagement: true,
+        assistedCards: true,
+      },
     }),
   );
   app.post(
     "/api/logout",
     originGuard,
-    requireAdmin,
+    requireStaff,
     csrfGuard,
     async (req, res) => {
       await sessions.revoke(req.adminSession.jti);
@@ -275,7 +316,7 @@ export function createApp({
   app.post(
     "/api/registration/media",
     originGuard,
-    requireAdmin,
+    requireStaff,
     csrfGuard,
     verificationLimit,
     async (req, res, next) => {
@@ -288,10 +329,11 @@ export function createApp({
   );
   app.get(
     "/api/registration/media/:id",
-    requireAdmin,
+    requireStaff,
     async (req, res, next) => {
       try {
         const file = await media.get(req.params.id);
+        await protectMedia(req, file);
         res.set({
           "Cache-Control": "no-store",
           "Content-Type": file.mime,
@@ -319,13 +361,13 @@ export function createApp({
       next(error);
     }
   });
-  app.get("/api/registration/countries", requireAdmin, (_req, res) =>
+  app.get("/api/registration/countries", requireStaff, (_req, res) =>
     res.json({ countries: registrationCountries() }),
   );
   app.post(
     "/api/users",
     originGuard,
-    requireAdmin,
+    requireStaff,
     csrfGuard,
     verificationLimit,
     async (req, res, next) => {
@@ -342,14 +384,88 @@ export function createApp({
       }
     },
   );
-  app.get("/api/dashboard", requireAdmin, async (req, res, next) => {
-    try {
-      res.json(await dashboard(pool, validateCountry(req.query.country)));
-    } catch (error) {
-      next(error);
-    }
-  });
-  app.get("/api/users", requireAdmin, async (req, res, next) => {
+  app.post(
+    "/api/users/:id/staff-role",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await assignAccountManager(
+            pool,
+            req.admin,
+            userId(req.params.id),
+            req.body,
+          ),
+        );
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/users/:id/card-quote",
+    originGuard,
+    requireStaff,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await quoteCard(
+            pool,
+            req.admin,
+            userId(req.params.id),
+            req.body,
+            config,
+          ),
+        );
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/users/:id/card-orders",
+    originGuard,
+    requireStaff,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res
+          .status(201)
+          .json(
+            await orderAssistedCard(
+              pool,
+              req.admin,
+              userId(req.params.id),
+              req.body,
+              config,
+              sendCardReceipt,
+            ),
+          );
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/dashboard",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(await dashboard(pool, validateCountry(req.query.country)));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get("/api/users", requireStaff, async (req, res, next) => {
     try {
       res.json(
         await findUsers(
@@ -360,15 +476,16 @@ export function createApp({
             page: pageNumber(req.query.page),
           },
           [config.mediaOrigin, config.origin],
+          req.admin,
         ),
       );
     } catch (error) {
       next(error);
     }
   });
-  app.get("/api/users/:id/manage", requireAdmin, async (req, res, next) => {
+  app.get("/api/users/:id/manage", requireStaff, async (req, res, next) => {
     try {
-      res.json(await managedClient(pool, userId(req.params.id)));
+      res.json(await managedClient(pool, userId(req.params.id), req.admin));
     } catch (error) {
       next(error);
     }
@@ -376,7 +493,7 @@ export function createApp({
   app.patch(
     "/api/users/:id",
     originGuard,
-    requireAdmin,
+    requireStaff,
     csrfGuard,
     verificationLimit,
     async (req, res, next) => {
@@ -392,6 +509,7 @@ export function createApp({
   app.post(
     "/api/users/:id/partner",
     originGuard,
+    requireStaff,
     requireAdmin,
     csrfGuard,
     verificationLimit,
@@ -410,28 +528,39 @@ export function createApp({
       }
     },
   );
-  app.get("/api/operations/:kind", requireAdmin, async (req, res, next) => {
+  app.get("/api/operations/:kind", requireStaff, async (req, res, next) => {
     try {
       res.json(
-        await operations(pool, req.params.kind, {
-          page: pageNumber(req.query.page),
-          search: req.query.search || "",
-          status: req.query.status || "",
-        }),
+        await operations(
+          pool,
+          req.params.kind,
+          {
+            page: pageNumber(req.query.page),
+            search: req.query.search || "",
+            status: req.query.status || "",
+          },
+          req.admin,
+        ),
       );
     } catch (error) {
       next(error);
     }
   });
-  app.get("/api/orders/:id", requireAdmin, async (req, res, next) => {
+  app.get(
+    "/api/orders/:id",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(await orderDetails(pool, userId(req.params.id)));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get("/users/:id/certificate", requireStaff, async (req, res, next) => {
     try {
-      res.json(await orderDetails(pool, userId(req.params.id)));
-    } catch (error) {
-      next(error);
-    }
-  });
-  app.get("/users/:id/certificate", requireAdmin, async (req, res, next) => {
-    try {
+      await assertClientScope(pool, req.admin, userId(req.params.id));
       res
         .set("Cache-Control", "no-store")
         .type("html")
@@ -440,19 +569,21 @@ export function createApp({
       next(error);
     }
   });
-  app.get("/api/users/:id", requireAdmin, async (req, res, next) => {
+  app.get("/api/users/:id", requireStaff, async (req, res, next) => {
     try {
       res.json(
-        await userProfile(pool, userId(req.params.id), [
-          config.mediaOrigin,
-          config.origin,
-        ]),
+        await userProfile(
+          pool,
+          userId(req.params.id),
+          [config.mediaOrigin, config.origin],
+          req.admin,
+        ),
       );
     } catch (error) {
       next(error);
     }
   });
-  app.get("/api/users/:id/activity", requireAdmin, async (req, res, next) => {
+  app.get("/api/users/:id/activity", requireStaff, async (req, res, next) => {
     try {
       res.json(
         await activity(
@@ -460,6 +591,7 @@ export function createApp({
           userId(req.params.id),
           req.query.kind || "transactions",
           pageNumber(req.query.page),
+          req.admin,
         ),
       );
     } catch (error) {
@@ -485,8 +617,14 @@ export function createApp({
     async (req, res, next) => {
       try {
         const session = readSession(req, config, sessions);
-        if (!session || !(await findAdmin(pool, session.sub)))
-          return res.redirect("/login");
+        const actor = session ? await findStaff(pool, session.sub) : null;
+        if (!actor) return res.redirect("/login");
+        if (actor.role === "AccountManager") {
+          if (["/", "/dashboard"].includes(req.path))
+            return res.redirect("/users");
+          if (["/transactions", "/orders"].includes(req.path))
+            return res.status(403).send("Fonction réservée à l’Admin.");
+        }
         res.set("Cache-Control", "no-store");
         res.sendFile(path.join(root, "src/backoffice/index.html"));
       } catch (error) {

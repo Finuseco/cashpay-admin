@@ -2,7 +2,7 @@
 
 ## Parcours livré
 
-Le menu « Nouvelle inscription » guide un Admin actif en quatre étapes : identité, coordonnées/compte, photo/signature/pièce, puis confirmation. Il propose des comptes particuliers nationaux ou diaspora. Le passage en compte partenaire est une opération séparée depuis la fiche client.
+Le menu « Nouvelle inscription » guide un professionnel actif autorisé (Admin ou Gestionnaire) en quatre étapes : identité, coordonnées/compte, photo/signature/pièce, puis confirmation. Il propose des comptes particuliers nationaux ou diaspora. Le passage en compte partenaire est une opération séparée depuis la fiche client.
 
 L’identité reprend nom, prénom, postnom, naissance, nationalité, profession et les champs facultatifs du schéma Cashpay. Les coordonnées comprennent e-mail du titulaire, téléphone international, pays, province, ville et adresse. Le titulaire doit confirmer ses informations avec l’administrateur. La photo, la signature et le recto de pièce sont obligatoires ; le verso et les dates de pièce sont facultatifs. Numéro de pièce unique, dates cohérentes, fichiers et coordonnées sont validés côté serveur. Les prises de vue utilisent la caméra native du navigateur ; il ne s’agit pas d’une reconnaissance faciale ou d’un OCR automatique.
 
@@ -12,13 +12,13 @@ La création transactionnelle écrit le Client actif, son portefeuille à zéro 
 
 ## Photos et documents
 
-`POST /api/registration/media` exige Admin, origine et CSRF. Les fichiers sont limités à 5 Mo : JPEG/PNG, et PDF pour les pièces. Sharp décode les images, corrige leur orientation, retire les métadonnées et réencode en JPEG. Les images trop grandes ou trompeuses sont rejetées. La signature peut être dessinée ou importée ; la caméra et l’import de fichier sont proposés.
+`POST /api/registration/media` exige une session professionnelle autorisée, l’origine et le CSRF. Les fichiers sont limités à 5 Mo : JPEG/PNG, et PDF pour les pièces. Sharp décode les images, corrige leur orientation, retire les métadonnées et réencode en JPEG. Les images trop grandes ou trompeuses sont rejetées. La signature peut être dessinée ou importée ; la caméra et l’import de fichier sont proposés.
 
 Les fichiers privés et leurs métadonnées sont conservés sous `ADMIN_STATE_DIR/registration-media`, avec répertoire privé et fichiers 0600. Les identifiants sont aléatoires, l’auteur est contrôlé et les fichiers doivent être rattachés à une inscription dans les 24 heures. Aucune suppression automatique des pièces n’est exécutée. Sauvegarder ce dossier avec la base et gérer sa rétention selon les règles de l’exploitation.
 
 Les avatars destinés à être publics sont également écrits dans `CASH_PAY_AVATAR_DIR`, le dossier `public/images/avatars` de Cashpay Web. Leur URL publique reste celle du Wallet, compatible avec son mécanisme actuel de téléchargement d’images après build. Aucun fichier existant n’est écrasé. Conserver et sauvegarder aussi ces avatars pour permettre les réimpressions des certificats. En production, l’inscription exige cette configuration explicite pour éviter des avatars indisponibles dans le client. Le service de consultation local `/media/avatars/:id` ne sert jamais une pièce ou signature.
 
-Les pièces et signatures sont accessibles via `/api/registration/media/:id`, après authentification Admin. Leur URL est enregistrée dans les colonnes existantes. Les autres applications et les agents utilisant uniquement la session client n’héritent pas de cet accès : leur éventuelle consultation des nouvelles pièces nécessite un contrat de lecture authentifié supplémentaire. Cette livraison ne publie pas ces pièces dans le dossier public du Wallet.
+Les pièces et signatures sont accessibles via `/api/registration/media/:id`, après authentification et contrôle du périmètre professionnel. Leur URL est enregistrée dans les colonnes existantes. Les autres applications et les agents utilisant uniquement la session client n’héritent pas de cet accès : leur éventuelle consultation des nouvelles pièces nécessite un contrat de lecture authentifié supplémentaire. Cette livraison ne publie pas ces pièces dans le dossier public du Wallet.
 
 ## Messages de bienvenue
 
@@ -72,3 +72,5 @@ L’outil de stockage ajoute seulement le chemin d’avatars, avec sauvegarde pr
 ## Vérification de livraison
 
 SQL PGlite isolé et Chromium : fichiers et contrôles d’accès, contenu trompeur refusé, PIN généré, contrat de bienvenue, doublons, rollback, version et PIN Admin, activation partenaire, quatre étapes, certificat PDF A4 d’une page sur le cas vérifié, listes des services et détail vendeurs, menu mobile/desktop. Les notifications utilisent des transports de test hors Git ; aucun message ni compte de production n’est créé. Les réponses positives, ambiguës et négatives SMS sont vérifiées séparément. La réception réelle SMTP/SMS/WhatsApp et les permissions SQL/fichiers/Nginx restent à vérifier après déploiement.
+
+Le rôle AccountManager peut désormais inscrire et corriger les Clients de son pays/province, avec restrictions serveur et consentement du titulaire pour les coordonnées sensibles. Les habilitations et les commandes de cartes assistées sont décrites dans [account-manager.md](account-manager.md).

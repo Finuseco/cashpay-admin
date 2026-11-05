@@ -52,4 +52,6 @@ Les activités d’une fiche concernent uniquement son identifiant. Les transact
 - `GET /api/operations/{kind}`, `GET /api/orders/{id}` : listes globales et détail commercial.
 - `GET /healthz` : disponibilité du processus uniquement, sans attestation de connexion à la base.
 
-La création de comptes ajoute un Client et un portefeuille à zéro ; elle ne nomme pas d’agent. Les autres routes ne modifient aucun compte, tarif, pays ou solde. Les opérations de gestion seront des phases séparées avec leurs contrôles et journaux réels.
+La création de comptes ajoute un Client et un portefeuille à zéro ; elle ne nomme pas d’agent. Les routes de consultation ne modifient aucun solde. Les mutations de comptes, habilitations et commandes assistées suivent leurs contrats, contrôles de consentement et journaux réels décrits dans les guides de gestion.
+
+Les données financières de ce contrat restent réservées à Admin. Le rôle AccountManager dispose de projections d’identité et de commandes de cartes restreintes, sans soldes ni transactions : voir [le contrat Gestionnaire](account-manager.md).

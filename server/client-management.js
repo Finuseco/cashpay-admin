@@ -1,3 +1,9 @@
+import { verifyCustomerConsent } from "./customer-consent.js";
+import {
+  assertClientScope,
+  assertRegistrationScope,
+  deny,
+} from "./staff-access.js";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
 import { readSnapshot } from "./db.js";
@@ -24,7 +30,7 @@ const version = (user) =>
     )
     .digest("hex");
 const pinFailures = new Map();
-async function adminPin(db, actor, pin) {
+export async function adminPin(db, actor, pin) {
   const now = Date.now();
   for (const [id, attempt] of pinFailures)
     if (attempt.until <= now) pinFailures.delete(id);
@@ -35,9 +41,9 @@ async function adminPin(db, actor, pin) {
       { retryAfter: Math.ceil((previous.until - now) / 1000) },
     );
   if (typeof pin !== "string" || !/^\d{4,6}$/.test(pin))
-    throw fail("PIN administrateur requis.", 403);
+    throw fail("PIN professionnel requis.", 403);
   const { rows } = await db.query(
-    "SELECT pin_hash FROM users WHERE id=$1 AND role::text='Admin' AND LOWER(TRIM(status::text))='active' FOR SHARE",
+    "SELECT id,pin_hash,role::text AS role,country,province FROM users WHERE id=$1 AND role::text IN ('Admin','AccountManager') AND LOWER(TRIM(status::text))='active' FOR SHARE",
     [actor.id],
   );
   const hash = rows[0]?.pin_hash;
@@ -57,12 +63,14 @@ async function adminPin(db, actor, pin) {
         fail("Trop de PIN incorrects. Réessayez dans 15 minutes.", 429),
         { retryAfter: 900 },
       );
-    throw fail("PIN administrateur incorrect.", 403);
+    throw fail("PIN professionnel incorrect.", 403);
   }
   pinFailures.delete(actor.id);
+  return rows[0];
 }
-export async function managedClient(pool, id) {
+export async function managedClient(pool, id, actor) {
   return readSnapshot(pool, async (db) => {
+    if (actor) await assertClientScope(db, actor, id);
     const { rows } = await db.query(
       `SELECT id,id_wallet,role::text AS role,status::text AS status,${editableFields.join(",")} FROM users WHERE id=$1`,
       [id],
@@ -76,7 +84,10 @@ export async function updateClient(pool, actor, id, body) {
     !body ||
     typeof body !== "object" ||
     Object.keys(body).some(
-      (key) => !["admin_pin", "reason", "version", "changes"].includes(key),
+      (key) =>
+        !["admin_pin", "customer_pin", "reason", "version", "changes"].includes(
+          key,
+        ),
     )
   )
     throw fail("Modification invalide.");
@@ -124,9 +135,10 @@ export async function updateClient(pool, actor, id, body) {
   try {
     await db.query("BEGIN READ WRITE");
     await db.query("SET LOCAL lock_timeout='3s'");
-    await adminPin(db, actor, body.admin_pin);
+    const freshActor = await adminPin(db, actor, body.admin_pin);
+    await assertClientScope(db, freshActor, id);
     const { rows } = await db.query(
-      `SELECT id,role::text AS role,${editableFields.join(",")} FROM users WHERE id=$1 FOR UPDATE`,
+      `SELECT id,country,pin_hash,role::text AS role,${editableFields.join(",")} FROM users WHERE id=$1 FOR UPDATE`,
       [id],
     );
     const user = rows[0];
@@ -135,6 +147,18 @@ export async function updateClient(pool, actor, id, body) {
         "Modification réservée aux comptes clients et partenaires.",
         403,
       );
+    await assertClientScope(db, freshActor, id);
+    if (freshActor.role === "AccountManager")
+      assertRegistrationScope(
+        freshActor,
+        user.country,
+        "province" in values ? values.province : user.province,
+      );
+    if (
+      freshActor.role === "AccountManager" &&
+      ("email" in values || "phone" in values)
+    )
+      await verifyCustomerConsent(user.pin_hash, body.customer_pin, id);
     if (body.version !== version(user))
       throw fail("La fiche a changé. Rechargez avant de modifier.", 409);
     const duplicate = await db.query(
@@ -168,6 +192,11 @@ export async function updateClient(pool, actor, id, body) {
         "CLIENT_UPDATE",
         JSON.stringify({
           reason,
+          consent_method:
+            freshActor.role === "AccountManager" &&
+            ("email" in values || "phone" in values)
+              ? "customer_pin"
+              : "staff_authorization",
           before: Object.fromEntries(
             Object.keys(values).map((key) => [key, user[key] ?? null]),
           ),
@@ -186,6 +215,7 @@ export async function updateClient(pool, actor, id, body) {
   }
 }
 export async function upgradePartner(pool, actor, id, body) {
+  if (actor.role !== "Admin") throw deny();
   const name =
     typeof body?.company_name === "string" ? body.company_name.trim() : "";
   if (name.length < 2 || name.length > 150 || /[\x00-\x1f]/.test(name))
@@ -194,7 +224,8 @@ export async function upgradePartner(pool, actor, id, body) {
   try {
     await db.query("BEGIN READ WRITE");
     await db.query("SET LOCAL lock_timeout='3s'");
-    await adminPin(db, actor, body.admin_pin);
+    const freshActor = await adminPin(db, actor, body.admin_pin);
+    if (freshActor.role !== "Admin") throw deny();
     const { rows } = await db.query(
       "SELECT role::text AS role,status::text AS status FROM users WHERE id=$1 FOR UPDATE",
       [id],

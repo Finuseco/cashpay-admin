@@ -58,6 +58,13 @@ export async function findAdmin(pool, id) {
   );
   return rows[0] || null;
 }
+export async function findStaff(pool, id) {
+  const { rows } = await pool.query(
+    "SELECT id,id_wallet,full_name,role::text AS role,status::text AS status,profile_photo,country,province FROM users WHERE id=$1 AND role::text IN ('Admin','AccountManager') AND LOWER(TRIM(status::text))='active'",
+    [id],
+  );
+  return rows[0] || null;
+}
 export function loginLimiter() {
   const entries = new Map();
   let sweep = 0;

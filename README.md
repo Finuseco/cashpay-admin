@@ -4,11 +4,12 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 
 ## Livraison actuelle
 
-- Connexion du compte `Admin` actif : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
+- Connexion des comptes `Admin` et `AccountManager` actifs : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
 - Inscription Client en quatre étapes : identité, coordonnées, photo/signature/pièce et confirmation, avec PIN généré, notifications et certificat A4 historisé. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
 - Centralisation financière : frais bruts par devise, registres crypto BTC/USDT, commissions, comptes de flotte/revenus, activités et corridors internationaux. Voir [sources et limites](docs/finance-dashboard.md).
 - Graphiques Chart.js de la template : répartition des déposants, inscriptions/premiers dépôts sur douze mois, volumes du registre dans une seule devise sélectionnée.
+- Espace Gestionnaire de compte sans soldes ni rapports financiers, limité aux Clients du pays/province attribués, avec commande physique à débit consenti. Voir [droits et migration enum](docs/account-manager.md).
 - Mise à jour de clients et activation Partenaire B2B, protégées par PIN Admin et journalisées. Menus dédiés aux transactions, commandes de cartes, ventes/articles/vendeurs et historique.
 - Recherche par nom, téléphone, e-mail ou ID Wallet. Fiche utilisateur : avatar public, identité de consultation, soldes par devise, dépôts et listes paginées des transactions, demandes de cartes et commandes.
 - Filtre pays, actualisation manuelle et toutes les 10 secondes lorsque le tableau de bord est visible. Les données affichées portent leur heure de lecture. Une panne n’est pas remplacée par des chiffres inventés.
@@ -31,7 +32,7 @@ Node.js **22.9 minimum** et PostgreSQL de l’application existante.
 
 Pour travailler uniquement sur la machine locale, choisir `NODE_ENV=development` et une origine exacte telle que `http://127.0.0.1:8010`. Le service écoute par défaut sur le loopback ; la publication HTTPS passe par le proxy du VPS.
 
-Aucune migration, colonne ou table supplémentaire n’est nécessaire pour cette phase. La création de comptes utilise les tables existantes `users`, `wallets`, `user_documents`, `b2b_partners` et `super_agent_interventions`. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
+Aucune nouvelle colonne ou table n’est créée. Le rôle Gestionnaire nécessite l’ajout de la valeur enum `AccountManager` par le [script fourni](docs/sql/account-manager-role.sql), sans migration automatique. La création de comptes utilise les tables existantes `users`, `wallets`, `user_documents`, `b2b_partners` et `super_agent_interventions`. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
 
 ### Accès SQL
 
@@ -45,7 +46,7 @@ Voir [le contrat des indicateurs](docs/dashboard-contract.md). Les devises ne so
 
 ## Accès et sessions
 
-L’accès global est limité au rôle `Admin` actif. Le code e-mail à six chiffres expire après dix minutes ; cinq essais incorrects invalident la demande. Le PIN existant de quatre à six chiffres est vérifié contre `users.pin_hash` (bcrypt ou ancien format numérique déjà pris en charge par Cashpay Web), sans modifier la base. Aucun accès n’est établi à la seule validation de l’OTP.
+L’accès global est limité au rôle `Admin` actif. Le rôle `AccountManager` dispose uniquement du périmètre de tâches décrit dans [le contrat Gestionnaire](docs/account-manager.md). Le code e-mail à six chiffres expire après dix minutes ; cinq essais incorrects invalident la demande. Le PIN existant de quatre à six chiffres est vérifié contre `users.pin_hash` (bcrypt ou ancien format numérique déjà pris en charge par Cashpay Web), sans modifier la base. Aucun accès n’est établi à la seule validation de l’OTP.
 
 Le service utilise les mêmes variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` et les modèles e-mail Cashpay Web. Une erreur SMTP bloque l’envoi, sans afficher un faux succès. Les codes sont conservés sous empreinte en mémoire et perdus au redémarrage. Les envois et vérifications sont limités.
 

@@ -1,6 +1,6 @@
 # Connexion Admin par e-mail, OTP et PIN
 
-Le rôle existant doit être `Admin`, le statut actif et `users.pin_hash` configuré. Aucun changement de schéma SQL requis. Le service reste en lecture seule sur la base partagée.
+Le rôle existant doit être `Admin` ou `AccountManager`, le statut actif et `users.pin_hash` configuré. Aucun changement de schéma SQL requis. Le service reste en lecture seule sur la base partagée.
 
 ## Mise à jour de l’installation existante
 
@@ -20,7 +20,7 @@ UPDATE
 
 L’import SMTP copie seulement les quatre paramètres SMTP existants. Il conserve les paramètres PostgreSQL et le secret admin, crée une sauvegarde privée de `.env`, refuse des paramètres SMTP différents déjà configurés et n’affiche aucun secret. Les sauvegardes sont exclues de Git. L’outil exige Node 22.9 minimum. Ne pas copier les secrets JWT client.
 
-Nginx et les autres processus ne sont pas modifiés. Ouvrir ensuite https://admin.cashpay-all.com/login, saisir l’ID Wallet ou l’e-mail Admin, le code reçu, puis le PIN existant. Vérifier la réception réelle de l’e-mail et l’accès au tableau de bord. `/healthz` confirme uniquement le processus, pas SMTP ni PostgreSQL.
+Nginx et les autres processus ne sont pas modifiés. Ouvrir ensuite https://admin.cashpay-all.com/login, saisir l’ID Wallet ou l’e-mail professionnel, le code reçu, puis le PIN existant. Vérifier la réception réelle de l’e-mail et l’accès au tableau de bord. `/healthz` confirme uniquement le processus, pas SMTP ni PostgreSQL.
 
 Les sessions valides survivent au redémarrage PM2 si le secret et `.runtime` restent identiques. Durée absolue configurable par `ADMIN_SESSION_HOURS` (défaut 8), inactivité par `ADMIN_SESSION_IDLE_MINUTES` (défaut 60). Les demandes OTP inachevées doivent être recommencées après redémarrage. La persistance est conçue pour une instance PM2 unique.
 

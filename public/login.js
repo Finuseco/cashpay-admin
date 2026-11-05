@@ -39,7 +39,7 @@ function updateResend() {
 function render(next) {
   state = next;
   if (state.step === "authenticated") {
-    location.replace("/dashboard");
+    location.replace(state.landing || "/dashboard");
     return;
   }
   for (const step of ["email", "otp", "pin"]) {
@@ -54,7 +54,7 @@ function render(next) {
   $("retry-status").hidden = true;
   $("login-info").textContent =
     state.step === "email"
-      ? "Saisissez l’ID Wallet ou l’adresse e-mail de votre compte Admin."
+      ? "Saisissez l’ID Wallet ou l’adresse e-mail de votre compte professionnel."
       : state.step === "otp"
         ? `Un code a été envoyé à ${state.destination}. Il est valable dix minutes.`
         : "Code e-mail vérifié. Saisissez maintenant votre PIN existant.";
@@ -118,9 +118,9 @@ $("otp").addEventListener("input", () => {
 $("pin-form").addEventListener("submit", (event) => {
   event.preventDefault();
   void run(async () => {
-    await api("/api/auth/pin", { pin: $("pin").value });
+    const result = await api("/api/auth/pin", { pin: $("pin").value });
     $("pin").value = "";
-    location.replace("/dashboard");
+    location.replace(result.landing || "/dashboard");
   });
 });
 $("resend").addEventListener("click", () => {

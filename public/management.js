@@ -18,13 +18,17 @@ async function renderClientManagement(user) {
   $("user-certificate").hidden = !["Client", "PartnerB2B"].includes(user.role);
   if (!["Client", "PartnerB2B"].includes(user.role)) return;
   try {
+    $("edit-customer-consent").hidden =
+      state.session.user.role !== "AccountManager";
     managedSnapshot = await api("/api/users/" + user.id + "/manage");
     for (const field of Object.keys(managedSnapshot))
       if ($("edit-" + field))
         $("edit-" + field).value = managedSnapshot[field] || "";
     $("edit-client-open").hidden = false;
     $("partner-open").hidden =
-      user.role !== "Client" || String(user.status).toLowerCase() !== "active";
+      state.session.user.role !== "Admin" ||
+      user.role !== "Client" ||
+      String(user.status).toLowerCase() !== "active";
   } catch (reason) {
     $("app-status").textContent =
       "Consultation disponible. Gestion de ce compte indisponible : " +
@@ -63,6 +67,7 @@ $("edit-client-form").addEventListener("submit", async (event) => {
         version: managedSnapshot.version,
         reason: $("edit-reason").value,
         admin_pin: $("edit-admin-pin").value,
+        customer_pin: $("edit-customer-pin").value,
       }),
     });
     await loadProfile();
@@ -75,6 +80,7 @@ $("edit-client-form").addEventListener("submit", async (event) => {
     clientMutationBusy = false;
     submit.disabled = false;
     $("edit-admin-pin").value = "";
+    $("edit-customer-pin").value = "";
   }
 });
 $("partner-form").addEventListener("submit", async (event) => {
@@ -197,6 +203,7 @@ async function loadOperations() {
           row.id_wallet,
           row.card_type,
           row.brand,
+          row.currency,
           row.status,
           userLink(row),
         ];

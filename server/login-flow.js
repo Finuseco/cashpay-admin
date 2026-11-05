@@ -60,7 +60,7 @@ export function createLoginFlow({ pool, config, sendOtp, clock = Date.now }) {
   }
   async function readUser(id) {
     const { rows } = await pool.query(
-      "SELECT id,email,full_name,pin_hash,role::text AS role,status::text AS status FROM users WHERE id=$1 AND role::text='Admin' AND LOWER(TRIM(status::text))='active'",
+      "SELECT id,email,full_name,pin_hash,role::text AS role,status::text AS status FROM users WHERE id=$1 AND role::text IN ('Admin','AccountManager') AND LOWER(TRIM(status::text))='active'",
       [id],
     );
     return rows[0] || null;
@@ -71,7 +71,10 @@ export function createLoginFlow({ pool, config, sendOtp, clock = Date.now }) {
       throw failure("Demande expirée. Recommencez.", 410);
     if (!user || normalize(user.email) !== current.email || !user.pin_hash) {
       challenges.delete(current.id);
-      throw failure("Compte Admin actif et PIN configuré requis.", 403);
+      throw failure(
+        "Compte Admin ou Gestionnaire actif et PIN configuré requis.",
+        403,
+      );
     }
     return user;
   }
@@ -92,16 +95,19 @@ export function createLoginFlow({ pool, config, sendOtp, clock = Date.now }) {
     if (challenges.size >= 5000)
       throw failure("Trop de connexions en cours. Réessayez plus tard.", 503);
     const { rows } = await pool.query(
-      "SELECT id,email,full_name,pin_hash FROM users WHERE ((LOWER(TRIM(email))=$1 AND $2::boolean) OR (LOWER(TRIM(id_wallet))=$1 AND NOT $2::boolean)) AND role::text='Admin' AND LOWER(TRIM(status::text))='active' LIMIT 2",
+      "SELECT id,email,full_name,pin_hash FROM users WHERE ((LOWER(TRIM(email))=$1 AND $2::boolean) OR (LOWER(TRIM(id_wallet))=$1 AND NOT $2::boolean)) AND role::text IN ('Admin','AccountManager') AND LOWER(TRIM(status::text))='active' LIMIT 2",
       [identifier, isEmail],
     );
     if (rows.length !== 1 || !rows[0].pin_hash)
-      throw failure("Compte Admin actif et PIN configuré requis.", 403);
+      throw failure(
+        "Compte Admin ou Gestionnaire actif et PIN configuré requis.",
+        403,
+      );
     const user = rows[0];
     const email = normalize(user.email);
     if (!/^[^\s@]+@[^@\s]+\.[^@\s]+$/.test(email))
       throw failure(
-        "Ce compte Admin doit posséder une adresse e-mail valide pour recevoir l’OTP.",
+        "Ce compte doit posséder une adresse e-mail valide pour recevoir l’OTP.",
         403,
       );
     // Recheck after the asynchronous query so concurrent sends cannot bypass cooldown.

@@ -1,8 +1,26 @@
 import { readFile } from "node:fs/promises";
 import { smtpTransport, escape } from "./mailer.js";
 export function createWelcomeSender(config) {
-  return async ({ email, phone, full_name, id_wallet, pin }) => {
-    const text = `Bienvenue chez CashPay All, ${full_name}. Votre ID Wallet : ${id_wallet}. Votre PIN initial : ${pin}. Changez-le dès votre première connexion. Ne le partagez pas.`;
+  return async ({
+    email,
+    phone,
+    full_name,
+    id_wallet,
+    pin,
+    kind = "welcome",
+    price,
+    currency,
+    reference,
+    brand,
+    request_id,
+  }) => {
+    const cardOrder = kind === "card-order";
+    const subject = cardOrder
+      ? "Votre commande de carte CashPay All"
+      : "Votre inscription CashPay All";
+    const text = cardOrder
+      ? `CashPay All : carte physique ${brand.toUpperCase()} commandée. Tarif débité : ${price} ${currency}. Référence : ${reference}. Demande #${request_id} en attente de validation fournisseur. Aucun PIN ne vous sera demandé par message.`
+      : `Bienvenue chez CashPay All, ${full_name}. Votre ID Wallet : ${id_wallet}. Votre PIN initial : ${pin}. Changez-le dès votre première connexion. Ne le partagez pas.`;
     const results = {};
     const emailTask = (async () => {
       try {
@@ -12,7 +30,12 @@ export function createWelcomeSender(config) {
             "utf8",
           ),
           readFile(
-            new URL("./email-templates/welcome.html", import.meta.url),
+            new URL(
+              cardOrder
+                ? "./email-templates/card-order.html"
+                : "./email-templates/welcome.html",
+              import.meta.url,
+            ),
             "utf8",
           ),
         ]);
@@ -22,7 +45,12 @@ export function createWelcomeSender(config) {
           pin,
           loginUrl: config.mediaOrigin + "/login",
           signature: "L’équipe CashPay All",
-          subject: "Votre inscription CashPay All",
+          subject,
+          price,
+          currency,
+          reference,
+          brand,
+          requestId: request_id,
           year: new Date().getFullYear(),
         };
         const html = base
@@ -31,7 +59,7 @@ export function createWelcomeSender(config) {
         const result = await smtpTransport(config).sendMail({
           from: { name: "CashPay All", address: config.smtp.user },
           to: email,
-          subject: "Votre inscription CashPay All",
+          subject,
           text,
           html,
         });
@@ -126,4 +154,9 @@ export function createWelcomeSender(config) {
     await Promise.all([emailTask, smsTask, whatsappTask]);
     return results;
   };
+}
+
+export function createCardOrderSender(config) {
+  const send = createWelcomeSender(config);
+  return (receipt) => send({ ...receipt, kind: "card-order" });
 }

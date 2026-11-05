@@ -425,7 +425,7 @@ async function loadActivity() {
       state.kind === "transactions"
         ? ["Date", "Référence", "Type", "Montant", "Frais", "État", "Sens"]
         : state.kind === "cards"
-          ? ["Date", "ID", "Type", "Marque", "État"]
+          ? ["Date", "ID", "Type", "Marque", "Devise", "État"]
           : ["Date", "Référence", "Montant", "État"];
     const head = element("tr");
     for (const label of labels) head.append(element("th", label));
@@ -452,6 +452,7 @@ async function loadActivity() {
                 row.id,
                 row.card_type,
                 row.brand,
+                row.currency || "Non renseignée",
                 badge(row.status),
               ]
             : [
@@ -514,34 +515,53 @@ async function loadProfile() {
         element("dd", value || "Non renseigné", "col-sm-8"),
       );
     }
-    const quality = data.walletQuality;
-    $("user-wallet-warning").hidden =
-      Number(quality.wallets) > 0 && Number(quality.invalid_wallets) === 0;
-    $("user-wallet-warning").textContent =
-      Number(quality.wallets) === 0
-        ? "Aucun portefeuille enregistré."
-        : "Le format d’un portefeuille doit être vérifié.";
-    fillRows(
-      "user-balance-rows",
-      data.balances.map((row) => [
-        row.currency,
-        decimal(row.amount, row.currency),
-      ]),
-      2,
-    );
-    fillRows(
-      "user-deposit-rows",
-      data.deposits.map((row) => [
-        row.currency,
-        decimal(row.amount, row.currency),
-        number(row.count),
-      ]),
-      3,
-    );
+    const financial = data.financialAccess !== false;
+    $("user-financial-data").hidden = !financial;
+    document
+      .querySelectorAll("[data-kind]")
+      .forEach(
+        (button) =>
+          (button.hidden = !financial && button.dataset.kind !== "cards"),
+      );
+    if (!financial) {
+      state.kind = "cards";
+      document
+        .querySelectorAll("[data-kind]")
+        .forEach((button) =>
+          button.classList.toggle("active", button.dataset.kind === "cards"),
+        );
+    }
+    if (financial) {
+      const quality = data.walletQuality;
+      $("user-wallet-warning").hidden =
+        Number(quality.wallets) > 0 && Number(quality.invalid_wallets) === 0;
+      $("user-wallet-warning").textContent =
+        Number(quality.wallets) === 0
+          ? "Aucun portefeuille enregistré."
+          : "Le format d’un portefeuille doit être vérifié.";
+      fillRows(
+        "user-balance-rows",
+        data.balances.map((row) => [
+          row.currency,
+          decimal(row.amount, row.currency),
+        ]),
+        2,
+      );
+      fillRows(
+        "user-deposit-rows",
+        data.deposits.map((row) => [
+          row.currency,
+          decimal(row.amount, row.currency),
+          number(row.count),
+        ]),
+        3,
+      );
+    }
     $("app-status").textContent =
       "Fiche de consultation du compte : aucune modification ni approbation effectuée.";
     await loadActivity();
     await renderClientManagement(user);
+    await setupStaffActions(user);
   } catch (reason) {
     error(reason.message);
   }
@@ -549,6 +569,7 @@ async function loadProfile() {
 async function boot() {
   try {
     state.session = await api("/api/session");
+    staffMenus();
     $("admin-name").textContent =
       state.session.user.full_name || "Administrateur";
     document
@@ -575,7 +596,7 @@ async function boot() {
       for (const country of data.countries)
         select.add(new Option(country.name, country.code));
       $("app-status").textContent =
-        "Création réservée aux administrateurs. Aucun solde ni rôle privilégié attribué.";
+        "Inscription dans votre périmètre autorisé. Aucun solde initial ni rôle privilégié attribué.";
     } else if (location.pathname === "/users") {
       $("users-view").hidden = false;
       await loadUsers();

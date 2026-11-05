@@ -165,6 +165,26 @@
             <p id="app-status" class="text-muted" role="status">
               Chargement des données réelles…
             </p>
+            <section id="staff-task-summary" class="card mb-4" hidden>
+              <div class="card-body">
+                <h1 class="h4">Espace Gestionnaire de compte</h1>
+                <p id="staff-scope-label"></p>
+                <p>
+                  Vos tâches : inscrire les clients, corriger leurs données et
+                  les accompagner dans leurs commandes de cartes. Aucun accès
+                  aux soldes ou revenus.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="/users/new" class="btn btn-primary"
+                    >Inscrire un client</a
+                  ><a href="/users" class="btn btn-outline-primary"
+                    >Rechercher / mettre à jour</a
+                  ><a href="/cards" class="btn btn-outline-primary"
+                    >Demandes de cartes</a
+                  >
+                </div>
+              </div>
+            </section>
             <section id="create-user-view" hidden>
               <div class="page-header">
                 <h1 class="page-title">Inscrire un utilisateur</h1>
@@ -1228,8 +1248,7 @@
                       ></textarea>
                     </div>
                     <div class="form-group">
-                      <label for="edit-admin-pin"
-                        >Votre PIN administrateur</label
+                      <label for="edit-admin-pin">Votre PIN professionnel</label
                       ><input
                         id="edit-admin-pin"
                         class="form-control"
@@ -1239,6 +1258,23 @@
                         maxlength="6"
                         required
                       />
+                    </div>
+                    <div class="form-group" id="edit-customer-consent" hidden>
+                      <label for="edit-customer-pin"
+                        >PIN du titulaire — requis pour changer son e-mail ou
+                        téléphone</label
+                      ><input
+                        id="edit-customer-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="6"
+                      />
+                      <p>
+                        Le titulaire confirme lui-même ses nouvelles coordonnées
+                        avant de saisir son PIN.
+                      </p>
                     </div>
                     <button class="btn btn-primary">
                       Enregistrer les modifications
@@ -1267,7 +1303,7 @@
                       />
                     </div>
                     <div class="form-group">
-                      <label for="partner-pin">Votre PIN administrateur</label
+                      <label for="partner-pin">Votre PIN professionnel</label
                       ><input
                         id="partner-pin"
                         class="form-control"
@@ -1296,6 +1332,166 @@
                   <p id="partner-result" role="status"></p>
                 </div>
               </div>
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <button
+                  id="staff-role-open"
+                  class="btn btn-outline-warning"
+                  type="button"
+                  hidden
+                >
+                  Habilitations Gestionnaire</button
+                ><button
+                  id="assisted-card-open"
+                  class="btn btn-outline-primary"
+                  type="button"
+                  hidden
+                >
+                  Commander une carte avec le titulaire
+                </button>
+              </div>
+              <div id="staff-role-panel" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Nomination et périmètre du gestionnaire
+                  </h2>
+                  <p>
+                    Réservé à l’Admin. Le gestionnaire ne reçoit aucun accès aux
+                    soldes, transactions globales ou revenus.
+                  </p>
+                  <form id="staff-role-form">
+                    <div class="form-group">
+                      <label for="staff-role">Rôle</label
+                      ><select id="staff-role" class="form-control">
+                        <option value="AccountManager">
+                          Gestionnaire de compte
+                        </option>
+                        <option value="Client">
+                          Client — retirer les droits gestionnaire
+                        </option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-country"
+                        >Pays attribué (code ISO, ex. CD)</label
+                      ><input
+                        id="staff-country"
+                        class="form-control"
+                        maxlength="2"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-province"
+                        >Province attribuée (facultatif : sinon tout le
+                        pays)</label
+                      ><input
+                        id="staff-province"
+                        class="form-control"
+                        maxlength="150"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-pin">Votre PIN Admin</label
+                      ><input
+                        id="staff-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <button class="btn btn-warning">
+                      Enregistrer l’habilitation
+                    </button>
+                  </form>
+                  <p id="staff-role-result" role="status"></p>
+                </div>
+              </div>
+              <div id="assisted-card-panel" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Commande de carte physique assistée
+                  </h2>
+                  <p>
+                    Visa/Mastercard physique en USD ou EUR. Le tarif est
+                    confirmé avant débit. Aucun solde n’est affiché au
+                    gestionnaire. L’attribution et la livraison nécessitent le
+                    circuit de validation fournisseur ; une demande en attente
+                    n’est pas une carte activée.
+                  </p>
+                  <form id="card-quote-form">
+                    <div class="row">
+                      <div class="col-md-6 form-group">
+                        <label for="assisted-card-brand">Marque</label
+                        ><select id="assisted-card-brand" class="form-control">
+                          <option value="visa">Visa</option>
+                          <option value="mastercard">Mastercard</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="assisted-card-currency"
+                          >Devise de paiement</label
+                        ><select
+                          id="assisted-card-currency"
+                          class="form-control"
+                        >
+                          <option>USD</option>
+                          <option>EUR</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button class="btn btn-outline-primary">
+                      Afficher le tarif
+                    </button>
+                  </form>
+                  <form id="card-consent-form" hidden>
+                    <p id="assisted-card-price" class="text-info mt-3"></p>
+                    <div class="form-group">
+                      <label for="assisted-staff-pin"
+                        >Votre PIN professionnel</label
+                      ><input
+                        id="assisted-staff-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="assisted-customer-pin"
+                        >PIN du titulaire — à saisir par le client</label
+                      ><input
+                        id="assisted-customer-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label"
+                        ><input
+                          id="assisted-card-consent"
+                          type="checkbox"
+                          class="form-check-input"
+                          required
+                        />Le titulaire autorise le débit du tarif affiché pour
+                        cette commande.</label
+                      >
+                    </div>
+                    <button class="btn btn-success mt-3">
+                      Confirmer la commande et le débit
+                    </button>
+                  </form>
+                  <p id="assisted-card-result" role="status"></p>
+                </div>
+              </div>
               <div class="card mb-4">
                 <div class="card-body">
                   <div
@@ -1303,37 +1499,41 @@
                     class="d-flex align-items-center"
                   ></div>
                   <dl id="user-facts" class="row mt-4"></dl>
-                  <div
-                    id="user-wallet-warning"
-                    class="alert alert-warning"
-                    hidden
-                  ></div>
-                  <h2 class="card-title mt-4">
-                    Soldes actuels, sans conversion
-                  </h2>
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Devise</th>
-                          <th>Solde</th>
-                        </tr>
-                      </thead>
-                      <tbody id="user-balance-rows"></tbody>
-                    </table>
-                  </div>
-                  <h2 class="card-title mt-4">Dépôts confirmés du titulaire</h2>
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Devise</th>
-                          <th>Principal du registre</th>
-                          <th>Nombre</th>
-                        </tr>
-                      </thead>
-                      <tbody id="user-deposit-rows"></tbody>
-                    </table>
+                  <div id="user-financial-data" hidden>
+                    <div
+                      id="user-wallet-warning"
+                      class="alert alert-warning"
+                      hidden
+                    ></div>
+                    <h2 class="card-title mt-4">
+                      Soldes actuels, sans conversion
+                    </h2>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Solde</th>
+                          </tr>
+                        </thead>
+                        <tbody id="user-balance-rows"></tbody>
+                      </table>
+                    </div>
+                    <h2 class="card-title mt-4">
+                      Dépôts confirmés du titulaire
+                    </h2>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Principal du registre</th>
+                            <th>Nombre</th>
+                          </tr>
+                        </thead>
+                        <tbody id="user-deposit-rows"></tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1404,5 +1604,6 @@
     <script src="/app.js" defer></script>
     <script src="/registration.js" defer></script>
     <script src="/management.js" defer></script>
+    <script src="/staff.js" defer></script>
   </body>
 </html>

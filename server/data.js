@@ -1,3 +1,4 @@
+import { assertClientScope, clientFilter, deny } from "./staff-access.js";
 import { financialOverview } from "./finance.js";
 import countries from "./countries.json" with { type: "json" };
 import { readSnapshot, optionalSection } from "./db.js";
@@ -162,6 +163,7 @@ export async function findUsers(
   pool,
   { search = "", country = null, page = 0 },
   mediaOrigin,
+  actor,
 ) {
   return readSnapshot(pool, async (db) => {
     if (typeof search !== "string" || search.length > 100)
@@ -170,14 +172,18 @@ export async function findUsers(
       });
     const literal = search.trim().replace(/[\\%_]/g, "\\$&"),
       digits = search.replace(/\D/g, "");
+    const access = actor
+      ? clientFilter(actor, "u", 6)
+      : { sql: "TRUE", values: [] };
     const args = [
       JSON.stringify(aliases),
       country,
       `%${literal}%`,
       literal ? digits.slice(-9) : "",
       page * 25,
+      ...access.values,
     ];
-    const where = `($2::text IS NULL OR ${countrySql}=$2) AND ($3='%%' OR u.full_name ILIKE $3 OR u.email ILIKE $3 OR u.id_wallet ILIKE $3 OR u.phone ILIKE $3 OR ($4<>'' AND RIGHT(regexp_replace(COALESCE(u.phone,''),'[^0-9]','','g'),9)=$4))`;
+    const where = `(${access.sql}) AND ($2::text IS NULL OR ${countrySql}=$2) AND ($3='%%' OR u.full_name ILIKE $3 OR u.email ILIKE $3 OR u.id_wallet ILIKE $3 OR u.phone ILIKE $3 OR ($4<>'' AND RIGHT(regexp_replace(COALESCE(u.phone,''),'[^0-9]','','g'),9)=$4))`;
     const { rows } = await db.query(
       `SELECT u.id,u.full_name,u.id_wallet,u.phone,u.email,u.country,u.role::text AS role,u.status::text AS status,u.profile_photo,u.created_at FROM users u WHERE ${where} ORDER BY u.created_at DESC NULLS LAST,u.id DESC LIMIT 26 OFFSET $5`,
       args,
@@ -192,8 +198,9 @@ export async function findUsers(
     };
   });
 }
-export async function userProfile(pool, id, mediaOrigin) {
+export async function userProfile(pool, id, mediaOrigin, actor) {
   return readSnapshot(pool, async (db) => {
+    if (actor) await assertClientScope(db, actor, id);
     const {
       rows: [user],
     } = await db.query(
@@ -202,6 +209,14 @@ export async function userProfile(pool, id, mediaOrigin) {
     );
     if (!user)
       throw Object.assign(Error("Utilisateur introuvable."), { status: 404 });
+    if (actor?.role === "AccountManager")
+      return {
+        user: {
+          ...user,
+          profile_photo: avatarUrl(user.profile_photo, mediaOrigin),
+        },
+        financialAccess: false,
+      };
     const { rows: balances } = await db.query(
       `SELECT UPPER(TRIM(b.key)) AS currency,b.value AS amount FROM wallets w CROSS JOIN LATERAL jsonb_each_text(CASE WHEN jsonb_typeof(COALESCE(w.balances::jsonb,'{}'::jsonb))='object' THEN COALESCE(w.balances::jsonb,'{}'::jsonb) ELSE '{}'::jsonb END)b WHERE w.user_id=$1 ORDER BY b.key`,
       [id],
@@ -227,8 +242,12 @@ export async function userProfile(pool, id, mediaOrigin) {
     };
   });
 }
-export async function activity(pool, id, kind, page) {
+export async function activity(pool, id, kind, page, actor) {
   return readSnapshot(pool, async (db) => {
+    if (actor) {
+      if (actor.role === "AccountManager" && kind !== "cards") throw deny();
+      await assertClientScope(db, actor, id);
+    }
     const { rows: exists } = await db.query(
       "SELECT id FROM users WHERE id=$1",
       [id],
@@ -252,7 +271,7 @@ export async function activity(pool, id, kind, page) {
         async () =>
           (
             await db.query(
-              "SELECT id,status::text AS status,to_jsonb(cr)->>'card_type' AS card_type,to_jsonb(cr)->>'brand' AS brand,created_at FROM card_requests cr WHERE user_id=$1 ORDER BY created_at DESC,id DESC LIMIT 26 OFFSET $2",
+              "SELECT id,status::text AS status,to_jsonb(cr)->>'card_type' AS card_type,to_jsonb(cr)->>'brand' AS brand,to_jsonb(cr)->>'currency' AS currency,created_at FROM card_requests cr WHERE user_id=$1 ORDER BY created_at DESC,id DESC LIMIT 26 OFFSET $2",
               [id, page * 25],
             )
           ).rows,
