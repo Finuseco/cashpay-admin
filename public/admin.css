@@ -28,3 +28,4 @@
     flex-wrap: wrap;
   }
 }
+.img-lg.rounded-circle {object-fit:cover;}
