@@ -172,9 +172,52 @@
             </ul>
             <ul class="navbar-nav navbar-nav-right">
               <li class="nav-item">
-                <button id="logout" class="btn btn-outline-light btn-sm">
-                  <i class="mdi mdi-logout"></i> Déconnexion
-                </button>
+                <div class="dropdown">
+                  <button
+                    class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
+                    type="button"
+                    id="staff-profile-menu"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    aria-label="Menu de mon profil"
+                  >
+                    <img
+                      id="staff-avatar"
+                      class="rounded-circle"
+                      width="36"
+                      height="36"
+                      alt=""
+                      hidden
+                    />
+                    <i
+                      id="staff-avatar-fallback"
+                      class="mdi mdi-account-circle icon-md"
+                      aria-hidden="true"
+                    ></i>
+                    <span id="staff-last-name" class="mx-2">Mon profil</span>
+                  </button>
+                  <div
+                    class="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="staff-profile-menu"
+                  >
+                    <a class="dropdown-item" href="/profile"
+                      ><i
+                        class="mdi mdi-account-outline"
+                        aria-hidden="true"
+                      ></i>
+                      Mon profil</a
+                    >
+                    <a class="dropdown-item" href="/profile#profile-security"
+                      ><i class="mdi mdi-shield-check" aria-hidden="true"></i>
+                      Sécurité et PIN</a
+                    >
+                    <div class="dropdown-divider"></div>
+                    <button id="logout" class="dropdown-item" type="button">
+                      <i class="mdi mdi-logout" aria-hidden="true"></i>
+                      Déconnexion
+                    </button>
+                  </div>
+                </div>
               </li>
             </ul>
             <button
@@ -217,6 +260,147 @@
                   >
                 </div>
               </div>
+            </section>
+            <section id="staff-profile-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">
+                  <i class="mdi mdi-account-circle" aria-hidden="true"></i> Mon
+                  profil
+                </h1>
+              </div>
+              <div class="row">
+                <div class="col-lg-5 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Compte professionnel</h2>
+                      <img
+                        id="profile-photo"
+                        class="rounded-circle mb-3"
+                        width="100"
+                        height="100"
+                        alt="Ma photo de profil"
+                        hidden
+                      />
+                      <i
+                        id="profile-photo-fallback"
+                        class="mdi mdi-account-circle icon-lg"
+                        aria-hidden="true"
+                      ></i>
+                      <dl>
+                        <dt>Nom</dt>
+                        <dd id="profile-name"></dd>
+                        <dt>ID Wallet</dt>
+                        <dd id="profile-wallet"></dd>
+                        <dt>E-mail</dt>
+                        <dd id="profile-email"></dd>
+                        <dt>Rôle</dt>
+                        <dd id="profile-role"></dd>
+                      </dl>
+                      <form id="profile-avatar-form">
+                        <div class="form-group">
+                          <label for="profile-avatar-file"
+                            >Nouvelle photo (JPEG/PNG, 5 Mo maximum)</label
+                          ><input
+                            id="profile-avatar-file"
+                            type="file"
+                            accept="image/jpeg,image/png"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="profile-avatar-pin">PIN actuel</label
+                          ><input
+                            id="profile-avatar-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            maxlength="6"
+                            autocomplete="current-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <button class="btn btn-primary" type="submit">
+                          <i class="mdi mdi-camera" aria-hidden="true"></i>
+                          Modifier ma photo
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body" id="profile-security">
+                      <h2 class="card-title">
+                        <i class="mdi mdi-shield-check" aria-hidden="true"></i>
+                        Sécurité du compte
+                      </h2>
+                      <p>
+                        Connexion protégée par code e-mail puis PIN. Votre
+                        session utilise un cookie sécurisé et expire après
+                        inactivité.
+                      </p>
+                      <form id="profile-pin-form">
+                        <div class="form-group">
+                          <label for="profile-current-pin">PIN actuel</label
+                          ><input
+                            id="profile-current-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            maxlength="6"
+                            autocomplete="current-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="profile-new-pin"
+                            >Nouveau PIN (4 à 6 chiffres)</label
+                          ><input
+                            id="profile-new-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            minlength="4"
+                            maxlength="6"
+                            autocomplete="new-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="profile-confirm-pin"
+                            >Confirmer le nouveau PIN</label
+                          ><input
+                            id="profile-confirm-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            minlength="4"
+                            maxlength="6"
+                            autocomplete="new-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <p class="text-warning">
+                          Ce changement s’applique au PIN de votre compte
+                          CashPay, également utilisé dans les autres
+                          applications. Toutes vos sessions sur ce portail admin
+                          seront fermées ; reconnectez-vous avec le nouveau PIN.
+                        </p>
+                        <button class="btn btn-primary" type="submit">
+                          <i class="mdi mdi-lock-reset" aria-hidden="true"></i>
+                          Changer mon PIN
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p id="profile-status" role="status" aria-live="polite"></p>
             </section>
             <section id="communications-view" hidden>
               <div
@@ -2265,6 +2449,7 @@ L’équipe CashPay All</textarea>
     <script src="/assets/vendors/chart.js/chart.umd.js"></script>
     <script src="/assets/js/off-canvas.js"></script>
     <script src="/assets/js/misc.js"></script>
+    <script src="/profile.js" defer></script>
     <script src="/app.js" defer></script>
     <script src="/registration.js" defer></script>
     <script src="/management.js" defer></script>

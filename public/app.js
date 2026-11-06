@@ -582,8 +582,7 @@ async function boot() {
   try {
     state.session = await api("/api/session");
     staffMenus();
-    $("admin-name").textContent =
-      state.session.user.full_name || "Administrateur";
+    renderStaffIdentity(state.session.user);
     document
       .querySelectorAll(".sidebar .nav-link")
       .forEach((link) =>
@@ -594,7 +593,9 @@ async function boot() {
             link.getAttribute("href") === location.pathname,
           ),
       );
-    if (location.pathname === "/communications") {
+    if (location.pathname === "/profile") {
+      bootStaffProfile();
+    } else if (location.pathname === "/communications") {
       await bootCommunications();
     } else if (["/fees", "/exchange-rates"].includes(location.pathname)) {
       await bootPricing();

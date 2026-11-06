@@ -28,4 +28,32 @@
     flex-wrap: wrap;
   }
 }
-.img-lg.rounded-circle {object-fit:cover;}
+.img-lg.rounded-circle {
+  object-fit: cover;
+}
+
+/* Account identity uses the template dropdown on desktop and mobile. */
+#staff-avatar,
+#profile-photo {
+  object-fit: cover;
+  flex-shrink: 0;
+}
+#staff-profile-menu {
+  max-width: min(260px, 48vw);
+}
+#staff-last-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#staff-profile-view input {
+  max-width: 100%;
+}
+@media (max-width: 575.98px) {
+  #staff-profile-view .card-body {
+    padding: 1.25rem;
+  }
+  #staff-profile-view input {
+    font-size: 16px;
+  }
+}

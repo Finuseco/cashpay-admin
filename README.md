@@ -4,6 +4,7 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 
 ## Livraison actuelle
 
+- Profil du compte connecté : avatar et nom de famille dans le menu, photo modifiable et changement du PIN avec contrôle du PIN actuel, alertes et reconnexion. Voir [le contrat de sécurité](docs/staff-profile.md).
 - Connexion des comptes `Admin` et `AccountManager` actifs : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
 - Inscription Client en quatre étapes : identité, coordonnées, photo/signature/pièce et confirmation, avec PIN généré, notifications et certificat A4 historisé. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.

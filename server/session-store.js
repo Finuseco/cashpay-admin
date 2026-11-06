@@ -126,6 +126,11 @@ export class SessionStore {
     }
     return true;
   }
+  async revokeUser(userId) {
+    for (const [id, record] of this.entries)
+      if (record.userId === Number(userId)) this.entries.delete(id);
+    await this.save();
+  }
   async revoke(id) {
     this.entries.delete(id);
     await this.save();

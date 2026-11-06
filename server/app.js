@@ -1,3 +1,4 @@
+import { updateStaffProfile } from "./staff-profile.js";
 import {
   pricingCatalog,
   listFees,
@@ -121,6 +122,9 @@ export function createApp({
   );
   app.get("/app.js", (_req, res) =>
     res.sendFile(path.join(root, "public/app.js")),
+  );
+  app.get("/profile.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/profile.js")),
   );
   app.get("/login.js", (_req, res) =>
     res.sendFile(path.join(root, "public/login.js")),
@@ -337,6 +341,33 @@ export function createApp({
         assistedCards: true,
       },
     }),
+  );
+  app.post(
+    "/api/profile",
+    originGuard,
+    requireStaff,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        const result = await updateStaffProfile(
+          pool,
+          req.admin,
+          req.body,
+          media,
+        );
+        if (result.reauthenticate) {
+          await sessions.revokeUser(req.admin.id);
+          res.clearCookie(cookieName, {
+            ...sessionOptions(config),
+            maxAge: undefined,
+          });
+        }
+        res.json(result);
+      } catch (error) {
+        next(error);
+      }
+    },
   );
   app.post(
     "/api/logout",
@@ -872,6 +903,7 @@ export function createApp({
     [
       "/",
       "/dashboard",
+      "/profile",
       "/users",
       "/users/new",
       "/users/:id",
