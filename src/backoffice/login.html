@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Connexion — Cashpay Admin</title>
+    <link
+      rel="stylesheet"
+      href="/assets/vendors/mdi/css/materialdesignicons.min.css"
+    />
+    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css" />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="icon" href="/assets/images/cashpay-icon.png" />
+    <link rel="stylesheet" href="/assets/css/cashpay-login.css" />
+  </head>
+  <body class="cashpay-login">
+    <div class="container-scroller">
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
+        <div class="row w-100 m-0">
+          <div
+            class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg"
+          >
+            <div class="card col-lg-4 mx-auto login-card">
+              <div class="card-body px-4 px-md-5 py-5">
+                <a class="login-brand" href="/login" aria-label="CashPay Admin"
+                  ><img
+                    src="/assets/images/cashpay-logo.png"
+                    alt="CashPay"
+                    width="1860"
+                    height="558"
+                /></a>
+                <h1 class="card-title text-start mb-3">
+                  Connexion à l’administration
+                </h1>
+                <p class="text-muted">Votre espace professionnel CashPay.</p>
+                <ul
+                  class="nav nav-pills nav-fill mb-4"
+                  aria-label="Étapes de connexion"
+                >
+                  <li class="nav-item">
+                    <span id="step-email" class="nav-link active"
+                      ><i class="mdi mdi-account-outline" aria-hidden="true"></i
+                      ><span>Identifiant</span></span
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <span id="step-otp" class="nav-link"
+                      ><i class="mdi mdi-email-outline" aria-hidden="true"></i
+                      ><span>Code e-mail</span></span
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <span id="step-pin" class="nav-link"
+                      ><i class="mdi mdi-lock-outline" aria-hidden="true"></i
+                      ><span>PIN</span></span
+                    >
+                  </li>
+                </ul>
+                <p
+                  id="login-info"
+                  class="text-info login-status"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Vérification de la session…
+                </p>
+                <div
+                  id="login-progress"
+                  class="login-progress text-info"
+                  role="status"
+                  hidden
+                >
+                  <span
+                    class="spinner-border spinner-border-sm"
+                    aria-hidden="true"
+                  ></span>
+                  Vérification en cours…
+                </div>
+                <p id="login-error" class="text-danger" role="alert"></p>
+                <form id="email-form" hidden>
+                  <div class="form-group">
+                    <label for="email"
+                      >ID Wallet ou e-mail du compte professionnel</label
+                    ><input
+                      id="email"
+                      name="email"
+                      type="text"
+                      autocomplete="username"
+                      required
+                      maxlength="254"
+                      class="form-control p_input"
+                    />
+                  </div>
+                  <div class="d-grid gap-2">
+                    <button
+                      id="email-submit"
+                      type="submit"
+                      class="btn btn-primary btn-block enter-btn"
+                    >
+                      <i class="mdi mdi-eye-outline" aria-hidden="true"></i>
+                      Recevoir le code par e-mail
+                    </button>
+                  </div>
+                </form>
+                <form id="otp-form" hidden>
+                  <div class="form-group">
+                    <label for="otp"
+                      ><i
+                        class="mdi mdi-email-check-outline"
+                        aria-hidden="true"
+                      ></i>
+                      Code à six chiffres reçu par e-mail</label
+                    ><input
+                      id="otp"
+                      name="otp"
+                      inputmode="numeric"
+                      autocomplete="one-time-code"
+                      pattern="[0-9]{6}"
+                      maxlength="6"
+                      required
+                      class="form-control p_input"
+                      aria-describedby="login-info"
+                    />
+                  </div>
+                  <div class="d-grid gap-2">
+                    <button
+                      id="otp-submit"
+                      type="submit"
+                      class="btn btn-primary btn-block enter-btn"
+                    >
+                      <i class="mdi mdi-check" aria-hidden="true"></i> Vérifier
+                      le code</button
+                    ><button
+                      id="resend"
+                      type="button"
+                      class="btn btn-outline-primary"
+                    >
+                      <i class="mdi mdi-refresh" aria-hidden="true"></i>
+                      Renvoyer le code
+                    </button>
+                  </div>
+                </form>
+                <form id="pin-form" hidden>
+                  <div class="form-group">
+                    <label for="pin"
+                      ><i class="mdi mdi-lock-outline" aria-hidden="true"></i>
+                      PIN Cashpay existant</label
+                    ><input
+                      id="pin"
+                      name="pin"
+                      type="password"
+                      inputmode="numeric"
+                      autocomplete="off"
+                      pattern="[0-9]{4,6}"
+                      minlength="4"
+                      maxlength="6"
+                      required
+                      class="form-control p_input"
+                    />
+                  </div>
+                  <p class="text-muted">
+                    Ce PIN est celui de votre compte Cashpay. Il ne sera pas
+                    modifié.
+                  </p>
+                  <div class="d-grid gap-2">
+                    <button
+                      id="pin-submit"
+                      type="submit"
+                      class="btn btn-primary btn-block enter-btn"
+                    >
+                      <i class="mdi mdi-login" aria-hidden="true"></i> Accéder
+                      au tableau de bord
+                    </button>
+                  </div>
+                </form>
+                <button
+                  id="change-email"
+                  type="button"
+                  class="btn btn-link mt-3"
+                  hidden
+                >
+                  <i class="mdi mdi-swap-horizontal" aria-hidden="true"></i>
+                  Changer d’identifiant</button
+                ><button
+                  id="retry-status"
+                  type="button"
+                  class="btn btn-outline-light mt-3"
+                  hidden
+                >
+                  <i class="mdi mdi-refresh" aria-hidden="true"></i> Réessayer
+                </button>
+                <p class="text-muted mt-4">
+                  <i class="mdi mdi-shield-check" aria-hidden="true"></i> Accès
+                  réservé aux administrateurs et gestionnaires autorisés.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/login.js" defer></script>
+  </body>
+</html>

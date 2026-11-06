@@ -1,0 +1,2606 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cashpay Admin — Tableau de bord</title>
+    <link
+      rel="stylesheet"
+      href="/assets/vendors/mdi/css/materialdesignicons.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/assets/vendors/ti-icons/css/themify-icons.css"
+    />
+    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css" />
+    <link
+      rel="stylesheet"
+      href="/assets/vendors/font-awesome/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <link rel="stylesheet" href="/admin.css" />
+    <link rel="icon" href="/assets/images/cashpay-icon.png" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div
+          class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top"
+        >
+          <a class="sidebar-brand brand-logo" href="/dashboard"
+            ><img src="/assets/images/cashpay-logo.png" alt="CashPay" /></a
+          ><a class="sidebar-brand brand-logo-mini" href="/dashboard"
+            ><img src="/assets/images/cashpay-icon.png" alt=""
+          /></a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  <i
+                    class="mdi mdi-account-circle icon-md"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+                <div class="profile-name">
+                  <h5 class="mb-0 font-weight-normal" id="admin-name">
+                    Session…
+                  </h5>
+                  <span>Administration Cashpay</span>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Pilotage</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/dashboard"
+              ><span class="menu-icon"><i class="mdi mdi-speedometer"></i></span
+              ><span class="menu-title">Tableau de bord</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/transactions"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-bank-transfer"></i></span
+              ><span class="menu-title">Transactions</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/dashboard#finance-view"
+              ><span class="menu-icon"><i class="mdi mdi-wallet"></i></span
+              ><span class="menu-title">Trésorerie et frais</span></a
+            >
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Comptes et inscriptions</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/users"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-account-multiple"></i></span
+              ><span class="menu-title">Utilisateurs</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/users/new"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-account-plus"></i></span
+              ><span class="menu-title">Nouvelle inscription</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/registrations"
+              ><span class="menu-icon"><i class="mdi mdi-history"></i></span
+              ><span class="menu-title">Historique</span></a
+            >
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Services et commerce</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/service-requests"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-clipboard-check"></i></span
+              ><span class="menu-title">Demandes et consultations</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/cards"
+              ><span class="menu-icon"><i class="mdi mdi-credit-card"></i></span
+              ><span class="menu-title">Commandes de cartes</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/orders"
+              ><span class="menu-icon"><i class="mdi mdi-cart"></i></span
+              ><span class="menu-title">Ventes et commandes</span></a
+            >
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Configuration financière</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/fees"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-cash-multiple"></i></span
+              ><span class="menu-title">Frais des services</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/exchange-rates"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-swap-horizontal"></i></span
+              ><span class="menu-title">Taux de change</span></a
+            >
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Administration</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/roles"
+              ><span class="menu-icon"><i class="mdi mdi-account-key"></i></span
+              ><span class="menu-title">Rôles et habilitations</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/communications"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-email-multiple"></i></span
+              ><span class="menu-title">Communications</span></a
+            >
+          </li>
+        </ul>
+      </nav>
+      <div class="container-fluid page-body-wrapper">
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div
+            class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center"
+          >
+            <a class="navbar-brand brand-logo-mini" href="/dashboard"
+              ><img src="/assets/images/cashpay-icon.png" alt=""
+            /></a>
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button
+              class="navbar-toggler navbar-toggler align-self-center"
+              type="button"
+              data-toggle="minimize"
+              aria-label="Réduire le menu"
+            >
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <span class="nav-link">Cashpay Admin</span>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item">
+                <div class="dropdown">
+                  <button
+                    class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
+                    type="button"
+                    id="staff-profile-menu"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    aria-label="Menu de mon profil"
+                  >
+                    <img
+                      id="staff-avatar"
+                      class="rounded-circle"
+                      width="36"
+                      height="36"
+                      alt=""
+                      hidden
+                    />
+                    <i
+                      id="staff-avatar-fallback"
+                      class="mdi mdi-account-circle icon-md"
+                      aria-hidden="true"
+                    ></i>
+                    <span id="staff-last-name" class="mx-2">Mon profil</span>
+                  </button>
+                  <div
+                    class="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="staff-profile-menu"
+                  >
+                    <a class="dropdown-item" href="/profile"
+                      ><i
+                        class="mdi mdi-account-outline"
+                        aria-hidden="true"
+                      ></i>
+                      Mon profil</a
+                    >
+                    <a class="dropdown-item" href="/profile#profile-security"
+                      ><i class="mdi mdi-shield-check" aria-hidden="true"></i>
+                      Sécurité et PIN</a
+                    >
+                    <div class="dropdown-divider"></div>
+                    <button id="logout" class="dropdown-item" type="button">
+                      <i class="mdi mdi-logout" aria-hidden="true"></i>
+                      Déconnexion
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <button
+              class="navbar-toggler navbar-toggler-right d-lg-none align-self-center"
+              type="button"
+              data-toggle="offcanvas"
+              aria-label="Ouvrir le menu"
+            >
+              <span class="mdi mdi-format-line-spacing"></span>
+            </button>
+          </div>
+        </nav>
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div
+              id="app-error"
+              class="alert alert-danger"
+              role="alert"
+              hidden
+            ></div>
+            <p id="app-status" class="text-muted" role="status">
+              Chargement des données réelles…
+            </p>
+            <section id="staff-task-summary" class="card mb-4" hidden>
+              <div class="card-body">
+                <h1 class="h4">Espace Gestionnaire de compte</h1>
+                <p id="staff-scope-label"></p>
+                <p>
+                  Vos tâches : inscrire les clients, corriger leurs données et
+                  les accompagner dans leurs commandes de cartes. Aucun accès
+                  aux soldes ou revenus.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="/users/new" class="btn btn-primary"
+                    >Inscrire un client</a
+                  ><a href="/users" class="btn btn-outline-primary"
+                    >Rechercher / mettre à jour</a
+                  ><a href="/cards" class="btn btn-outline-primary"
+                    >Demandes de cartes</a
+                  >
+                </div>
+              </div>
+            </section>
+            <section id="service-requests-view" hidden>
+              <h1 class="page-title mb-3">
+                <i class="mdi mdi-clipboard-check" aria-hidden="true"></i>
+                Demandes et consultations
+              </h1>
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-5 form-group">
+                      <label for="service-kind">Service</label
+                      ><select id="service-kind" class="form-control">
+                        <option value="tv">Abonnements TV</option>
+                        <option value="claims">
+                          Western Union / MoneyGram / Ria
+                        </option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="service-status">Statut TV</label
+                      ><select id="service-status" class="form-control">
+                        <option value="pending">En attente</option>
+                        <option value="active">Activés</option>
+                        <option value="cancelled">Annulés / remboursés</option>
+                        <option value="all">Tous</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button
+                    id="service-refresh"
+                    class="btn btn-outline-primary"
+                    type="button"
+                  >
+                    <i class="mdi mdi-refresh" aria-hidden="true"></i>
+                    Actualiser
+                  </button>
+                  <p id="service-state" role="status" class="mt-3"></p>
+                  <p class="text-muted">
+                    TV : activer après confirmation réelle du fournisseur ;
+                    rejeter rembourse le paiement initial. Réclamations :
+                    l’approbation administrative autorise le traitement, sans
+                    crédit automatique du client.
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Demande / client</th>
+                          <th>Service et montant</th>
+                          <th>Traitement</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody id="service-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex mt-3">
+                    <button
+                      id="service-prev"
+                      class="btn btn-outline-light mr-2"
+                      type="button"
+                    >
+                      Précédent</button
+                    ><button
+                      id="service-next"
+                      class="btn btn-outline-light"
+                      type="button"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="service-action-panel" class="card mb-4" hidden>
+                <div class="card-body">
+                  <h2 id="service-action-title" class="card-title"></h2>
+                  <form id="service-action-form">
+                    <div class="form-group">
+                      <label for="service-provider-reference"
+                        >Confirmation réelle du fournisseur (activation
+                        TV)</label
+                      ><input
+                        id="service-provider-reference"
+                        class="form-control"
+                        maxlength="200"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="service-pin">Votre PIN Admin</label
+                      ><input
+                        id="service-pin"
+                        class="form-control"
+                        type="password"
+                        inputmode="numeric"
+                        pattern="[0-9]{4,6}"
+                        maxlength="6"
+                        required
+                        autocomplete="off"
+                      />
+                    </div>
+                    <button class="btn btn-primary" type="submit">
+                      <i class="mdi mdi-check" aria-hidden="true"></i> Confirmer
+                      l’action</button
+                    ><button
+                      id="service-action-cancel"
+                      class="btn btn-outline-light ml-2"
+                      type="button"
+                    >
+                      Annuler
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <div id="service-history-panel" class="card" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Journal des traitements et consultations
+                  </h2>
+                  <p class="text-muted">
+                    Dernières consultations, réservations, vérifications et
+                    décisions, avec l’agent et la date. Les pages suivantes
+                    parcourent aussi ce journal.
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Date / dossier</th>
+                          <th>Intervenant</th>
+                          <th>Action</th>
+                          <th>Détails</th>
+                        </tr>
+                      </thead>
+                      <tbody id="service-history-rows"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section id="staff-profile-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">
+                  <i class="mdi mdi-account-circle" aria-hidden="true"></i> Mon
+                  profil
+                </h1>
+              </div>
+              <div class="row">
+                <div class="col-lg-5 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Compte professionnel</h2>
+                      <img
+                        id="profile-photo"
+                        class="rounded-circle mb-3"
+                        width="100"
+                        height="100"
+                        alt="Ma photo de profil"
+                        hidden
+                      />
+                      <i
+                        id="profile-photo-fallback"
+                        class="mdi mdi-account-circle icon-lg"
+                        aria-hidden="true"
+                      ></i>
+                      <dl>
+                        <dt>Nom</dt>
+                        <dd id="profile-name"></dd>
+                        <dt>ID Wallet</dt>
+                        <dd id="profile-wallet"></dd>
+                        <dt>E-mail</dt>
+                        <dd id="profile-email"></dd>
+                        <dt>Rôle</dt>
+                        <dd id="profile-role"></dd>
+                      </dl>
+                      <form id="profile-avatar-form">
+                        <div class="form-group">
+                          <label for="profile-avatar-file"
+                            >Nouvelle photo (JPEG/PNG, 5 Mo maximum)</label
+                          ><input
+                            id="profile-avatar-file"
+                            type="file"
+                            accept="image/jpeg,image/png"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="profile-avatar-pin">PIN actuel</label
+                          ><input
+                            id="profile-avatar-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            maxlength="6"
+                            autocomplete="current-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <button class="btn btn-primary" type="submit">
+                          <i class="mdi mdi-camera" aria-hidden="true"></i>
+                          Modifier ma photo
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body" id="profile-security">
+                      <h2 class="card-title">
+                        <i class="mdi mdi-shield-check" aria-hidden="true"></i>
+                        Sécurité du compte
+                      </h2>
+                      <p>
+                        Connexion protégée par code e-mail puis PIN. Votre
+                        session utilise un cookie sécurisé et expire après
+                        inactivité.
+                      </p>
+                      <form id="profile-pin-form">
+                        <div class="form-group">
+                          <label for="profile-current-pin">PIN actuel</label
+                          ><input
+                            id="profile-current-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            maxlength="6"
+                            autocomplete="current-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="profile-new-pin"
+                            >Nouveau PIN (4 à 6 chiffres)</label
+                          ><input
+                            id="profile-new-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            minlength="4"
+                            maxlength="6"
+                            autocomplete="new-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="profile-confirm-pin"
+                            >Confirmer le nouveau PIN</label
+                          ><input
+                            id="profile-confirm-pin"
+                            type="password"
+                            inputmode="numeric"
+                            pattern="[0-9]{4,6}"
+                            minlength="4"
+                            maxlength="6"
+                            autocomplete="new-password"
+                            class="form-control"
+                            required
+                          />
+                        </div>
+                        <p class="text-warning">
+                          Ce changement s’applique au PIN de votre compte
+                          CashPay, également utilisé dans les autres
+                          applications. Toutes vos sessions sur ce portail admin
+                          seront fermées ; reconnectez-vous avec le nouveau PIN.
+                        </p>
+                        <button class="btn btn-primary" type="submit">
+                          <i class="mdi mdi-lock-reset" aria-hidden="true"></i>
+                          Changer mon PIN
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p id="profile-status" role="status" aria-live="polite"></p>
+            </section>
+            <section id="communications-view" hidden>
+              <div
+                class="d-flex flex-wrap justify-content-between align-items-center mb-3"
+              >
+                <h1 class="h3">Communications CashPay</h1>
+                <button
+                  id="comm-refresh"
+                  class="btn btn-outline-primary"
+                  type="button"
+                >
+                  <i class="mdi mdi-refresh" aria-hidden="true"></i> Actualiser
+                  le suivi
+                </button>
+              </div>
+              <p id="comm-status" role="status"></p>
+              <div class="row">
+                <div class="col-xl-7 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Composer une communication</h2>
+                      <form id="comm-form">
+                        <div class="row">
+                          <div class="col-md-4 form-group">
+                            <label for="comm-channel">Canal</label
+                            ><select id="comm-channel" class="form-control">
+                              <option value="email">E-mail</option>
+                              <option value="sms">SMS</option>
+                              <option value="whatsapp">WhatsApp</option>
+                            </select>
+                          </div>
+                          <div class="col-md-4 form-group">
+                            <label for="comm-country">Pays</label
+                            ><select
+                              id="comm-country"
+                              class="form-control"
+                            ></select>
+                          </div>
+                          <div class="col-md-4 form-group">
+                            <label for="comm-role">Rôle</label
+                            ><select
+                              id="comm-role"
+                              class="form-control"
+                            ></select>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-5 form-group">
+                            <label for="comm-user-status"
+                              >État des comptes</label
+                            ><select
+                              id="comm-user-status"
+                              class="form-control"
+                            ></select>
+                          </div>
+                          <div class="col-md-7 form-group">
+                            <label for="comm-wallets"
+                              >ID Wallet ciblés (facultatif)</label
+                            ><textarea
+                              id="comm-wallets"
+                              class="form-control"
+                              rows="2"
+                              placeholder="Séparés par une virgule ou un retour à la ligne"
+                            ></textarea>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="comm-subject">Objet / titre</label
+                          ><input
+                            id="comm-subject"
+                            class="form-control"
+                            maxlength="180"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="comm-format">Présentation</label
+                          ><select id="comm-format" class="form-control">
+                            <option value="text">Message classique</option>
+                            <option value="html">
+                              E-mail HTML avec aperçu visuel
+                            </option>
+                          </select>
+                        </div>
+                        <div
+                          id="comm-tokens"
+                          class="d-flex flex-wrap gap-2 mb-3"
+                          aria-label="Raccourcis de personnalisation"
+                        ></div>
+                        <div id="comm-html-tools" hidden>
+                          <div class="d-flex flex-wrap gap-2 mb-2">
+                            <button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="paragraph"
+                              type="button"
+                            >
+                              Paragraphe</button
+                            ><button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="title"
+                              type="button"
+                            >
+                              Titre</button
+                            ><button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="bold"
+                              type="button"
+                            >
+                              Gras</button
+                            ><button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="button"
+                              type="button"
+                            >
+                              Bouton CashPay
+                            </button>
+                          </div>
+                          <div class="form-group">
+                            <label for="comm-import-html"
+                              >Importer un fichier HTML</label
+                            ><input
+                              id="comm-import-html"
+                              class="form-control"
+                              type="file"
+                              accept=".html,.htm,text/html"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="comm-image"
+                              >Importer une image JPEG, PNG ou WebP (6 Mo
+                              maximum)</label
+                            ><input
+                              id="comm-image"
+                              class="form-control"
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="comm-message"
+                            >Message — les raccourcis sont remplacés séparément
+                            pour chaque destinataire</label
+                          ><textarea
+                            id="comm-message"
+                            class="form-control"
+                            rows="10"
+                            maxlength="50000"
+                            required
+                          >
+Bonjour {{first_name}},
+
+Découvrez les services CashPay depuis votre espace.
+Votre ID Wallet : {{wallet_id}}.
+
+L’équipe CashPay All</textarea>
+                        </div>
+                        <p class="text-muted">
+                          Les e-mails reprennent automatiquement le logo,
+                          l’en-tête et le pied de page CashPay. Les soldes sont
+                          ceux relevés lors de l’aperçu.
+                        </p>
+                        <button
+                          id="comm-preview-button"
+                          class="btn btn-primary"
+                          type="submit"
+                        >
+                          <i class="mdi mdi-eye-outline" aria-hidden="true"></i>
+                          Préparer et vérifier l’aperçu
+                        </button>
+                      </form>
+                      <div id="comm-approval" class="mt-4" hidden>
+                        <h3 class="h5">Confirmer la communication</h3>
+                        <p id="comm-audience"></p>
+                        <div id="comm-previews"></div>
+                        <form id="comm-start-form">
+                          <div class="form-group">
+                            <label for="comm-pin">Votre PIN Admin</label
+                            ><input
+                              id="comm-pin"
+                              class="form-control"
+                              type="password"
+                              inputmode="numeric"
+                              maxlength="6"
+                              autocomplete="off"
+                              required
+                            />
+                          </div>
+                          <button
+                            id="comm-send"
+                            class="btn btn-warning"
+                            type="submit"
+                          >
+                            <i class="mdi mdi-check" aria-hidden="true"></i>
+                            Confirmer la mise en file d’envoi
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-5 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Historique et suivi</h2>
+                      <p>
+                        « Accepté » signifie accepté par le fournisseur, pas
+                        confirmé lu. Un résultat incertain n’est jamais relancé
+                        automatiquement.
+                      </p>
+                      <div id="comm-history"></div>
+                      <div class="d-flex gap-2">
+                        <button
+                          id="comm-prev"
+                          class="btn btn-sm btn-outline-primary"
+                          type="button"
+                        >
+                          <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                          Précédent</button
+                        ><button
+                          id="comm-next"
+                          class="btn btn-sm btn-outline-primary"
+                          type="button"
+                        >
+                          <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                          Suivant
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="comm-detail" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 id="comm-detail-title" class="card-title"></h2>
+                  <p id="comm-detail-status" role="status"></p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Compte</th>
+                          <th>Destination</th>
+                          <th>État</th>
+                          <th>Essais</th>
+                          <th>Résultat fournisseur</th>
+                        </tr>
+                      </thead>
+                      <tbody id="comm-deliveries"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex gap-2 mt-3">
+                    <button
+                      id="comm-detail-prev"
+                      class="btn btn-sm btn-outline-primary"
+                      type="button"
+                    >
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                      Précédent</button
+                    ><button
+                      id="comm-detail-next"
+                      class="btn btn-sm btn-outline-primary"
+                      type="button"
+                    >
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                      Suivant
+                    </button>
+                  </div>
+                  <form id="comm-control-form" class="mt-3">
+                    <div class="form-group">
+                      <label for="comm-control-pin"
+                        >PIN Admin pour agir sur cette file</label
+                      ><input
+                        id="comm-control-pin"
+                        class="form-control"
+                        type="password"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <button
+                      class="btn btn-outline-warning mr-2"
+                      value="retry_failed"
+                      type="submit"
+                    >
+                      Relancer uniquement les échecs certains</button
+                    ><button
+                      class="btn btn-outline-danger"
+                      value="cancel"
+                      type="submit"
+                    >
+                      <i class="mdi mdi-close" aria-hidden="true"></i> Annuler
+                      les envois en attente
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </section>
+            <section id="pricing-view" hidden>
+              <div class="page-header">
+                <h1 id="pricing-title" class="page-title"></h1>
+                <button id="pricing-new" class="btn btn-primary">
+                  <i class="mdi mdi-plus" aria-hidden="true"></i> Ajouter une
+                  règle
+                </button>
+              </div>
+              <p>
+                Paramètres réels de Cashpay. Chaque changement exige votre PIN
+                Admin et un motif. Les opérations déjà réalisées ne sont pas
+                recalculées.
+              </p>
+              <form id="pricing-filter" class="row">
+                <div class="col-md-4 form-group">
+                  <label for="pricing-filter-country">Pays</label
+                  ><select
+                    id="pricing-filter-country"
+                    class="form-control"
+                  ></select>
+                </div>
+                <div class="col-md-4 form-group">
+                  <label for="pricing-search"
+                    >Rechercher un code ou une devise</label
+                  ><input
+                    id="pricing-search"
+                    class="form-control"
+                    maxlength="100"
+                  />
+                </div>
+                <div id="pricing-active-filter" class="col-md-4">
+                  <div class="form-group">
+                    <label for="pricing-filter-active">État</label
+                    ><select id="pricing-filter-active" class="form-control">
+                      <option value="">Tous</option>
+                      <option value="true">Actifs</option>
+                      <option value="false">Inactifs</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 form-group">
+                  <button class="btn btn-outline-primary">
+                    <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                    Rechercher
+                  </button>
+                </div>
+              </form>
+              <p id="pricing-status" role="status"></p>
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead id="pricing-head"></thead>
+                      <tbody id="pricing-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <button id="pricing-prev" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                      Précédent</button
+                    ><span id="pricing-page"></span
+                    ><button id="pricing-next" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="pricing-editor" class="card mb-4" hidden>
+                <div class="card-body">
+                  <h2 id="pricing-editor-title" class="card-title"></h2>
+                  <form id="pricing-form">
+                    <div class="row">
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-country">Pays / code attribué</label
+                        ><select
+                          id="pricing-country"
+                          class="form-control"
+                        ></select>
+                      </div>
+                      <div class="col-12">
+                        <p id="pricing-country-code" class="text-info"></p>
+                      </div>
+                    </div>
+                    <div class="row pricing-fee-only">
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-type">Code du frais</label
+                        ><input
+                          id="pricing-type"
+                          class="form-control"
+                          list="pricing-types"
+                          maxlength="64"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-currency">Devise</label
+                        ><input
+                          id="pricing-currency"
+                          class="form-control"
+                          list="pricing-currencies"
+                          maxlength="16"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label class="form-check-label mt-4"
+                          ><input id="pricing-active" type="checkbox" checked />
+                          Barème actif</label
+                        >
+                      </div>
+                    </div>
+                    <div class="row pricing-rate-only">
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-from">Devise de départ</label
+                        ><input
+                          id="pricing-from"
+                          class="form-control"
+                          list="pricing-currencies"
+                          maxlength="16"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-to">Devise d’arrivée</label
+                        ><input
+                          id="pricing-to"
+                          class="form-control"
+                          list="pricing-currencies"
+                          maxlength="16"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-rate"
+                          >Taux : 1 départ = ce montant à l’arrivée</label
+                        ><input
+                          id="pricing-rate"
+                          class="form-control"
+                          inputmode="decimal"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <p id="pricing-policy" class="text-info"></p>
+                    <div class="pricing-fee-only">
+                      <h3 class="h6">Paliers</h3>
+                      <p>
+                        Minimum et maximum inclus ; maximum 0 = sans plafond. À
+                        une borne commune, le premier palier s’applique. Un seul
+                        palier 0 → 0 définit un tarif uniforme.
+                      </p>
+                      <div id="pricing-tiers"></div>
+                      <button
+                        id="pricing-add-tier"
+                        type="button"
+                        class="btn btn-outline-primary btn-sm mb-3"
+                      >
+                        <i class="mdi mdi-plus" aria-hidden="true"></i> Ajouter
+                        un palier
+                      </button>
+                    </div>
+                    <div class="form-group">
+                      <label for="pricing-reason"
+                        >Motif de l’ajout ou modification</label
+                      ><textarea
+                        id="pricing-reason"
+                        class="form-control"
+                        minlength="10"
+                        maxlength="500"
+                        required
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="pricing-pin">Votre PIN Admin</label
+                      ><input
+                        id="pricing-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <button id="pricing-save" class="btn btn-primary">
+                      <i class="mdi mdi-pencil" aria-hidden="true"></i>
+                      Enregistrer</button
+                    ><button
+                      id="pricing-cancel"
+                      type="button"
+                      class="btn btn-outline-light"
+                    >
+                      <i class="mdi mdi-close" aria-hidden="true"></i> Fermer
+                    </button>
+                  </form>
+                  <p id="pricing-result" class="mt-3" role="status"></p>
+                </div>
+              </div>
+              <div class="card mb-4" id="pricing-preview">
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Vérifier le barème demandé et son origine
+                  </h2>
+                  <p>
+                    Le service qui facture doit appeler ce code. Un nouveau code
+                    seul ne crée pas un service.
+                  </p>
+                  <form id="pricing-preview-form" class="row">
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-country">Pays du client</label
+                      ><select
+                        id="pricing-preview-country"
+                        class="form-control"
+                      ></select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-type">Code du frais</label
+                      ><input
+                        id="pricing-preview-type"
+                        class="form-control"
+                        list="pricing-types"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-currency">Devise</label
+                      ><input
+                        id="pricing-preview-currency"
+                        class="form-control"
+                        list="pricing-currencies"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-amount"
+                        >Montant de l’opération</label
+                      ><input
+                        id="pricing-preview-amount"
+                        class="form-control"
+                        inputmode="decimal"
+                        required
+                      />
+                    </div>
+                    <div class="col-12">
+                      <button class="btn btn-outline-primary">Calculer</button>
+                    </div>
+                  </form>
+                  <p id="pricing-preview-result" class="mt-3" role="status"></p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Historique des paramètres financiers
+                  </h2>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Admin</th>
+                          <th>Action</th>
+                          <th>Pays</th>
+                          <th>Code / paire</th>
+                          <th>Motif</th>
+                        </tr>
+                      </thead>
+                      <tbody id="pricing-history-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <button
+                      id="pricing-history-prev"
+                      class="btn btn-outline-primary"
+                    >
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                      Précédent</button
+                    ><span id="pricing-history-page"></span
+                    ><button
+                      id="pricing-history-next"
+                      class="btn btn-outline-primary"
+                    >
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <datalist id="pricing-types"></datalist
+              ><datalist id="pricing-currencies"></datalist>
+            </section>
+            <section id="create-user-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">Inscrire un utilisateur</h1>
+                <a class="btn btn-outline-light" href="/registrations"
+                  >Historique des inscriptions</a
+                >
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <p>
+                    Le PIN est généré par le serveur et envoyé au titulaire
+                    après enregistrement. Ne saisissez pas votre PIN
+                    administrateur dans les données du client.
+                  </p>
+                  <ul
+                    class="nav nav-pills nav-fill mb-4"
+                    id="registration-steps"
+                  >
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-0"
+                        >1. Identité</span
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-1"
+                        >2. Coordonnées</span
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-2"
+                        >3. Photos et pièces</span
+                      >
+                    </li>
+                    <li class="nav-item">
+                      <span class="nav-link" id="registration-step-label-3"
+                        >4. Confirmation</span
+                      >
+                    </li>
+                  </ul>
+                  <form id="create-user-form" novalidate>
+                    <fieldset data-registration-step="0">
+                      <legend class="h5">Identité du titulaire</legend>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label for="create-first_name">Prénom</label
+                          ><input
+                            id="create-first_name"
+                            class="form-control"
+                            name="first_name"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-last_name">Nom</label
+                          ><input
+                            id="create-last_name"
+                            class="form-control"
+                            name="last_name"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-middle_name">Postnom</label
+                          ><input
+                            id="create-middle_name"
+                            class="form-control"
+                            name="middle_name"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-birth_date"
+                            >Date de naissance</label
+                          ><input
+                            id="create-birth_date"
+                            class="form-control"
+                            name="birth_date"
+                            type="date"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-birth_place"
+                            >Lieu de naissance</label
+                          ><input
+                            id="create-birth_place"
+                            class="form-control"
+                            name="birth_place"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-nationality">Nationalité</label
+                          ><input
+                            id="create-nationality"
+                            class="form-control"
+                            name="nationality"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-profession">Profession</label
+                          ><input
+                            id="create-profession"
+                            class="form-control"
+                            name="profession"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-gender">Genre</label
+                          ><select
+                            id="create-gender"
+                            name="gender"
+                            class="form-control"
+                          >
+                            <option value="">Non renseigné</option>
+                            <option value="male">Homme</option>
+                            <option value="female">Femme</option>
+                            <option value="other">Autre</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-marital_status">État civil</label
+                          ><select
+                            id="create-marital_status"
+                            name="marital_status"
+                            class="form-control"
+                          >
+                            <option value="">Non renseigné</option>
+                            <option value="single">Célibataire</option>
+                            <option value="married">Marié(e)</option>
+                            <option value="divorced">Divorcé(e)</option>
+                            <option value="widowed">Veuf / veuve</option>
+                          </select>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset data-registration-step="1" hidden>
+                      <legend class="h5">Coordonnées et compte</legend>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label for="create-email">E-mail du titulaire</label
+                          ><input
+                            id="create-email"
+                            class="form-control"
+                            name="email"
+                            type="email"
+                            maxlength="254"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-phone"
+                            >Téléphone international (+243…)</label
+                          ><input
+                            id="create-phone"
+                            class="form-control"
+                            name="phone"
+                            type="tel"
+                            maxlength="16"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-province">Province</label
+                          ><input
+                            id="create-province"
+                            class="form-control"
+                            name="province"
+                            type="text"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-city">Ville</label
+                          ><input
+                            id="create-city"
+                            class="form-control"
+                            name="city"
+                            type="text"
+                            maxlength="150"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-address">Adresse</label
+                          ><input
+                            id="create-address"
+                            class="form-control"
+                            name="address"
+                            type="text"
+                            maxlength="500"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-country">Pays de résidence</label
+                          ><select
+                            id="create-country"
+                            name="countryCode"
+                            class="form-control"
+                            required
+                          ></select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-account_type">Type de compte</label
+                          ><select
+                            id="create-account_type"
+                            name="account_type"
+                            class="form-control"
+                          >
+                            <option value="national">National</option>
+                            <option value="diaspora">Diaspora</option>
+                          </select>
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset data-registration-step="2" hidden>
+                      <legend class="h5">
+                        Photo, signature et document d’identité
+                      </legend>
+                      <p>
+                        Images JPEG/PNG et pièces PDF, maximum 5 Mo par fichier.
+                        Les documents sont réservés aux administrateurs
+                        authentifiés.
+                      </p>
+                      <div class="row">
+                        <div class="col-md-6 form-group">
+                          <label for="upload-avatar"
+                            >Photo du profil (requis)</label
+                          ><input
+                            id="upload-avatar"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png"
+                            data-media-purpose="avatar"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="user"
+                              data-media-purpose="avatar"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-avatar"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="upload-signature"
+                            >Signature du titulaire (requis)</label
+                          ><input
+                            id="upload-signature"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png"
+                            data-media-purpose="signature"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="environment"
+                              data-media-purpose="signature"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-signature"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="upload-id_front"
+                            >Pièce d’identité — recto (requis)</label
+                          ><input
+                            id="upload-id_front"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png,application/pdf"
+                            data-media-purpose="id_front"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="environment"
+                              data-media-purpose="id_front"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-id_front"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="upload-id_back"
+                            >Pièce d’identité — verso</label
+                          ><input
+                            id="upload-id_back"
+                            class="form-control"
+                            type="file"
+                            accept="image/jpeg,image/png,application/pdf"
+                            data-media-purpose="id_back"
+                          /><label class="btn btn-outline-primary btn-sm mt-2"
+                            >Prendre une photo<input
+                              type="file"
+                              accept="image/jpeg,image/png"
+                              capture="environment"
+                              data-media-purpose="id_back"
+                              class="d-none"
+                          /></label>
+                          <div
+                            id="preview-id_back"
+                            class="mt-2"
+                            role="status"
+                          ></div>
+                        </div>
+                      </div>
+                      <details>
+                        <summary>Dessiner la signature du titulaire</summary>
+                        <canvas
+                          id="signature-canvas"
+                          width="600"
+                          height="180"
+                          class="border w-100"
+                          style="
+                            touch-action: none;
+                            max-width: 600px;
+                            background: white;
+                          "
+                        ></canvas>
+                        <div>
+                          <button
+                            type="button"
+                            id="signature-clear"
+                            class="btn btn-outline-light btn-sm"
+                          >
+                            Effacer</button
+                          ><button
+                            type="button"
+                            id="signature-use"
+                            class="btn btn-outline-primary btn-sm"
+                          >
+                            Utiliser cette signature
+                          </button>
+                        </div>
+                      </details>
+                      <div class="row mt-4">
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_type">Type de pièce</label
+                          ><select
+                            id="create-id_type"
+                            name="id_type"
+                            class="form-control"
+                          >
+                            <option value="national_id">Carte nationale</option>
+                            <option value="passport">Passeport</option>
+                            <option value="voter_card">Carte d’électeur</option>
+                            <option value="driving_license">
+                              Permis de conduire
+                            </option>
+                            <option value="residence_permit">
+                              Titre de séjour
+                            </option>
+                            <option value="other">Autre</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_number">Numéro de pièce</label
+                          ><input
+                            id="create-id_number"
+                            class="form-control"
+                            name="id_number"
+                            type="text"
+                            maxlength="100"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_issued_date"
+                            >Date de délivrance</label
+                          ><input
+                            id="create-id_issued_date"
+                            class="form-control"
+                            name="id_issued_date"
+                            type="date"
+                            maxlength="150"
+                          />
+                        </div>
+                        <div class="col-md-6 form-group">
+                          <label for="create-id_expiry_date"
+                            >Date d’expiration</label
+                          ><input
+                            id="create-id_expiry_date"
+                            class="form-control"
+                            name="id_expiry_date"
+                            type="date"
+                            maxlength="150"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
+                    <fieldset data-registration-step="3" hidden>
+                      <legend class="h5">Vérification avant création</legend>
+                      <dl id="registration-review" class="row"></dl>
+                      <p>
+                        Le compte et son portefeuille seront créés ensemble. Les
+                        pièces recueillies ne déclenchent pas une validation
+                        automatique de l’identité.
+                      </p>
+                      <div class="form-check">
+                        <label class="form-check-label"
+                          ><input
+                            id="create-confirm"
+                            type="checkbox"
+                            class="form-check-input"
+                            required
+                          />J’ai contrôlé les informations avec le titulaire et
+                          recueilli son accord.</label
+                        >
+                      </div>
+                    </fieldset>
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                      <button
+                        id="registration-prev"
+                        type="button"
+                        class="btn btn-outline-light"
+                      >
+                        <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                        Précédent</button
+                      ><button
+                        id="registration-next"
+                        type="button"
+                        class="btn btn-primary"
+                      >
+                        <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                        Suivant</button
+                      ><button
+                        id="create-user-submit"
+                        type="submit"
+                        class="btn btn-success"
+                        hidden
+                      >
+                        <i class="mdi mdi-send" aria-hidden="true"></i> Créer et
+                        envoyer les codes
+                      </button>
+                    </div>
+                  </form>
+                  <div
+                    id="create-user-result"
+                    class="mt-3"
+                    role="status"
+                    aria-live="polite"
+                  ></div>
+                </div>
+              </div>
+            </section>
+            <section id="dashboard-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">Tableau de bord Cashpay</h1>
+                <a href="/users/new" class="btn btn-outline-primary"
+                  ><i class="mdi mdi-account-plus"></i> Créer un compte</a
+                >
+                <button id="refresh" class="btn btn-primary">
+                  <i class="mdi mdi-refresh"></i> Actualiser
+                </button>
+              </div>
+              <p class="text-muted">
+                Comptes de tous les rôles, dépôts confirmés et soldes
+                comptables. Aucune conversion entre devises.
+              </p>
+              <div class="form-group">
+                <label for="country-filter">Pays déclaré du titulaire</label
+                ><select id="country-filter" class="form-control">
+                  <option value="">Tous les pays</option>
+                </select>
+              </div>
+              <div class="row" id="metric-cards"></div>
+              <div
+                id="balance-warning"
+                class="alert alert-warning"
+                hidden
+              ></div>
+              <div class="row">
+                <div class="col-md-4 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">
+                        Comptes avec et sans dépôt confirmé
+                      </h2>
+                      <canvas
+                        id="deposit-chart"
+                        height="250"
+                        role="img"
+                        aria-label="Répartition des titulaires avec et sans dépôt"
+                      ></canvas>
+                      <p class="text-muted mt-3">
+                        Un solde positif ne remplace pas l’historique de dépôt.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-8 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">
+                        Inscriptions et premiers déposants
+                      </h2>
+                      <p class="text-muted">Douze mois, calendrier UTC.</p>
+                      <canvas
+                        id="registration-chart"
+                        height="140"
+                        role="img"
+                        aria-label="Inscriptions et premiers dépôts par mois"
+                      ></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-7 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Dépôts du registre par devise</h2>
+                      <label for="volume-currency">Devise de l’écriture</label
+                      ><select
+                        id="volume-currency"
+                        class="form-control mb-3"
+                      ></select
+                      ><canvas
+                        id="volume-chart"
+                        height="180"
+                        role="img"
+                        aria-label="Volume mensuel des dépôts dans la devise sélectionnée"
+                      ></canvas>
+                      <p class="text-muted mt-3">
+                        Principal enregistré, sans frais ajoutés et sans
+                        conversion.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-5 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">
+                        Commandes et demandes de cartes
+                      </h2>
+                      <div id="queue-summary"></div>
+                      <p class="text-muted mt-3">
+                        Détails disponibles depuis la fiche de chaque
+                        utilisateur. Aucune approbation n’est simulée.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Soldes des devises non nulles</h2>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Devise</th>
+                              <th>Somme des soldes</th>
+                              <th>Titulaires non nuls</th>
+                            </tr>
+                          </thead>
+                          <tbody id="currency-rows"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Pays représentés</h2>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>Pays</th>
+                              <th>Comptes</th>
+                              <th>Actifs</th>
+                              <th>Déposants</th>
+                            </tr>
+                          </thead>
+                          <tbody id="country-rows"></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="finance-view" hidden>
+                <div class="page-header">
+                  <h2 class="page-title">
+                    Trésorerie et activités financières
+                  </h2>
+                </div>
+                <p class="text-muted">
+                  Soldes internes et frais bruts du registre. Les soldes
+                  clients, commissions, crypto et comptes de flotte restent
+                  séparés. Ils ne représentent pas un bénéfice net ni une
+                  liquidité bancaire ou blockchain vérifiée. Les comptes globaux
+                  GBL restent inclus dans la trésorerie, même avec un filtre
+                  pays.
+                </p>
+                <div id="finance-warnings" role="status"></div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">Frais inscrits sur douze mois</h3>
+                    <label for="fee-currency">Devise du graphique</label
+                    ><select
+                      class="form-control mb-3"
+                      id="fee-currency"
+                    ></select
+                    ><canvas id="fee-chart" height="100"></canvas>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Frais bruts des transactions terminées
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Opérations</th>
+                            <th>Frais cumulés</th>
+                            <th>Frais du mois</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-fee-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Équivalents indicatifs des frais en USD / EUR
+                    </h3>
+                    <p class="text-muted">
+                      Taux directs de la configuration Cashpay : pays
+                      sélectionné, puis GBL. Sans taux, aucun équivalent
+                      inventé. Ces estimations ne constituent pas une opération
+                      de change.
+                    </p>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise source</th>
+                            <th>Frais source</th>
+                            <th>Devise cible</th>
+                            <th>Taux configuré</th>
+                            <th>Équivalent</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-mirror-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">Registre des soldes crypto</h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Actif / réseau</th>
+                            <th>Solde enregistré</th>
+                            <th>Comptes</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-crypto-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Commissions enregistrées des agents
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Solde de commissions</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-commission-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Soldes des comptes de flotte et de revenus référencés
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Solde interne</th>
+                            <th>Qualité</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-treasury-total-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">Comptes de flotte et de revenus</h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>ID Wallet</th>
+                            <th>Rattachements</th>
+                            <th>Devise</th>
+                            <th>Solde interne</th>
+                            <th>État</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-account-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Toutes les activités du registre par type et statut
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Type</th>
+                            <th>Statut</th>
+                            <th>Devise</th>
+                            <th>Opérations</th>
+                            <th>Montant principal</th>
+                            <th>Frais inscrits</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-flow-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      Opérations terminées entre pays distincts
+                    </h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Pays émetteur</th>
+                            <th>Pays bénéficiaire</th>
+                            <th>Devise</th>
+                            <th>Opérations</th>
+                            <th>Montant</th>
+                            <th>Frais</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-corridor-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="card-title">50 dernières opérations</h3>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Date</th>
+                            <th>Référence</th>
+                            <th>Type</th>
+                            <th>Statut</th>
+                            <th>Devise</th>
+                            <th>Montant</th>
+                            <th>Frais</th>
+                            <th>Pays émetteur</th>
+                            <th>Pays bénéficiaire</th>
+                          </tr>
+                        </thead>
+                        <tbody id="finance-recent-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section id="users-view" hidden>
+              <div class="page-header">
+                <h1 class="page-title">Utilisateurs</h1>
+              </div>
+              <form id="user-search" class="mb-4">
+                <label for="search"
+                  >Rechercher par téléphone, ID Wallet, nom ou e-mail</label
+                >
+                <div class="input-group">
+                  <input
+                    id="search"
+                    class="form-control"
+                    maxlength="100"
+                    placeholder="Numéro ou identifiant"
+                  /><button class="btn btn-primary" type="submit">
+                    <i class="mdi mdi-magnify"></i> Rechercher
+                  </button>
+                </div>
+              </form>
+              <div class="card">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Utilisateur</th>
+                          <th>ID Wallet</th>
+                          <th>Téléphone</th>
+                          <th>Pays</th>
+                          <th>Rôle</th>
+                          <th>État</th>
+                          <th>Fiche</th>
+                        </tr>
+                      </thead>
+                      <tbody id="user-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-4">
+                    <button id="users-prev" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                      Précédent</button
+                    ><span id="users-page"></span
+                    ><button id="users-next" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section id="operations-view" hidden>
+              <div class="page-header">
+                <h1 id="operations-title" class="page-title"></h1>
+              </div>
+              <form id="operations-search" class="row mb-3">
+                <div class="col-md-6 form-group">
+                  <label for="operations-query"
+                    >Nom, téléphone, ID Wallet ou référence</label
+                  ><input
+                    id="operations-query"
+                    class="form-control"
+                    maxlength="100"
+                  />
+                </div>
+                <div class="col-md-4 form-group">
+                  <label for="operations-status"
+                    >Statut exact (facultatif)</label
+                  ><input
+                    id="operations-status"
+                    class="form-control"
+                    maxlength="50"
+                  />
+                </div>
+                <div class="col-md-2 form-group d-flex align-items-end">
+                  <button class="btn btn-primary">
+                    <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                    Rechercher
+                  </button>
+                </div>
+              </form>
+              <div class="card">
+                <div class="card-body">
+                  <p id="operations-info" role="status"></p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead id="operations-head"></thead>
+                      <tbody id="operations-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <button
+                      id="operations-prev"
+                      class="btn btn-outline-primary"
+                    >
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                      Précédent</button
+                    ><span id="operations-page"></span
+                    ><button
+                      id="operations-next"
+                      class="btn btn-outline-primary"
+                    >
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="order-detail" class="card mt-3" hidden>
+                <div class="card-body">
+                  <h2 id="order-detail-title" class="card-title"></h2>
+                  <div id="order-detail-items"></div>
+                </div>
+              </div>
+            </section>
+            <section id="user-view" hidden>
+              <a href="/users" class="btn btn-outline-light mb-4"
+                ><i class="mdi mdi-arrow-left"></i> Retour aux utilisateurs</a
+              >
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <a id="user-certificate" class="btn btn-outline-primary"
+                  >Certificat A4</a
+                ><button
+                  id="edit-client-open"
+                  class="btn btn-primary"
+                  type="button"
+                  hidden
+                >
+                  <i class="mdi mdi-pencil" aria-hidden="true"></i> Modifier les
+                  données</button
+                ><button
+                  id="partner-open"
+                  class="btn btn-outline-success"
+                  type="button"
+                  hidden
+                >
+                  Activer comme partenaire
+                </button>
+              </div>
+              <div id="client-management" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">Mise à jour du client</h2>
+                  <form id="edit-client-form">
+                    <div class="row">
+                      <div class="col-md-6 form-group">
+                        <label for="edit-first_name">Prénom</label
+                        ><input
+                          id="edit-first_name"
+                          name="first_name"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-last_name">Nom</label
+                        ><input
+                          id="edit-last_name"
+                          name="last_name"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-middle_name">Postnom</label
+                        ><input
+                          id="edit-middle_name"
+                          name="middle_name"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-email">E-mail</label
+                        ><input
+                          id="edit-email"
+                          name="email"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-phone">Téléphone international</label
+                        ><input
+                          id="edit-phone"
+                          name="phone"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-province">Province</label
+                        ><input
+                          id="edit-province"
+                          name="province"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-city">Ville</label
+                        ><input
+                          id="edit-city"
+                          name="city"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-address">Adresse</label
+                        ><input
+                          id="edit-address"
+                          name="address"
+                          class="form-control"
+                          maxlength="500"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-nationality">Nationalité</label
+                        ><input
+                          id="edit-nationality"
+                          name="nationality"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="edit-profession">Profession</label
+                        ><input
+                          id="edit-profession"
+                          name="profession"
+                          class="form-control"
+                          maxlength="254"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="edit-reason">Motif de modification</label
+                      ><textarea
+                        id="edit-reason"
+                        class="form-control"
+                        minlength="10"
+                        maxlength="500"
+                        required
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="edit-admin-pin">Votre PIN professionnel</label
+                      ><input
+                        id="edit-admin-pin"
+                        class="form-control"
+                        type="password"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="6"
+                        required
+                      />
+                    </div>
+                    <div class="form-group" id="edit-customer-consent" hidden>
+                      <label for="edit-customer-pin"
+                        >PIN du titulaire — requis pour changer son e-mail ou
+                        téléphone</label
+                      ><input
+                        id="edit-customer-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="6"
+                      />
+                      <p>
+                        Le titulaire confirme lui-même ses nouvelles coordonnées
+                        avant de saisir son PIN.
+                      </p>
+                    </div>
+                    <button class="btn btn-primary">
+                      <i class="mdi mdi-pencil" aria-hidden="true"></i>
+                      Enregistrer les modifications
+                    </button>
+                  </form>
+                  <p id="edit-client-result" role="status"></p>
+                </div>
+              </div>
+              <div id="partner-panel" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">Passage au compte Partenaire B2B</h2>
+                  <p>
+                    Cette opération attribue le rôle PartnerB2B et crée les
+                    identifiants API selon le mécanisme Cashpay existant. Aucun
+                    solde n’est modifié.
+                  </p>
+                  <form id="partner-form">
+                    <div class="form-group">
+                      <label for="partner-company">Nom de l’entreprise</label
+                      ><input
+                        id="partner-company"
+                        class="form-control"
+                        minlength="2"
+                        maxlength="150"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="partner-pin">Votre PIN professionnel</label
+                      ><input
+                        id="partner-pin"
+                        class="form-control"
+                        type="password"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label"
+                        ><input
+                          id="partner-confirm"
+                          type="checkbox"
+                          class="form-check-input"
+                          required
+                        />Je confirme l’attribution de l’accès partenaire à ce
+                        client.</label
+                      >
+                    </div>
+                    <button class="btn btn-success mt-3">
+                      Activer le partenariat
+                    </button>
+                  </form>
+                  <p id="partner-result" role="status"></p>
+                </div>
+              </div>
+              <div class="d-flex flex-wrap gap-2 mb-3">
+                <button
+                  id="staff-role-open"
+                  class="btn btn-outline-warning"
+                  type="button"
+                  hidden
+                >
+                  <i class="mdi mdi-pencil" aria-hidden="true"></i> Nommer ou
+                  modifier le rôle</button
+                ><button
+                  id="assisted-card-open"
+                  class="btn btn-outline-primary"
+                  type="button"
+                  hidden
+                >
+                  Commander une carte avec le titulaire
+                </button>
+              </div>
+              <div id="staff-role-panel" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Nomination et périmètre de l’utilisateur
+                  </h2>
+                  <p>
+                    Réservé à l’Admin. La nomination est journalisée, avec
+                    alerte dans le compte et e-mails au titulaire et à
+                    l’administrateur. Aucun solde n’est modifié.
+                  </p>
+                  <form id="staff-role-form">
+                    <div class="form-group">
+                      <label for="staff-role">Rôle</label
+                      ><select id="staff-role" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-country"
+                        >Pays attribué (code ISO, ex. CD)</label
+                      ><select id="staff-country" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-province"
+                        >Province attribuée (facultatif : sinon tout le
+                        pays)</label
+                      ><input
+                        id="staff-province"
+                        class="form-control"
+                        maxlength="150"
+                      />
+                    </div>
+                    <div id="staff-agent-fields" class="form-group" hidden>
+                      <label for="staff-agent-days"
+                        >Accès Agent offert (jours, sans débit)</label
+                      ><input
+                        id="staff-agent-days"
+                        class="form-control"
+                        type="number"
+                        min="1"
+                        max="365"
+                        value="30"
+                      /><small
+                        >La nomination active son espace Agent. Un accès
+                        existant plus long est conservé.</small
+                      >
+                    </div>
+                    <div id="staff-partner-fields" class="form-group" hidden>
+                      <label for="staff-company"
+                        >Nom de la société partenaire</label
+                      ><input
+                        id="staff-company"
+                        class="form-control"
+                        maxlength="150"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-reason">Motif de la nomination</label
+                      ><textarea
+                        id="staff-reason"
+                        class="form-control"
+                        minlength="10"
+                        maxlength="500"
+                        required
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-pin">Votre PIN Admin</label
+                      ><input
+                        id="staff-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <button class="btn btn-warning">
+                      <i class="mdi mdi-pencil" aria-hidden="true"></i>
+                      Enregistrer l’habilitation
+                    </button>
+                  </form>
+                  <p id="staff-role-result" role="status"></p>
+                </div>
+              </div>
+              <div id="assisted-card-panel" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Commande de carte physique assistée
+                  </h2>
+                  <p>
+                    Visa/Mastercard physique en USD ou EUR. Le tarif est
+                    confirmé avant débit. Aucun solde n’est affiché au
+                    gestionnaire. L’attribution et la livraison nécessitent le
+                    circuit de validation fournisseur ; une demande en attente
+                    n’est pas une carte activée.
+                  </p>
+                  <form id="card-quote-form">
+                    <div class="row">
+                      <div class="col-md-6 form-group">
+                        <label for="assisted-card-brand">Marque</label
+                        ><select id="assisted-card-brand" class="form-control">
+                          <option value="visa">Visa</option>
+                          <option value="mastercard">Mastercard</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="assisted-card-currency"
+                          >Devise de paiement</label
+                        ><select
+                          id="assisted-card-currency"
+                          class="form-control"
+                        >
+                          <option>USD</option>
+                          <option>EUR</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button class="btn btn-outline-primary">
+                      <i class="mdi mdi-eye-outline" aria-hidden="true"></i>
+                      Afficher le tarif
+                    </button>
+                  </form>
+                  <form id="card-consent-form" hidden>
+                    <p id="assisted-card-price" class="text-info mt-3"></p>
+                    <div class="form-group">
+                      <label for="assisted-staff-pin"
+                        >Votre PIN professionnel</label
+                      ><input
+                        id="assisted-staff-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="assisted-customer-pin"
+                        >PIN du titulaire — à saisir par le client</label
+                      ><input
+                        id="assisted-customer-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label"
+                        ><input
+                          id="assisted-card-consent"
+                          type="checkbox"
+                          class="form-check-input"
+                          required
+                        />Le titulaire autorise le débit du tarif affiché pour
+                        cette commande.</label
+                      >
+                    </div>
+                    <button class="btn btn-success mt-3">
+                      <i class="mdi mdi-check" aria-hidden="true"></i> Confirmer
+                      la commande et le débit
+                    </button>
+                  </form>
+                  <p id="assisted-card-result" role="status"></p>
+                </div>
+              </div>
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div
+                    id="user-heading"
+                    class="d-flex align-items-center"
+                  ></div>
+                  <dl id="user-facts" class="row mt-4"></dl>
+                  <div id="user-financial-data" hidden>
+                    <div
+                      id="user-wallet-warning"
+                      class="alert alert-warning"
+                      hidden
+                    ></div>
+                    <h2 class="card-title mt-4">
+                      Soldes actuels, sans conversion
+                    </h2>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Solde</th>
+                          </tr>
+                        </thead>
+                        <tbody id="user-balance-rows"></tbody>
+                      </table>
+                    </div>
+                    <h2 class="card-title mt-4">
+                      Dépôts confirmés du titulaire
+                    </h2>
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Devise</th>
+                            <th>Principal du registre</th>
+                            <th>Nombre</th>
+                          </tr>
+                        </thead>
+                        <tbody id="user-deposit-rows"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <h2 class="card-title">Activités du compte</h2>
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                      <button
+                        class="nav-link active"
+                        data-kind="transactions"
+                        type="button"
+                      >
+                        Transactions
+                      </button>
+                    </li>
+                    <li class="nav-item">
+                      <button class="nav-link" data-kind="cards" type="button">
+                        Demandes de cartes
+                      </button>
+                    </li>
+                    <li class="nav-item">
+                      <button class="nav-link" data-kind="orders" type="button">
+                        Commandes
+                      </button>
+                    </li>
+                  </ul>
+                  <div class="table-responsive mt-3">
+                    <table class="table">
+                      <thead id="activity-head"></thead>
+                      <tbody id="activity-rows"></tbody>
+                    </table>
+                  </div>
+                  <p id="activity-status" role="status"></p>
+                  <div class="d-flex justify-content-between mt-4">
+                    <button id="activity-prev" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
+                      Précédent</button
+                    ><span id="activity-page"></span
+                    ><button id="activity-next" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+          <footer class="footer">
+            <div
+              class="d-sm-flex justify-content-center justify-content-sm-between"
+            >
+              <span class="text-muted"
+                >Cashpay Admin — gestion de la base partagée</span
+              ><span class="text-muted"
+                >Template Corona ·
+                <a href="https://www.bootstrapdash.com/" rel="noopener"
+                  >BootstrapDash</a
+                ></span
+              >
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="/assets/vendors/chart.js/chart.umd.js"></script>
+    <script src="/assets/js/off-canvas.js"></script>
+    <script src="/assets/js/misc.js"></script>
+    <script src="/service-requests.js" defer></script>
+    <script src="/profile.js" defer></script>
+    <script src="/app.js" defer></script>
+    <script src="/registration.js" defer></script>
+    <script src="/management.js" defer></script>
+    <script src="/staff.js" defer></script>
+    <script src="/pricing.js" defer></script>
+    <script src="/communications.js" defer></script>
+  </body>
+</html>

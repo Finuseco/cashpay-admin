@@ -1,0 +1,116 @@
+/* Layout adjustments for the existing Corona authentication components. */
+.cashpay-login .full-page-wrapper {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.cashpay-login .auth.login-bg {
+  padding: 2rem 1rem;
+  justify-content: center;
+}
+.cashpay-login .login-card {
+  width: 100%;
+  max-width: 460px;
+  flex: 0 1 460px;
+  padding: 0;
+}
+.cashpay-login .login-brand {
+  display: block;
+  margin-bottom: 2rem;
+}
+.cashpay-login .login-brand img {
+  display: block;
+  width: 200px;
+  max-width: 75%;
+  height: auto;
+}
+.cashpay-login h1.card-title {
+  font-size: 1.35rem;
+  line-height: 1.4;
+}
+.cashpay-login .nav-pills {
+  gap: 0.35rem;
+}
+.cashpay-login .nav-pills .nav-link {
+  padding: 0.7rem 0.35rem;
+  font-size: 0.8rem;
+  border-radius: 0.25rem;
+}
+.cashpay-login .nav-pills .nav-link i {
+  display: block;
+  font-size: 1.35rem;
+  margin-bottom: 0.25rem;
+}
+.cashpay-login .form-control {
+  min-height: 48px;
+}
+.cashpay-login .btn {
+  min-height: 44px;
+  white-space: normal;
+  line-height: 1.4;
+}
+.cashpay-login .btn i {
+  margin-right: 0.4rem;
+}
+.cashpay-login #otp {
+  letter-spacing: 0.35em;
+  font-variant-numeric: tabular-nums;
+}
+.cashpay-login .login-status {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.cashpay-login .login-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+.cashpay-login [hidden] {
+  display: none !important;
+}
+.cashpay-login form:not([hidden]) {
+  animation: login-enter 0.18s ease-out;
+}
+.cashpay-login .btn:focus-visible,
+.cashpay-login input:focus-visible {
+  outline: 2px solid #0090e7;
+  outline-offset: 3px;
+}
+@keyframes login-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 575.98px) {
+  .cashpay-login .auth.login-bg {
+    padding: 1rem 0.75rem;
+  }
+  .cashpay-login .login-card .card-body {
+    padding: 1.75rem 1.25rem !important;
+  }
+  .cashpay-login .login-brand {
+    margin-bottom: 1.5rem;
+  }
+  .cashpay-login .login-brand img {
+    width: 175px;
+  }
+  .cashpay-login .form-control {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cashpay-login form:not([hidden]),
+  .cashpay-login .spinner-border {
+    animation: none;
+  }
+}
+
+.cashpay-login .text-muted {
+  color: #adb4c6 !important;
+}
