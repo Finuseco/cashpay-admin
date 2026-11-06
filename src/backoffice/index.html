@@ -129,6 +129,22 @@
               ><span class="menu-title">Taux de change</span></a
             >
           </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Administration</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/roles"
+              ><span class="menu-icon"><i class="mdi mdi-account-key"></i></span
+              ><span class="menu-title">Rôles et habilitations</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/communications"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-email-multiple"></i></span
+              ><span class="menu-title">Communications</span></a
+            >
+          </li>
         </ul>
       </nav>
       <div class="container-fluid page-body-wrapper">
@@ -199,6 +215,296 @@
                   ><a href="/cards" class="btn btn-outline-primary"
                     >Demandes de cartes</a
                   >
+                </div>
+              </div>
+            </section>
+            <section id="communications-view" hidden>
+              <div
+                class="d-flex flex-wrap justify-content-between align-items-center mb-3"
+              >
+                <h1 class="h3">Communications CashPay</h1>
+                <button
+                  id="comm-refresh"
+                  class="btn btn-outline-primary"
+                  type="button"
+                >
+                  Actualiser le suivi
+                </button>
+              </div>
+              <p id="comm-status" role="status"></p>
+              <div class="row">
+                <div class="col-xl-7 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Composer une communication</h2>
+                      <form id="comm-form">
+                        <div class="row">
+                          <div class="col-md-4 form-group">
+                            <label for="comm-channel">Canal</label
+                            ><select id="comm-channel" class="form-control">
+                              <option value="email">E-mail</option>
+                              <option value="sms">SMS</option>
+                              <option value="whatsapp">WhatsApp</option>
+                            </select>
+                          </div>
+                          <div class="col-md-4 form-group">
+                            <label for="comm-country">Pays</label
+                            ><select
+                              id="comm-country"
+                              class="form-control"
+                            ></select>
+                          </div>
+                          <div class="col-md-4 form-group">
+                            <label for="comm-role">Rôle</label
+                            ><select
+                              id="comm-role"
+                              class="form-control"
+                            ></select>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-5 form-group">
+                            <label for="comm-user-status"
+                              >État des comptes</label
+                            ><select
+                              id="comm-user-status"
+                              class="form-control"
+                            ></select>
+                          </div>
+                          <div class="col-md-7 form-group">
+                            <label for="comm-wallets"
+                              >ID Wallet ciblés (facultatif)</label
+                            ><textarea
+                              id="comm-wallets"
+                              class="form-control"
+                              rows="2"
+                              placeholder="Séparés par une virgule ou un retour à la ligne"
+                            ></textarea>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="comm-subject">Objet / titre</label
+                          ><input
+                            id="comm-subject"
+                            class="form-control"
+                            maxlength="180"
+                            required
+                          />
+                        </div>
+                        <div class="form-group">
+                          <label for="comm-format">Présentation</label
+                          ><select id="comm-format" class="form-control">
+                            <option value="text">Message classique</option>
+                            <option value="html">
+                              E-mail HTML avec aperçu visuel
+                            </option>
+                          </select>
+                        </div>
+                        <div
+                          id="comm-tokens"
+                          class="d-flex flex-wrap gap-2 mb-3"
+                          aria-label="Raccourcis de personnalisation"
+                        ></div>
+                        <div id="comm-html-tools" hidden>
+                          <div class="d-flex flex-wrap gap-2 mb-2">
+                            <button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="paragraph"
+                              type="button"
+                            >
+                              Paragraphe</button
+                            ><button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="title"
+                              type="button"
+                            >
+                              Titre</button
+                            ><button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="bold"
+                              type="button"
+                            >
+                              Gras</button
+                            ><button
+                              class="btn btn-sm btn-outline-primary"
+                              data-html="button"
+                              type="button"
+                            >
+                              Bouton CashPay
+                            </button>
+                          </div>
+                          <div class="form-group">
+                            <label for="comm-import-html"
+                              >Importer un fichier HTML</label
+                            ><input
+                              id="comm-import-html"
+                              class="form-control"
+                              type="file"
+                              accept=".html,.htm,text/html"
+                            />
+                          </div>
+                          <div class="form-group">
+                            <label for="comm-image"
+                              >Importer une image JPEG, PNG ou WebP (6 Mo
+                              maximum)</label
+                            ><input
+                              id="comm-image"
+                              class="form-control"
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                            />
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="comm-message"
+                            >Message — les raccourcis sont remplacés séparément
+                            pour chaque destinataire</label
+                          ><textarea
+                            id="comm-message"
+                            class="form-control"
+                            rows="10"
+                            maxlength="50000"
+                            required
+                          >
+Bonjour {{first_name}},
+
+Découvrez les services CashPay depuis votre espace.
+Votre ID Wallet : {{wallet_id}}.
+
+L’équipe CashPay All</textarea>
+                        </div>
+                        <p class="text-muted">
+                          Les e-mails reprennent automatiquement le logo,
+                          l’en-tête et le pied de page CashPay. Les soldes sont
+                          ceux relevés lors de l’aperçu.
+                        </p>
+                        <button
+                          id="comm-preview-button"
+                          class="btn btn-primary"
+                          type="submit"
+                        >
+                          Préparer et vérifier l’aperçu
+                        </button>
+                      </form>
+                      <div id="comm-approval" class="mt-4" hidden>
+                        <h3 class="h5">Confirmer la communication</h3>
+                        <p id="comm-audience"></p>
+                        <div id="comm-previews"></div>
+                        <form id="comm-start-form">
+                          <div class="form-group">
+                            <label for="comm-pin">Votre PIN Admin</label
+                            ><input
+                              id="comm-pin"
+                              class="form-control"
+                              type="password"
+                              inputmode="numeric"
+                              maxlength="6"
+                              autocomplete="off"
+                              required
+                            />
+                          </div>
+                          <button
+                            id="comm-send"
+                            class="btn btn-warning"
+                            type="submit"
+                          >
+                            Confirmer la mise en file d’envoi
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-5 grid-margin">
+                  <div class="card">
+                    <div class="card-body">
+                      <h2 class="card-title">Historique et suivi</h2>
+                      <p>
+                        « Accepté » signifie accepté par le fournisseur, pas
+                        confirmé lu. Un résultat incertain n’est jamais relancé
+                        automatiquement.
+                      </p>
+                      <div id="comm-history"></div>
+                      <div class="d-flex gap-2">
+                        <button
+                          id="comm-prev"
+                          class="btn btn-sm btn-outline-primary"
+                          type="button"
+                        >
+                          Précédent</button
+                        ><button
+                          id="comm-next"
+                          class="btn btn-sm btn-outline-primary"
+                          type="button"
+                        >
+                          Suivant
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="comm-detail" class="card mb-3" hidden>
+                <div class="card-body">
+                  <h2 id="comm-detail-title" class="card-title"></h2>
+                  <p id="comm-detail-status" role="status"></p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Compte</th>
+                          <th>Destination</th>
+                          <th>État</th>
+                          <th>Essais</th>
+                          <th>Résultat fournisseur</th>
+                        </tr>
+                      </thead>
+                      <tbody id="comm-deliveries"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex gap-2 mt-3">
+                    <button
+                      id="comm-detail-prev"
+                      class="btn btn-sm btn-outline-primary"
+                      type="button"
+                    >
+                      Précédent</button
+                    ><button
+                      id="comm-detail-next"
+                      class="btn btn-sm btn-outline-primary"
+                      type="button"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                  <form id="comm-control-form" class="mt-3">
+                    <div class="form-group">
+                      <label for="comm-control-pin"
+                        >PIN Admin pour agir sur cette file</label
+                      ><input
+                        id="comm-control-pin"
+                        class="form-control"
+                        type="password"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <button
+                      class="btn btn-outline-warning mr-2"
+                      value="retry_failed"
+                      type="submit"
+                    >
+                      Relancer uniquement les échecs certains</button
+                    ><button
+                      class="btn btn-outline-danger"
+                      value="cancel"
+                      type="submit"
+                    >
+                      Annuler les envois en attente
+                    </button>
+                  </form>
                 </div>
               </div>
             </section>
@@ -1638,7 +1944,7 @@
                   type="button"
                   hidden
                 >
-                  Habilitations Gestionnaire</button
+                  Nommer ou modifier le rôle</button
                 ><button
                   id="assisted-card-open"
                   class="btn btn-outline-primary"
@@ -1651,33 +1957,22 @@
               <div id="staff-role-panel" class="card mb-3" hidden>
                 <div class="card-body">
                   <h2 class="card-title">
-                    Nomination et périmètre du gestionnaire
+                    Nomination et périmètre de l’utilisateur
                   </h2>
                   <p>
-                    Réservé à l’Admin. Le gestionnaire ne reçoit aucun accès aux
-                    soldes, transactions globales ou revenus.
+                    Réservé à l’Admin. La nomination est journalisée, avec
+                    alerte dans le compte et e-mails au titulaire et à
+                    l’administrateur. Aucun solde n’est modifié.
                   </p>
                   <form id="staff-role-form">
                     <div class="form-group">
                       <label for="staff-role">Rôle</label
-                      ><select id="staff-role" class="form-control">
-                        <option value="AccountManager">
-                          Gestionnaire de compte
-                        </option>
-                        <option value="Client">
-                          Client — retirer les droits gestionnaire
-                        </option>
-                      </select>
+                      ><select id="staff-role" class="form-control"></select>
                     </div>
                     <div class="form-group">
                       <label for="staff-country"
                         >Pays attribué (code ISO, ex. CD)</label
-                      ><input
-                        id="staff-country"
-                        class="form-control"
-                        maxlength="2"
-                        required
-                      />
+                      ><select id="staff-country" class="form-control"></select>
                     </div>
                     <div class="form-group">
                       <label for="staff-province"
@@ -1688,6 +1983,40 @@
                         class="form-control"
                         maxlength="150"
                       />
+                    </div>
+                    <div id="staff-agent-fields" class="form-group" hidden>
+                      <label for="staff-agent-days"
+                        >Accès Agent offert (jours, sans débit)</label
+                      ><input
+                        id="staff-agent-days"
+                        class="form-control"
+                        type="number"
+                        min="1"
+                        max="365"
+                        value="30"
+                      /><small
+                        >La nomination active son espace Agent. Un accès
+                        existant plus long est conservé.</small
+                      >
+                    </div>
+                    <div id="staff-partner-fields" class="form-group" hidden>
+                      <label for="staff-company"
+                        >Nom de la société partenaire</label
+                      ><input
+                        id="staff-company"
+                        class="form-control"
+                        maxlength="150"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label for="staff-reason">Motif de la nomination</label
+                      ><textarea
+                        id="staff-reason"
+                        class="form-control"
+                        minlength="10"
+                        maxlength="500"
+                        required
+                      ></textarea>
                     </div>
                     <div class="form-group">
                       <label for="staff-pin">Votre PIN Admin</label
@@ -1905,5 +2234,6 @@
     <script src="/management.js" defer></script>
     <script src="/staff.js" defer></script>
     <script src="/pricing.js" defer></script>
+    <script src="/communications.js" defer></script>
   </body>
 </html>

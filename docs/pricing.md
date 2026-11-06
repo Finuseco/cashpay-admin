@@ -1,6 +1,6 @@
 # Frais et taux de change par pays
 
-Les menus **Frais des services** et **Taux de change** utilisent les composants de la template et les tables existantes `fee_structures` et `exchange_rates`. Aucun ajout de table, colonne ou migration SQL n’est nécessaire pour cette livraison. Le rôle `AccountManager` n’a accès ni aux écrans ni aux API de tarification.
+Les menus **Frais des services** et **Taux de change** utilisent les composants de la template et les tables existantes `fee_structures` et `exchange_rates`. Les règles de tarification ne nécessitent aucune nouvelle colonne. Les nouveaux avis e-mail exigent cependant les deux tables du [script communications](sql/admin-communications.sql), à exécuter dans Adminer avant cette mise à jour. Le rôle `AccountManager` n’a accès ni aux écrans ni aux API de tarification.
 
 ## Frais
 
@@ -39,8 +39,9 @@ Dans le clone admin, sans toucher aux applications voisines ni au fichier d’en
 ```bash
 cd /var/www/caspay-all/admin
 git pull --ff-only origin codex/admin-dashboard
+npm ci --ignore-scripts
 npm run check
-pm2 restart cashpay-admin --update-env
+pm2 startOrReload deploy/ecosystem.config.cjs --update-env
 ```
 
 Les essais de livraison ont couvert SQL et navigateur sur une base temporaire : ajout/modification, paliers et pourcentages, replis pays/GBL/CD, lecture du tarif réel de carte, précision des taux, conflits de versions, doublons, PIN, CSRF, restriction Gestionnaire, affichage mobile et rollback du journal. Aucun appel fournisseur, notification réelle ou accès à la base de production pendant ces essais. Les scénarios restent hors du dépôt livré.

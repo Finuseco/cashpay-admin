@@ -7,7 +7,12 @@ import {
   pricingHistory,
 } from "./pricing.js";
 import { assertClientScope, deny } from "./staff-access.js";
-import { assignAccountManager } from "./staff-roles.js";
+import {
+  assignAccountManager,
+  assignRole,
+  roleCatalog,
+} from "./staff-roles.js";
+import { createCommunications } from "./communications.js";
 import { quoteCard, orderAssistedCard } from "./assisted-cards.js";
 import {
   managedClient,
@@ -54,10 +59,17 @@ export function createApp({
   clock,
   sendWelcome = createWelcomeSender(config),
   sendCardReceipt = createCardOrderSender(config),
+  sendCommunication,
 }) {
   const media = createMediaStore(config);
   const flow = createLoginFlow({ pool, config, sendOtp, clock });
   const app = express();
+  const communications = createCommunications({
+    pool,
+    config,
+    dispatch: sendCommunication,
+  });
+  app.locals.communications = communications;
   app.disable("x-powered-by");
   app.set("trust proxy", "loopback");
   app.use(
@@ -67,7 +79,7 @@ export function createApp({
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
-          imgSrc: ["'self'", "data:", config.mediaOrigin],
+          imgSrc: ["'self'", "data:", "https:"],
           fontSrc: ["'self'", "data:"],
           connectSrc: ["'self'"],
           objectSrc: ["'none'"],
@@ -81,6 +93,19 @@ export function createApp({
     }),
   );
   app.use("/api/registration/media", express.json({ limit: "8mb" }));
+  app.use("/api/communications", express.json({ limit: "128kb" }));
+  app.use(
+    "/api/communication-assets",
+    express.raw({
+      type: [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/octet-stream",
+      ],
+      limit: "6mb",
+    }),
+  );
   app.use(express.json({ limit: "16kb" }));
   app.use(cookieParser());
   // Serve only the template asset directory and the explicit application scripts.
@@ -105,6 +130,9 @@ export function createApp({
   );
   app.get("/registration.js", (_req, res) =>
     res.sendFile(path.join(root, "public/registration.js")),
+  );
+  app.get("/communications.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/communications.js")),
   );
   app.get("/pricing.js", (_req, res) =>
     res.sendFile(path.join(root, "public/pricing.js")),
@@ -390,6 +418,142 @@ export function createApp({
             sendWelcome,
           }),
         });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/roles/catalog",
+    requireStaff,
+    requireAdmin,
+    async (_req, res, next) => {
+      try {
+        res.json(await roleCatalog(pool));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/users/:id/role",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await assignRole(pool, req.admin, userId(req.params.id), req.body),
+        );
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/communications/catalog",
+    requireStaff,
+    requireAdmin,
+    async (_req, res, next) => {
+      try {
+        res.json(await communications.catalog());
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/communication-assets",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res
+          .status(201)
+          .json(await communications.assets.save(req.admin, req.body));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/communications/preview",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.status(201).json(await communications.preview(req.admin, req.body));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/communications",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(await communications.list(pageNumber(req.query.page)));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/communications/:id",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await communications.detail(
+            req.params.id,
+            pageNumber(req.query.page),
+          ),
+        );
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/communications/:id/start",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res
+          .status(202)
+          .json(await communications.start(req.admin, req.params.id, req.body));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/communications/:id/control",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await communications.control(req.admin, req.params.id, req.body),
+        );
       } catch (error) {
         next(error);
       }
@@ -717,6 +881,8 @@ export function createApp({
       "/registrations",
       "/fees",
       "/exchange-rates",
+      "/communications",
+      "/roles",
     ],
     async (req, res, next) => {
       try {
@@ -727,9 +893,14 @@ export function createApp({
           if (["/", "/dashboard"].includes(req.path))
             return res.redirect("/users");
           if (
-            ["/transactions", "/orders", "/fees", "/exchange-rates"].includes(
-              req.path,
-            )
+            [
+              "/transactions",
+              "/orders",
+              "/fees",
+              "/exchange-rates",
+              "/communications",
+              "/roles",
+            ].includes(req.path)
           )
             return res.status(403).send("Fonction réservée à l’Admin.");
         }

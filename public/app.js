@@ -582,7 +582,9 @@ async function boot() {
             link.getAttribute("href") === location.pathname,
           ),
       );
-    if (["/fees", "/exchange-rates"].includes(location.pathname)) {
+    if (location.pathname === "/communications") {
+      await bootCommunications();
+    } else if (["/fees", "/exchange-rates"].includes(location.pathname)) {
       await bootPricing();
     } else if (
       ["/transactions", "/cards", "/orders", "/registrations"].includes(
@@ -599,7 +601,7 @@ async function boot() {
         select.add(new Option(country.name, country.code));
       $("app-status").textContent =
         "Inscription dans votre périmètre autorisé. Aucun solde initial ni rôle privilégié attribué.";
-    } else if (location.pathname === "/users") {
+    } else if (["/users", "/roles"].includes(location.pathname)) {
       $("users-view").hidden = false;
       await loadUsers();
     } else if (/^\/users\/[1-9]\d*$/.test(location.pathname)) {

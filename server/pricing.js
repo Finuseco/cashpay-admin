@@ -1,3 +1,4 @@
+import { queueActionNotice } from "./message-outbox.js";
 import crypto from "node:crypto";
 import countries from "./registration-countries.json" with { type: "json" };
 import policy from "./pricing-policy.json" with { type: "json" };
@@ -368,6 +369,12 @@ export async function savePricing(pool, actor, kind, mode, body) {
         JSON.stringify({ reason, before: before || null, after }),
       ],
     );
+    await queueActionNotice(db, {
+      actorId: actor.id,
+      subject: "Configuration financière CashPay mise à jour",
+      message: `Une règle de ${kind === "fees" ? "frais" : "taux de change"} a été ${mode === "create" ? "ajoutée" : "modifiée"} dans CashPay Admin pour ${code}. Consultez l’historique des configurations pour les détails.`,
+      action: kind === "fees" ? "FEE_RULE_CHANGE" : "EXCHANGE_RATE_CHANGE",
+    });
     await db.query("COMMIT");
     return {
       success: true,

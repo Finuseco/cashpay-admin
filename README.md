@@ -7,6 +7,7 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 - Connexion des comptes `Admin` et `AccountManager` actifs : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
 - Inscription Client en quatre étapes : identité, coordonnées, photo/signature/pièce et confirmation, avec PIN généré, notifications et certificat A4 historisé. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
+- Nominations Admin des rôles existants, avis e-mail et communications personnalisées e-mail/SMS/WhatsApp avec prévisualisation et suivi persistant. Voir [le contrat et le SQL requis](docs/roles-communications.md).
 - Configuration Admin des frais et taux de change : recherche, ajout, modification, pays et codes ISO, paliers fixes/pourcentages, PIN et historique. Voir [le contrat de tarification](docs/pricing.md).
 - Centralisation financière : frais bruts par devise, registres crypto BTC/USDT, commissions, comptes de flotte/revenus, activités et corridors internationaux. Voir [sources et limites](docs/finance-dashboard.md).
 - Graphiques Chart.js de la template : répartition des déposants, inscriptions/premiers dépôts sur douze mois, volumes du registre dans une seule devise sélectionnée.
@@ -15,7 +16,7 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 - Recherche par nom, téléphone, e-mail ou ID Wallet. Fiche utilisateur : avatar public, identité de consultation, soldes par devise, dépôts et listes paginées des transactions, demandes de cartes et commandes.
 - Filtre pays, actualisation manuelle et toutes les 10 secondes lorsque le tableau de bord est visible. Les données affichées portent leur heure de lecture. Une panne n’est pas remplacée par des chiffres inventés.
 
-Les fonctionnalités de nomination, blocage de comptes ou de pays, interruption des inscriptions, approbations/rejets et configuration globale constituent les phases suivantes. Aucun bouton ne prétend effectuer ces opérations dans ce premier lot. La restriction d’inscription devra être appliquée dans **Cashpay Web**, à l’endroit où l’inscription est réellement exécutée : un interrupteur isolé dans l’admin ne suffirait pas.
+Les fonctionnalités de blocage de comptes ou de pays, interruption des inscriptions, approbations/rejets et configuration globale constituent les phases suivantes. Aucun bouton ne prétend effectuer ces opérations dans ce premier lot. La restriction d’inscription devra être appliquée dans **Cashpay Web**, à l’endroit où l’inscription est réellement exécutée : un interrupteur isolé dans l’admin ne suffirait pas.
 
 ## Template conservée
 
@@ -33,7 +34,7 @@ Node.js **22.9 minimum** et PostgreSQL de l’application existante.
 
 Pour travailler uniquement sur la machine locale, choisir `NODE_ENV=development` et une origine exacte telle que `http://127.0.0.1:8010`. Le service écoute par défaut sur le loopback ; la publication HTTPS passe par le proxy du VPS.
 
-Aucune nouvelle colonne ou table n’est créée. Le rôle Gestionnaire nécessite l’ajout de la valeur enum `AccountManager` par le [script fourni](docs/sql/account-manager-role.sql), sans migration automatique. La création de comptes utilise les tables existantes `users`, `wallets`, `user_documents`, `b2b_partners` et `super_agent_interventions`. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
+La file de communications nécessite deux nouvelles tables : exécuter d’abord [le script SQL](docs/sql/admin-communications.sql), décrit dans [le guide](docs/roles-communications.md). Aucune colonne utilisateur n’est ajoutée. Le rôle Gestionnaire nécessite l’ajout de la valeur enum `AccountManager` par le [script fourni](docs/sql/account-manager-role.sql), sans migration automatique. La création de comptes utilise les tables existantes `users`, `wallets`, `user_documents`, `b2b_partners` et `super_agent_interventions`. Aucun script n’est exécuté automatiquement sur la base. Le catalogue de pays de Cashpay Web a été repris, avec ses codes et noms, dans `server/countries.json` ; il normalise les pays déclarés sans modifier les comptes.
 
 ### Accès SQL
 

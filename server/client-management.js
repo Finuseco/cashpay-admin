@@ -1,3 +1,4 @@
+import { queueActionNotice } from "./message-outbox.js";
 import { verifyCustomerConsent } from "./customer-consent.js";
 import {
   assertClientScope,
@@ -204,6 +205,14 @@ export async function updateClient(pool, actor, id, body) {
         }),
       ],
     );
+    await queueActionNotice(db, {
+      actorId: actor.id,
+      targetId: id,
+      subject: "Mise à jour de votre compte CashPay",
+      message:
+        "Les informations de votre compte CashPay ont été mises à jour par un membre habilité. Si vous ne reconnaissez pas cette action, contactez CashPay.",
+      action: "CLIENT_UPDATE",
+    });
     await db.query("COMMIT");
     return { success: true };
   } catch (error) {
@@ -235,18 +244,7 @@ export async function upgradePartner(pool, actor, id, body) {
       String(rows[0].status).toLowerCase() !== "active"
     )
       throw fail("Seul un Client actif peut devenir partenaire.", 409);
-    const apiKey = "cp_live_" + crypto.randomBytes(12).toString("hex"),
-      apiSecret = "csk_live_" + crypto.randomBytes(24).toString("hex"),
-      testKey = "cp_test_" + crypto.randomBytes(12).toString("hex"),
-      testSecret = "csk_test_" + crypto.randomBytes(24).toString("hex");
-    await db.query(
-      "UPDATE users SET role='PartnerB2B',account_type='business',full_name=$2,api_key=$3,api_secret=$4,test_api_key=$5,test_api_secret=$6 WHERE id=$1",
-      [id, name.toUpperCase(), apiKey, apiSecret, testKey, testSecret],
-    );
-    await db.query(
-      "INSERT INTO b2b_partners (owner_user_id,company_name,company_email,status,api_key) SELECT id,$2,email,'active',$3 FROM users WHERE id=$1 ON CONFLICT (owner_user_id) DO UPDATE SET company_name=EXCLUDED.company_name,status='active',api_key=EXCLUDED.api_key",
-      [id, name, apiKey],
-    );
+    await provisionPartner(db, id, name);
     await db.query(
       "INSERT INTO super_agent_interventions (admin_user_id,target_user_id,action_type,detail) VALUES ($1,$2,$3,$4)",
       [
@@ -260,6 +258,14 @@ export async function upgradePartner(pool, actor, id, body) {
         }),
       ],
     );
+    await queueActionNotice(db, {
+      actorId: actor.id,
+      targetId: id,
+      subject: "Votre compte Partenaire CashPay",
+      message:
+        "Votre compte a été activé comme Partenaire B2B CashPay. Consultez votre espace pour les accès et services disponibles. Aucun secret API n’est transmis par ce message.",
+      action: "ROLE_UPGRADE_B2B",
+    });
     await db.query("COMMIT");
     return { success: true };
   } catch (error) {
@@ -268,4 +274,19 @@ export async function upgradePartner(pool, actor, id, body) {
   } finally {
     db.release();
   }
+}
+
+export async function provisionPartner(db, id, name) {
+  const apiKey = "cp_live_" + crypto.randomBytes(12).toString("hex"),
+    apiSecret = "csk_live_" + crypto.randomBytes(24).toString("hex"),
+    testKey = "cp_test_" + crypto.randomBytes(12).toString("hex"),
+    testSecret = "csk_test_" + crypto.randomBytes(24).toString("hex");
+  await db.query(
+    "UPDATE users SET role='PartnerB2B',account_type='business',full_name=$2,api_key=$3,api_secret=$4,test_api_key=$5,test_api_secret=$6 WHERE id=$1",
+    [id, name.toUpperCase(), apiKey, apiSecret, testKey, testSecret],
+  );
+  await db.query(
+    "INSERT INTO b2b_partners (owner_user_id,company_name,company_email,status,api_key) SELECT id,$2,email,'active',$3 FROM users WHERE id=$1 ON CONFLICT (owner_user_id) DO UPDATE SET company_name=EXCLUDED.company_name,status='active',api_key=EXCLUDED.api_key",
+    [id, name, apiKey],
+  );
 }

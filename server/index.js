@@ -11,12 +11,18 @@ try {
     secret: config.secret,
   }).load();
   const app = createApp({ pool, config, sessions });
+  app.locals.communications.startWorker();
   const server = app.listen(config.port, config.host, () =>
     console.log(`Cashpay Admin écoute sur ${config.host}:${config.port}`),
   );
   function close() {
-    server.close(() => pool.end().then(() => process.exit(0)));
-    setTimeout(() => process.exit(1), 10000).unref();
+    server.close(() =>
+      app.locals.communications
+        .stop()
+        .then(() => pool.end())
+        .then(() => process.exit(0)),
+    );
+    setTimeout(() => process.exit(1), 30000).unref();
   }
   process.once("SIGTERM", close);
   process.once("SIGINT", close);

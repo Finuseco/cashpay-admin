@@ -1,6 +1,8 @@
 let assistedQuote = null,
   assistedBusy = false,
   roleBusy = false;
+let roleTarget = null,
+  roleOptions = null;
 function staffMenus() {
   const manager = state.session.user.role === "AccountManager";
   if (manager) {
@@ -26,7 +28,7 @@ function staffMenus() {
         link.closest("li").hidden = true;
     for (const category of document.querySelectorAll(".sidebar .nav-category"))
       if (
-        ["Pilotage", "Configuration financière"].includes(
+        ["Pilotage", "Configuration financière", "Administration"].includes(
           category.textContent.trim(),
         )
       )
@@ -44,21 +46,41 @@ async function setupStaffActions(user) {
   $("assisted-card-panel").hidden = true;
   assistedQuote = null;
   $("card-consent-form").hidden = true;
+  roleTarget = user;
+  $("staff-role-open").disabled = true;
   $("staff-role-open").hidden =
-    !admin || !["Client", "AccountManager"].includes(user.role);
+    !admin ||
+    Number(user.id) === Number(state.session.user.id) ||
+    String(user.status).toLowerCase() !== "active";
   $("assisted-card-open").hidden =
     !["Client", "PartnerB2B"].includes(user.role) ||
     String(user.status).toLowerCase() !== "active";
-  if (admin && ["Client", "AccountManager"].includes(user.role)) {
-    const data = await api("/api/registration/countries");
-    const country = data.countries.find(
+  if (admin) {
+    roleOptions = await api("/api/roles/catalog");
+    $("staff-role").replaceChildren(
+      ...roleOptions.roles.map((role) => new Option(role.label, role.code)),
+    );
+    $("staff-country").replaceChildren(
+      new Option("Conserver le pays actuel", ""),
+      ...roleOptions.countries.map(
+        (country) =>
+          new Option(country.name + " (" + country.code + ")", country.code),
+      ),
+    );
+    const country = roleOptions.countries.find(
       (c) =>
-        c.name.toLowerCase() === String(user.country).toLowerCase() ||
-        c.code.toLowerCase() === String(user.country).toLowerCase(),
+        c.code.toLowerCase() === String(user.country).toLowerCase() ||
+        c.name.toLowerCase() === String(user.country).toLowerCase(),
     );
     $("staff-country").value = country?.code || "";
     $("staff-province").value = user.province || "";
-    $("staff-role").value = "AccountManager";
+    $("staff-role").value = roleOptions.roles.some((r) => r.code === user.role)
+      ? user.role
+      : "Client";
+    $("staff-reason").value = "";
+    $("staff-company").value = "";
+    applyRoleFields();
+    $("staff-role-open").disabled = false;
   }
 }
 $("staff-role-open").addEventListener("click", () => {
@@ -74,7 +96,7 @@ $("staff-role-form").addEventListener("submit", async (event) => {
   const button = event.currentTarget.querySelector("button");
   button.disabled = true;
   try {
-    await api("/api/users/" + state.userId + "/staff-role", {
+    const result = await api("/api/users/" + state.userId + "/role", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,12 +107,16 @@ $("staff-role-form").addEventListener("submit", async (event) => {
         countryCode: $("staff-country").value.toUpperCase(),
         province: $("staff-province").value,
         admin_pin: $("staff-pin").value,
+        reason: $("staff-reason").value,
+        expected_role: roleTarget?.role,
+        agent_days: $("staff-agent-days").value,
+        company_name: $("staff-company").value,
       }),
     });
     await loadProfile();
     $("staff-role-panel").hidden = false;
     $("staff-role-result").textContent =
-      "Habilitation et périmètre enregistrés. Les droits sont revérifiés à chaque requête.";
+      "Nomination enregistrée. Alerte du compte créée et e-mails mis en file d’envoi. Suivi : Communications.";
   } catch (reason) {
     $("staff-role-result").textContent = reason.message;
   } finally {
@@ -191,6 +217,17 @@ $("card-consent-form").addEventListener("submit", async (event) => {
   }
 });
 
-$("staff-role").addEventListener("change", () => {
-  $("staff-country").required = $("staff-role").value === "AccountManager";
-});
+function applyRoleFields() {
+  const role = $("staff-role").value;
+  $("staff-country").required =
+    roleOptions?.scoped_roles.includes(role) || false;
+  $("staff-province").required =
+    roleOptions?.provincial_roles.includes(role) || false;
+  $("staff-agent-fields").hidden = role !== "Agent";
+  $("staff-partner-fields").hidden =
+    role !== "PartnerB2B" || roleTarget?.role === "PartnerB2B";
+  $("staff-company").required =
+    role === "PartnerB2B" && roleTarget?.role !== "PartnerB2B";
+  $("staff-agent-days").required = role === "Agent";
+}
+$("staff-role").addEventListener("change", applyRoleFields);
