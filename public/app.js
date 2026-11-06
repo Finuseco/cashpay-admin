@@ -593,7 +593,9 @@ async function boot() {
             link.getAttribute("href") === location.pathname,
           ),
       );
-    if (location.pathname === "/profile") {
+    if (location.pathname === "/service-requests") {
+      await bootServiceRequests();
+    } else if (location.pathname === "/profile") {
       bootStaffProfile();
     } else if (location.pathname === "/communications") {
       await bootCommunications();

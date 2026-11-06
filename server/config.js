@@ -64,6 +64,10 @@ export function loadConfig(env = process.env) {
     throw Error("SMTP_PORT invalide.");
   return {
     production,
+    services: {
+      origin: env.CASH_PAY_APP_URL || media.origin,
+      secret: env.JWT_SECRET || null,
+    },
     sessionHours,
     sessionIdleMinutes,
     stateDir: env.ADMIN_STATE_DIR || ".runtime",

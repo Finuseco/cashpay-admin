@@ -8,6 +8,7 @@ Back-office indépendant pour **admin.cashpay-all.com**, basé sur la template C
 - Connexion des comptes `Admin` et `AccountManager` actifs : ID Wallet ou e-mail → OTP envoyé par e-mail → PIN Cashpay existant. Aucun compte ou code de démonstration créé.
 - Inscription Client en quatre étapes : identité, coordonnées, photo/signature/pièce et confirmation, avec PIN généré, notifications et certificat A4 historisé. Voir [le contrat et les droits SQL](docs/account-creation.md).
 - Tableau de bord global : utilisateurs, comptes actifs, pays représentés, pays avec au moins un compte actif, titulaires avec et sans dépôt confirmé, somme exacte des soldes USD et EUR, toutes les devises de soldes non nuls, répartition par pays.
+- Traitement Admin des demandes TV payées, activation manuelle/référence fournisseur, rejet/remboursement et réclamations internationales avec journal des agents. Voir [configuration et droits](docs/service-requests.md).
 - Nominations Admin des rôles existants, avis e-mail et communications personnalisées e-mail/SMS/WhatsApp avec prévisualisation et suivi persistant. Voir [le contrat et le SQL requis](docs/roles-communications.md).
 - Configuration Admin des frais et taux de change : recherche, ajout, modification, pays et codes ISO, paliers fixes/pourcentages, PIN et historique. Voir [le contrat de tarification](docs/pricing.md).
 - Centralisation financière : frais bruts par devise, registres crypto BTC/USDT, commissions, comptes de flotte/revenus, activités et corridors internationaux. Voir [sources et limites](docs/finance-dashboard.md).

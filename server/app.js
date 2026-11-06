@@ -1,3 +1,4 @@
+import { serviceRequest } from "./service-requests.js";
 import { updateStaffProfile } from "./staff-profile.js";
 import {
   pricingCatalog,
@@ -16,6 +17,7 @@ import {
 import { createCommunications } from "./communications.js";
 import { quoteCard, orderAssistedCard } from "./assisted-cards.js";
 import {
+  adminPin,
   managedClient,
   updateClient,
   upgradePartner,
@@ -122,6 +124,9 @@ export function createApp({
   );
   app.get("/app.js", (_req, res) =>
     res.sendFile(path.join(root, "public/app.js")),
+  );
+  app.get("/service-requests.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/service-requests.js")),
   );
   app.get("/profile.js", (_req, res) =>
     res.sendFile(path.join(root, "public/profile.js")),
@@ -341,6 +346,45 @@ export function createApp({
         assistedCards: true,
       },
     }),
+  );
+  app.get(
+    "/api/service-requests/:kind",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(
+          await serviceRequest(config, req.admin, req.params.kind, req.query),
+        );
+      } catch (e) {
+        next(e);
+      }
+    },
+  );
+  app.post(
+    "/api/service-requests/:kind",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    verificationLimit,
+    async (req, res, next) => {
+      try {
+        const { id, action, pin, providerReference } = req.body || {};
+        await adminPin(pool, req.admin, pin);
+        res.json(
+          await serviceRequest(
+            config,
+            req.admin,
+            req.params.kind,
+            {},
+            { id, action, pin, providerReference },
+          ),
+        );
+      } catch (e) {
+        next(e);
+      }
+    },
   );
   app.post(
     "/api/profile",
@@ -914,6 +958,7 @@ export function createApp({
       "/fees",
       "/exchange-rates",
       "/communications",
+      "/service-requests",
       "/roles",
     ],
     async (req, res, next) => {
@@ -931,6 +976,7 @@ export function createApp({
               "/fees",
               "/exchange-rates",
               "/communications",
+              "/service-requests",
               "/roles",
             ].includes(req.path)
           )
