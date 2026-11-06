@@ -1,3 +1,11 @@
+import {
+  pricingCatalog,
+  listFees,
+  listRates,
+  savePricing,
+  previewFee,
+  pricingHistory,
+} from "./pricing.js";
 import { assertClientScope, deny } from "./staff-access.js";
 import { assignAccountManager } from "./staff-roles.js";
 import { quoteCard, orderAssistedCard } from "./assisted-cards.js";
@@ -97,6 +105,9 @@ export function createApp({
   );
   app.get("/registration.js", (_req, res) =>
     res.sendFile(path.join(root, "public/registration.js")),
+  );
+  app.get("/pricing.js", (_req, res) =>
+    res.sendFile(path.join(root, "public/pricing.js")),
   );
   app.get("/staff.js", (_req, res) =>
     res.sendFile(path.join(root, "public/staff.js")),
@@ -465,6 +476,97 @@ export function createApp({
       }
     },
   );
+  app.get(
+    "/api/pricing/catalog",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(await pricingCatalog(pool));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/pricing/fees",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(await listFees(pool, req.query, pageNumber(req.query.page)));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/pricing/rates",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(await listRates(pool, req.query, pageNumber(req.query.page)));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.get(
+    "/api/pricing/history",
+    requireStaff,
+    requireAdmin,
+    async (req, res, next) => {
+      try {
+        res.json(await pricingHistory(pool, pageNumber(req.query.page)));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  app.post(
+    "/api/pricing/fee-preview",
+    originGuard,
+    requireStaff,
+    requireAdmin,
+    csrfGuard,
+    async (req, res, next) => {
+      try {
+        res.json(await previewFee(pool, req.body));
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+  for (const [method, mode] of [
+    ["post", "create"],
+    ["put", "update"],
+  ])
+    app[method](
+      "/api/pricing/:kind",
+      originGuard,
+      requireStaff,
+      requireAdmin,
+      csrfGuard,
+      verificationLimit,
+      async (req, res, next) => {
+        try {
+          res
+            .status(mode === "create" ? 201 : 200)
+            .json(
+              await savePricing(
+                pool,
+                req.admin,
+                req.params.kind,
+                mode,
+                req.body,
+              ),
+            );
+        } catch (error) {
+          next(error);
+        }
+      },
+    );
   app.get("/api/users", requireStaff, async (req, res, next) => {
     try {
       res.json(
@@ -613,6 +715,8 @@ export function createApp({
       "/cards",
       "/orders",
       "/registrations",
+      "/fees",
+      "/exchange-rates",
     ],
     async (req, res, next) => {
       try {
@@ -622,7 +726,11 @@ export function createApp({
         if (actor.role === "AccountManager") {
           if (["/", "/dashboard"].includes(req.path))
             return res.redirect("/users");
-          if (["/transactions", "/orders"].includes(req.path))
+          if (
+            ["/transactions", "/orders", "/fees", "/exchange-rates"].includes(
+              req.path,
+            )
+          )
             return res.status(403).send("Fonction réservée à l’Admin.");
         }
         res.set("Cache-Control", "no-store");

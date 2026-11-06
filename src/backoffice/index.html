@@ -112,6 +112,23 @@
               ><span class="menu-title">Ventes et commandes</span></a
             >
           </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Configuration financière</span>
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/fees"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-cash-multiple"></i></span
+              ><span class="menu-title">Frais des services</span></a
+            >
+          </li>
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="/exchange-rates"
+              ><span class="menu-icon"
+                ><i class="mdi mdi-swap-horizontal"></i></span
+              ><span class="menu-title">Taux de change</span></a
+            >
+          </li>
         </ul>
       </nav>
       <div class="container-fluid page-body-wrapper">
@@ -184,6 +201,288 @@
                   >
                 </div>
               </div>
+            </section>
+            <section id="pricing-view" hidden>
+              <div class="page-header">
+                <h1 id="pricing-title" class="page-title"></h1>
+                <button id="pricing-new" class="btn btn-primary">
+                  Ajouter une règle
+                </button>
+              </div>
+              <p>
+                Paramètres réels de Cashpay. Chaque changement exige votre PIN
+                Admin et un motif. Les opérations déjà réalisées ne sont pas
+                recalculées.
+              </p>
+              <form id="pricing-filter" class="row">
+                <div class="col-md-4 form-group">
+                  <label for="pricing-filter-country">Pays</label
+                  ><select
+                    id="pricing-filter-country"
+                    class="form-control"
+                  ></select>
+                </div>
+                <div class="col-md-4 form-group">
+                  <label for="pricing-search"
+                    >Rechercher un code ou une devise</label
+                  ><input
+                    id="pricing-search"
+                    class="form-control"
+                    maxlength="100"
+                  />
+                </div>
+                <div id="pricing-active-filter" class="col-md-4">
+                  <div class="form-group">
+                    <label for="pricing-filter-active">État</label
+                    ><select id="pricing-filter-active" class="form-control">
+                      <option value="">Tous</option>
+                      <option value="true">Actifs</option>
+                      <option value="false">Inactifs</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 form-group">
+                  <button class="btn btn-outline-primary">Rechercher</button>
+                </div>
+              </form>
+              <p id="pricing-status" role="status"></p>
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead id="pricing-head"></thead>
+                      <tbody id="pricing-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <button id="pricing-prev" class="btn btn-outline-primary">
+                      Précédent</button
+                    ><span id="pricing-page"></span
+                    ><button id="pricing-next" class="btn btn-outline-primary">
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="pricing-editor" class="card mb-4" hidden>
+                <div class="card-body">
+                  <h2 id="pricing-editor-title" class="card-title"></h2>
+                  <form id="pricing-form">
+                    <div class="row">
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-country">Pays / code attribué</label
+                        ><select
+                          id="pricing-country"
+                          class="form-control"
+                        ></select>
+                      </div>
+                      <div class="col-12">
+                        <p id="pricing-country-code" class="text-info"></p>
+                      </div>
+                    </div>
+                    <div class="row pricing-fee-only">
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-type">Code du frais</label
+                        ><input
+                          id="pricing-type"
+                          class="form-control"
+                          list="pricing-types"
+                          maxlength="64"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-currency">Devise</label
+                        ><input
+                          id="pricing-currency"
+                          class="form-control"
+                          list="pricing-currencies"
+                          maxlength="16"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label class="form-check-label mt-4"
+                          ><input id="pricing-active" type="checkbox" checked />
+                          Barème actif</label
+                        >
+                      </div>
+                    </div>
+                    <div class="row pricing-rate-only">
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-from">Devise de départ</label
+                        ><input
+                          id="pricing-from"
+                          class="form-control"
+                          list="pricing-currencies"
+                          maxlength="16"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-to">Devise d’arrivée</label
+                        ><input
+                          id="pricing-to"
+                          class="form-control"
+                          list="pricing-currencies"
+                          maxlength="16"
+                          required
+                        />
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="pricing-rate"
+                          >Taux : 1 départ = ce montant à l’arrivée</label
+                        ><input
+                          id="pricing-rate"
+                          class="form-control"
+                          inputmode="decimal"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <p id="pricing-policy" class="text-info"></p>
+                    <div class="pricing-fee-only">
+                      <h3 class="h6">Paliers</h3>
+                      <p>
+                        Minimum et maximum inclus ; maximum 0 = sans plafond. À
+                        une borne commune, le premier palier s’applique. Un seul
+                        palier 0 → 0 définit un tarif uniforme.
+                      </p>
+                      <div id="pricing-tiers"></div>
+                      <button
+                        id="pricing-add-tier"
+                        type="button"
+                        class="btn btn-outline-primary btn-sm mb-3"
+                      >
+                        Ajouter un palier
+                      </button>
+                    </div>
+                    <div class="form-group">
+                      <label for="pricing-reason"
+                        >Motif de l’ajout ou modification</label
+                      ><textarea
+                        id="pricing-reason"
+                        class="form-control"
+                        minlength="10"
+                        maxlength="500"
+                        required
+                      ></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="pricing-pin">Votre PIN Admin</label
+                      ><input
+                        id="pricing-pin"
+                        type="password"
+                        class="form-control"
+                        inputmode="numeric"
+                        maxlength="6"
+                        autocomplete="off"
+                        required
+                      />
+                    </div>
+                    <button id="pricing-save" class="btn btn-primary">
+                      Enregistrer</button
+                    ><button
+                      id="pricing-cancel"
+                      type="button"
+                      class="btn btn-outline-light"
+                    >
+                      Fermer
+                    </button>
+                  </form>
+                  <p id="pricing-result" class="mt-3" role="status"></p>
+                </div>
+              </div>
+              <div class="card mb-4" id="pricing-preview">
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Vérifier le barème demandé et son origine
+                  </h2>
+                  <p>
+                    Le service qui facture doit appeler ce code. Un nouveau code
+                    seul ne crée pas un service.
+                  </p>
+                  <form id="pricing-preview-form" class="row">
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-country">Pays du client</label
+                      ><select
+                        id="pricing-preview-country"
+                        class="form-control"
+                      ></select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-type">Code du frais</label
+                      ><input
+                        id="pricing-preview-type"
+                        class="form-control"
+                        list="pricing-types"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-currency">Devise</label
+                      ><input
+                        id="pricing-preview-currency"
+                        class="form-control"
+                        list="pricing-currencies"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-4 form-group">
+                      <label for="pricing-preview-amount"
+                        >Montant de l’opération</label
+                      ><input
+                        id="pricing-preview-amount"
+                        class="form-control"
+                        inputmode="decimal"
+                        required
+                      />
+                    </div>
+                    <div class="col-12">
+                      <button class="btn btn-outline-primary">Calculer</button>
+                    </div>
+                  </form>
+                  <p id="pricing-preview-result" class="mt-3" role="status"></p>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body">
+                  <h2 class="card-title">
+                    Historique des paramètres financiers
+                  </h2>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Admin</th>
+                          <th>Action</th>
+                          <th>Pays</th>
+                          <th>Code / paire</th>
+                          <th>Motif</th>
+                        </tr>
+                      </thead>
+                      <tbody id="pricing-history-rows"></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <button
+                      id="pricing-history-prev"
+                      class="btn btn-outline-primary"
+                    >
+                      Précédent</button
+                    ><span id="pricing-history-page"></span
+                    ><button
+                      id="pricing-history-next"
+                      class="btn btn-outline-primary"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <datalist id="pricing-types"></datalist
+              ><datalist id="pricing-currencies"></datalist>
             </section>
             <section id="create-user-view" hidden>
               <div class="page-header">
@@ -1605,5 +1904,6 @@
     <script src="/registration.js" defer></script>
     <script src="/management.js" defer></script>
     <script src="/staff.js" defer></script>
+    <script src="/pricing.js" defer></script>
   </body>
 </html>

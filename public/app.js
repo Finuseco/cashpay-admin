@@ -582,7 +582,9 @@ async function boot() {
             link.getAttribute("href") === location.pathname,
           ),
       );
-    if (
+    if (["/fees", "/exchange-rates"].includes(location.pathname)) {
+      await bootPricing();
+    } else if (
       ["/transactions", "/cards", "/orders", "/registrations"].includes(
         location.pathname,
       )

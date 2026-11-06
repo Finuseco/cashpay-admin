@@ -25,7 +25,12 @@ function staffMenus() {
       )
         link.closest("li").hidden = true;
     for (const category of document.querySelectorAll(".sidebar .nav-category"))
-      if (category.textContent.trim() === "Pilotage") category.hidden = true;
+      if (
+        ["Pilotage", "Configuration financière"].includes(
+          category.textContent.trim(),
+        )
+      )
+        category.hidden = true;
   }
   const caption = $("admin-name").nextElementSibling;
   if (caption)
