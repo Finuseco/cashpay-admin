@@ -280,6 +280,10 @@ async function commHistory() {
     button.type = "button";
     button.className = "btn btn-sm btn-outline-primary ml-2";
     button.textContent = "Voir le suivi";
+    const icon = document.createElement("i");
+    icon.className = "mdi mdi-eye-outline";
+    icon.setAttribute("aria-hidden", "true");
+    button.prepend(icon, document.createTextNode(" "));
     button.onclick = () => {
       commState.detailId = row.id;
       commState.detailPage = 1;

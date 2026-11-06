@@ -21,6 +21,9 @@ async function api(path, body) {
   return data;
 }
 function controls() {
+  document.getElementById("login-progress").hidden = !busy;
+  for (const form of document.querySelectorAll("form"))
+    form.setAttribute("aria-busy", String(busy));
   document.querySelectorAll("form button,form input").forEach((node) => {
     node.disabled = busy;
   });
@@ -33,8 +36,14 @@ function updateResend() {
     Math.ceil(((state.resendAt || 0) - Date.now()) / 1000),
   );
   $("resend").disabled = busy || seconds > 0;
-  $("resend").textContent =
-    seconds > 0 ? `Renvoyer dans ${seconds} s` : "Renvoyer le code";
+  $("resend").replaceChildren(
+    Object.assign(document.createElement("i"), {
+      className: "mdi mdi-refresh",
+    }),
+    document.createTextNode(
+      seconds > 0 ? ` Renvoyer dans ${seconds} s` : " Renvoyer le code",
+    ),
+  );
 }
 function render(next) {
   state = next;

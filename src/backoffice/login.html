@@ -10,41 +10,72 @@
     />
     <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css" />
     <link rel="stylesheet" href="/assets/css/style.css" />
-    <link rel="icon" href="/assets/images/favicon.png" />
+    <link rel="icon" href="/assets/images/cashpay-icon.png" />
+    <link rel="stylesheet" href="/assets/css/cashpay-login.css" />
   </head>
-  <body>
+  <body class="cashpay-login">
     <div class="container-scroller">
       <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div class="row w-100">
+        <div class="row w-100 m-0">
           <div
             class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg"
           >
-            <div class="card col-lg-5 mx-auto">
+            <div class="card col-lg-4 mx-auto login-card">
               <div class="card-body px-4 px-md-5 py-5">
-                <h1 class="card-title text-start mb-3">Cashpay Admin</h1>
-                <p class="text-muted">
-                  Accès réservé aux comptes Admin et Gestionnaire actifs : ID
-                  Wallet ou e-mail, code reçu, puis PIN Cashpay existant.
-                </p>
+                <a class="login-brand" href="/login" aria-label="CashPay Admin"
+                  ><img
+                    src="/assets/images/cashpay-logo.png"
+                    alt="CashPay"
+                    width="1860"
+                    height="558"
+                /></a>
+                <h1 class="card-title text-start mb-3">
+                  Connexion à l’administration
+                </h1>
+                <p class="text-muted">Votre espace professionnel CashPay.</p>
                 <ul
                   class="nav nav-pills nav-fill mb-4"
                   aria-label="Étapes de connexion"
                 >
                   <li class="nav-item">
                     <span id="step-email" class="nav-link active"
-                      >1. Identifiant</span
+                      ><i class="mdi mdi-account-outline" aria-hidden="true"></i
+                      ><span>Identifiant</span></span
                     >
                   </li>
                   <li class="nav-item">
-                    <span id="step-otp" class="nav-link">2. OTP</span>
+                    <span id="step-otp" class="nav-link"
+                      ><i class="mdi mdi-email-outline" aria-hidden="true"></i
+                      ><span>Code e-mail</span></span
+                    >
                   </li>
                   <li class="nav-item">
-                    <span id="step-pin" class="nav-link">3. PIN</span>
+                    <span id="step-pin" class="nav-link"
+                      ><i class="mdi mdi-lock-outline" aria-hidden="true"></i
+                      ><span>PIN</span></span
+                    >
                   </li>
                 </ul>
-                <p id="login-info" class="text-info" role="status">
+                <p
+                  id="login-info"
+                  class="text-info login-status"
+                  role="status"
+                  aria-live="polite"
+                >
                   Vérification de la session…
                 </p>
+                <div
+                  id="login-progress"
+                  class="login-progress text-info"
+                  role="status"
+                  hidden
+                >
+                  <span
+                    class="spinner-border spinner-border-sm"
+                    aria-hidden="true"
+                  ></span>
+                  Vérification en cours…
+                </div>
                 <p id="login-error" class="text-danger" role="alert"></p>
                 <form id="email-form" hidden>
                   <div class="form-group">
@@ -66,13 +97,19 @@
                       type="submit"
                       class="btn btn-primary btn-block enter-btn"
                     >
+                      <i class="mdi mdi-eye-outline" aria-hidden="true"></i>
                       Recevoir le code par e-mail
                     </button>
                   </div>
                 </form>
                 <form id="otp-form" hidden>
                   <div class="form-group">
-                    <label for="otp">Code à six chiffres reçu par e-mail</label
+                    <label for="otp"
+                      ><i
+                        class="mdi mdi-email-check-outline"
+                        aria-hidden="true"
+                      ></i>
+                      Code à six chiffres reçu par e-mail</label
                     ><input
                       id="otp"
                       name="otp"
@@ -91,19 +128,23 @@
                       type="submit"
                       class="btn btn-primary btn-block enter-btn"
                     >
-                      Vérifier le code</button
+                      <i class="mdi mdi-check" aria-hidden="true"></i> Vérifier
+                      le code</button
                     ><button
                       id="resend"
                       type="button"
                       class="btn btn-outline-primary"
                     >
+                      <i class="mdi mdi-refresh" aria-hidden="true"></i>
                       Renvoyer le code
                     </button>
                   </div>
                 </form>
                 <form id="pin-form" hidden>
                   <div class="form-group">
-                    <label for="pin">PIN Cashpay existant</label
+                    <label for="pin"
+                      ><i class="mdi mdi-lock-outline" aria-hidden="true"></i>
+                      PIN Cashpay existant</label
                     ><input
                       id="pin"
                       name="pin"
@@ -127,7 +168,8 @@
                       type="submit"
                       class="btn btn-primary btn-block enter-btn"
                     >
-                      Accéder au tableau de bord
+                      <i class="mdi mdi-login" aria-hidden="true"></i> Accéder
+                      au tableau de bord
                     </button>
                   </div>
                 </form>
@@ -137,6 +179,7 @@
                   class="btn btn-link mt-3"
                   hidden
                 >
+                  <i class="mdi mdi-swap-horizontal" aria-hidden="true"></i>
                   Changer d’identifiant</button
                 ><button
                   id="retry-status"
@@ -144,11 +187,11 @@
                   class="btn btn-outline-light mt-3"
                   hidden
                 >
-                  Réessayer
+                  <i class="mdi mdi-refresh" aria-hidden="true"></i> Réessayer
                 </button>
                 <p class="text-muted mt-4">
-                  La session est conservée pendant votre travail. Aucun code OTP
-                  ni PIN n’est enregistré dans le navigateur.
+                  <i class="mdi mdi-shield-check" aria-hidden="true"></i> Accès
+                  réservé aux administrateurs et gestionnaires autorisés.
                 </p>
               </div>
             </div>

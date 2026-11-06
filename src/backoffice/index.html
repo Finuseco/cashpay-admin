@@ -19,7 +19,7 @@
     />
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="stylesheet" href="/admin.css" />
-    <link rel="icon" href="/assets/images/favicon.png" />
+    <link rel="icon" href="/assets/images/cashpay-icon.png" />
   </head>
   <body>
     <div class="container-scroller">
@@ -28,9 +28,9 @@
           class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top"
         >
           <a class="sidebar-brand brand-logo" href="/dashboard"
-            ><img src="/assets/images/logo.svg" alt="Template Corona" /></a
+            ><img src="/assets/images/cashpay-logo.png" alt="CashPay" /></a
           ><a class="sidebar-brand brand-logo-mini" href="/dashboard"
-            ><img src="/assets/images/logo-mini.svg" alt=""
+            ><img src="/assets/images/cashpay-icon.png" alt=""
           /></a>
         </div>
         <ul class="nav">
@@ -153,7 +153,7 @@
             class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center"
           >
             <a class="navbar-brand brand-logo-mini" href="/dashboard"
-              ><img src="/assets/images/logo-mini.svg" alt=""
+              ><img src="/assets/images/cashpay-icon.png" alt=""
             /></a>
           </div>
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
@@ -228,7 +228,8 @@
                   class="btn btn-outline-primary"
                   type="button"
                 >
-                  Actualiser le suivi
+                  <i class="mdi mdi-refresh" aria-hidden="true"></i> Actualiser
+                  le suivi
                 </button>
               </div>
               <p id="comm-status" role="status"></p>
@@ -383,6 +384,7 @@ L’équipe CashPay All</textarea>
                           class="btn btn-primary"
                           type="submit"
                         >
+                          <i class="mdi mdi-eye-outline" aria-hidden="true"></i>
                           Préparer et vérifier l’aperçu
                         </button>
                       </form>
@@ -408,6 +410,7 @@ L’équipe CashPay All</textarea>
                             class="btn btn-warning"
                             type="submit"
                           >
+                            <i class="mdi mdi-check" aria-hidden="true"></i>
                             Confirmer la mise en file d’envoi
                           </button>
                         </form>
@@ -431,12 +434,14 @@ L’équipe CashPay All</textarea>
                           class="btn btn-sm btn-outline-primary"
                           type="button"
                         >
+                          <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                           Précédent</button
                         ><button
                           id="comm-next"
                           class="btn btn-sm btn-outline-primary"
                           type="button"
                         >
+                          <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                           Suivant
                         </button>
                       </div>
@@ -468,12 +473,14 @@ L’équipe CashPay All</textarea>
                       class="btn btn-sm btn-outline-primary"
                       type="button"
                     >
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                       Précédent</button
                     ><button
                       id="comm-detail-next"
                       class="btn btn-sm btn-outline-primary"
                       type="button"
                     >
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                       Suivant
                     </button>
                   </div>
@@ -502,7 +509,8 @@ L’équipe CashPay All</textarea>
                       value="cancel"
                       type="submit"
                     >
-                      Annuler les envois en attente
+                      <i class="mdi mdi-close" aria-hidden="true"></i> Annuler
+                      les envois en attente
                     </button>
                   </form>
                 </div>
@@ -512,7 +520,8 @@ L’équipe CashPay All</textarea>
               <div class="page-header">
                 <h1 id="pricing-title" class="page-title"></h1>
                 <button id="pricing-new" class="btn btn-primary">
-                  Ajouter une règle
+                  <i class="mdi mdi-plus" aria-hidden="true"></i> Ajouter une
+                  règle
                 </button>
               </div>
               <p>
@@ -548,7 +557,10 @@ L’équipe CashPay All</textarea>
                   </div>
                 </div>
                 <div class="col-12 form-group">
-                  <button class="btn btn-outline-primary">Rechercher</button>
+                  <button class="btn btn-outline-primary">
+                    <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                    Rechercher
+                  </button>
                 </div>
               </form>
               <p id="pricing-status" role="status"></p>
@@ -562,9 +574,11 @@ L’équipe CashPay All</textarea>
                   </div>
                   <div class="d-flex justify-content-between mt-3">
                     <button id="pricing-prev" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                       Précédent</button
                     ><span id="pricing-page"></span
                     ><button id="pricing-next" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                       Suivant
                     </button>
                   </div>
@@ -660,7 +674,8 @@ L’équipe CashPay All</textarea>
                         type="button"
                         class="btn btn-outline-primary btn-sm mb-3"
                       >
-                        Ajouter un palier
+                        <i class="mdi mdi-plus" aria-hidden="true"></i> Ajouter
+                        un palier
                       </button>
                     </div>
                     <div class="form-group">
@@ -687,13 +702,14 @@ L’équipe CashPay All</textarea>
                       />
                     </div>
                     <button id="pricing-save" class="btn btn-primary">
+                      <i class="mdi mdi-pencil" aria-hidden="true"></i>
                       Enregistrer</button
                     ><button
                       id="pricing-cancel"
                       type="button"
                       class="btn btn-outline-light"
                     >
-                      Fermer
+                      <i class="mdi mdi-close" aria-hidden="true"></i> Fermer
                     </button>
                   </form>
                   <p id="pricing-result" class="mt-3" role="status"></p>
@@ -776,12 +792,14 @@ L’équipe CashPay All</textarea>
                       id="pricing-history-prev"
                       class="btn btn-outline-primary"
                     >
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                       Précédent</button
                     ><span id="pricing-history-page"></span
                     ><button
                       id="pricing-history-next"
                       class="btn btn-outline-primary"
                     >
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                       Suivant
                     </button>
                   </div>
@@ -1231,12 +1249,14 @@ L’équipe CashPay All</textarea>
                         type="button"
                         class="btn btn-outline-light"
                       >
+                        <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                         Précédent</button
                       ><button
                         id="registration-next"
                         type="button"
                         class="btn btn-primary"
                       >
+                        <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                         Suivant</button
                       ><button
                         id="create-user-submit"
@@ -1244,7 +1264,8 @@ L’équipe CashPay All</textarea>
                         class="btn btn-success"
                         hidden
                       >
-                        Créer et envoyer les codes
+                        <i class="mdi mdi-send" aria-hidden="true"></i> Créer et
+                        envoyer les codes
                       </button>
                     </div>
                   </form>
@@ -1655,9 +1676,11 @@ L’équipe CashPay All</textarea>
                   </div>
                   <div class="d-flex justify-content-between mt-4">
                     <button id="users-prev" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                       Précédent</button
                     ><span id="users-page"></span
                     ><button id="users-next" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                       Suivant
                     </button>
                   </div>
@@ -1688,7 +1711,10 @@ L’équipe CashPay All</textarea>
                   />
                 </div>
                 <div class="col-md-2 form-group d-flex align-items-end">
-                  <button class="btn btn-primary">Rechercher</button>
+                  <button class="btn btn-primary">
+                    <i class="mdi mdi-magnify" aria-hidden="true"></i>
+                    Rechercher
+                  </button>
                 </div>
               </form>
               <div class="card">
@@ -1705,12 +1731,14 @@ L’équipe CashPay All</textarea>
                       id="operations-prev"
                       class="btn btn-outline-primary"
                     >
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                       Précédent</button
                     ><span id="operations-page"></span
                     ><button
                       id="operations-next"
                       class="btn btn-outline-primary"
                     >
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                       Suivant
                     </button>
                   </div>
@@ -1736,7 +1764,8 @@ L’équipe CashPay All</textarea>
                   type="button"
                   hidden
                 >
-                  Modifier les données</button
+                  <i class="mdi mdi-pencil" aria-hidden="true"></i> Modifier les
+                  données</button
                 ><button
                   id="partner-open"
                   class="btn btn-outline-success"
@@ -1882,6 +1911,7 @@ L’équipe CashPay All</textarea>
                       </p>
                     </div>
                     <button class="btn btn-primary">
+                      <i class="mdi mdi-pencil" aria-hidden="true"></i>
                       Enregistrer les modifications
                     </button>
                   </form>
@@ -1944,7 +1974,8 @@ L’équipe CashPay All</textarea>
                   type="button"
                   hidden
                 >
-                  Nommer ou modifier le rôle</button
+                  <i class="mdi mdi-pencil" aria-hidden="true"></i> Nommer ou
+                  modifier le rôle</button
                 ><button
                   id="assisted-card-open"
                   class="btn btn-outline-primary"
@@ -2031,6 +2062,7 @@ L’équipe CashPay All</textarea>
                       />
                     </div>
                     <button class="btn btn-warning">
+                      <i class="mdi mdi-pencil" aria-hidden="true"></i>
                       Enregistrer l’habilitation
                     </button>
                   </form>
@@ -2071,6 +2103,7 @@ L’équipe CashPay All</textarea>
                       </div>
                     </div>
                     <button class="btn btn-outline-primary">
+                      <i class="mdi mdi-eye-outline" aria-hidden="true"></i>
                       Afficher le tarif
                     </button>
                   </form>
@@ -2114,7 +2147,8 @@ L’équipe CashPay All</textarea>
                       >
                     </div>
                     <button class="btn btn-success mt-3">
-                      Confirmer la commande et le débit
+                      <i class="mdi mdi-check" aria-hidden="true"></i> Confirmer
+                      la commande et le débit
                     </button>
                   </form>
                   <p id="assisted-card-result" role="status"></p>
@@ -2198,9 +2232,11 @@ L’équipe CashPay All</textarea>
                   <p id="activity-status" role="status"></p>
                   <div class="d-flex justify-content-between mt-4">
                     <button id="activity-prev" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-left" aria-hidden="true"></i>
                       Précédent</button
                     ><span id="activity-page"></span
                     ><button id="activity-next" class="btn btn-outline-primary">
+                      <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
                       Suivant
                     </button>
                   </div>

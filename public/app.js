@@ -15,6 +15,18 @@ function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined && text !== null) node.textContent = String(text);
   if (className) node.className = className;
+  const actionIcon = {
+    Consulter: "eye-outline",
+    Modifier: "pencil",
+    Dupliquer: "content-copy",
+    Retirer: "delete-outline",
+  }[text];
+  if (["a", "button"].includes(tag) && actionIcon) {
+    const icon = document.createElement("i");
+    icon.className = "mdi mdi-" + actionIcon;
+    icon.setAttribute("aria-hidden", "true");
+    node.prepend(icon, document.createTextNode(" "));
+  }
   return node;
 }
 function number(value) {
