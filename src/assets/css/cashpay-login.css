@@ -1,4 +1,4 @@
-/* Layout adjustments for the existing Corona authentication components. */
+/* Compact layout using the existing Corona authentication components. */
 .cashpay-login .full-page-wrapper {
   min-height: 100vh;
   min-height: 100dvh;
@@ -9,41 +9,68 @@
 }
 .cashpay-login .login-card {
   width: 100%;
-  max-width: 460px;
-  flex: 0 1 460px;
+  max-width: 410px;
+  flex: 0 1 410px;
   padding: 0;
+}
+.cashpay-login .login-card .card-body {
+  padding: 2rem !important;
 }
 .cashpay-login .login-brand {
   display: block;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 .cashpay-login .login-brand img {
   display: block;
-  width: 200px;
+  width: 140px;
   max-width: 75%;
   height: auto;
 }
 .cashpay-login h1.card-title {
-  font-size: 1.35rem;
-  line-height: 1.4;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  text-transform: none;
+  margin-bottom: 0.65rem !important;
+}
+.cashpay-login .text-muted {
+  color: #adb4c6 !important;
+}
+.cashpay-login .card-body > .text-muted {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
 }
 .cashpay-login .nav-pills {
   gap: 0.35rem;
+  margin-bottom: 1rem !important;
 }
 .cashpay-login .nav-pills .nav-link {
-  padding: 0.7rem 0.35rem;
-  font-size: 0.8rem;
+  padding: 0.4rem 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
   border-radius: 0.25rem;
 }
 .cashpay-login .nav-pills .nav-link i {
   display: block;
-  font-size: 1.35rem;
-  margin-bottom: 0.25rem;
+  font-size: 1.05rem;
+  margin-bottom: 0.1rem;
 }
-.cashpay-login .form-control {
-  min-height: 48px;
+.cashpay-login .form-group {
+  margin-bottom: 1rem;
+}
+.cashpay-login label {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
+}
+.cashpay-login .form-control.p_input {
+  height: 40px;
+  min-height: 40px;
+  padding: 0.45rem 0.65rem;
 }
 .cashpay-login .btn {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
   min-height: 44px;
   white-space: normal;
   line-height: 1.4;
@@ -55,16 +82,25 @@
   letter-spacing: 0.35em;
   font-variant-numeric: tabular-nums;
 }
-.cashpay-login .login-status {
-  font-size: 0.875rem;
-  line-height: 1.6;
+.cashpay-login .login-status,
+.cashpay-login #login-error,
+.cashpay-login .login-progress {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+.cashpay-login #login-error:empty {
+  display: none;
 }
 .cashpay-login .login-progress {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
+}
+.cashpay-login .card-body > .text-muted:last-child {
+  margin-top: 1.25rem !important;
+  margin-bottom: 0;
+  font-size: 0.75rem;
 }
 .cashpay-login [hidden] {
   display: none !important;
@@ -89,18 +125,18 @@
 }
 @media (max-width: 575.98px) {
   .cashpay-login .auth.login-bg {
-    padding: 1rem 0.75rem;
+    padding: 0.75rem;
   }
   .cashpay-login .login-card .card-body {
-    padding: 1.75rem 1.25rem !important;
+    padding: 1.4rem 1.25rem !important;
   }
   .cashpay-login .login-brand {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   .cashpay-login .login-brand img {
-    width: 175px;
+    width: 125px;
   }
-  .cashpay-login .form-control {
+  .cashpay-login .form-control.p_input {
     font-size: 16px;
   }
 }
@@ -109,8 +145,4 @@
   .cashpay-login .spinner-border {
     animation: none;
   }
-}
-
-.cashpay-login .text-muted {
-  color: #adb4c6 !important;
 }
